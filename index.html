@@ -21,6 +21,48 @@
     overflow-x: hidden; padding-bottom: 40px;
   }
 
+  /* ================= タイトル画面 ================= */
+  .title-screen {
+    position: fixed; inset: 0; z-index: 200;
+    background: radial-gradient(circle at 50% 30%, #ff9ec6 0%, #7b1fa2 60%, #1a0826 100%);
+    display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px;
+  }
+  .title-screen.hidden { display: none; }
+  .title-card {
+    background: rgba(255, 255, 255, 0.96); border-radius: 30px; padding: 28px 24px;
+    width: 100%; max-width: 420px; text-align: center;
+    border: 5px solid #fff; box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px #ff4081;
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .title-logo {
+    background: linear-gradient(135deg, #ff007f, #ff9100);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    font-size: 2rem; font-weight: 900; margin: 0 0 6px; letter-spacing: 1px;
+    filter: drop-shadow(0 3px 0 rgba(0,0,0,0.12));
+  }
+  .title-sub { font-size: 0.85rem; color: #666; font-weight: bold; margin-bottom: 20px; }
+  .user-select-box {
+    background: #fdf2f7; border: 3px solid #f8bbd0; border-radius: 18px; padding: 16px; margin-bottom: 20px;
+  }
+  .user-select-label { display: block; font-weight: 900; font-size: 0.9rem; color: #c93b76; margin-bottom: 8px; }
+  .user-select-dropdown {
+    width: 100%; padding: 12px 14px; font-size: 1.05rem; font-weight: 900;
+    border-radius: 12px; border: 2px solid #ff7eb3; background: #fff; color: #333;
+    outline: none; cursor: pointer;
+  }
+  .btn-start {
+    width: 100%; padding: 15px; border-radius: 50px; border: none;
+    background: linear-gradient(135deg, #ff4081, #ff9100); color: #fff;
+    font-size: 1.25rem; font-weight: 900; cursor: pointer;
+    box-shadow: 0 6px 0 #b21045, 0 12px 20px rgba(255,64,129,0.4);
+    transition: transform 0.1s, box-shadow 0.1s; margin-bottom: 16px;
+  }
+  .btn-start:active { transform: translateY(4px); box-shadow: 0 2px 0 #b21045; }
+  .btn-parent-menu {
+    background: #eceff1; color: #455a64; border: 2px solid #cfd8dc;
+    padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 0.82rem; cursor: pointer;
+  }
+
   /* 上部ステータスバー */
   header {
     width: 100%; max-width: 520px; background: rgba(255,255,255,0.95); padding: 10px 14px;
@@ -38,7 +80,20 @@
   }
   .btn-ui:active { transform: translateY(2px); box-shadow: 0 1px 0 #ccc; }
   .btn-shop { background: linear-gradient(135deg, #ff4081, #ff9100); color: #fff; box-shadow: 0 3px 0 #b21045; }
-  .btn-debug { background: #ab47bc; color: #fff; box-shadow: 0 3px 0 #6a1b9a; font-size: 0.7rem; }
+
+  /* デバッグモード専用バー（通常時は完全非表示） */
+  .debug-bar {
+    width: 100%; max-width: 520px; background: #311b92; color: #fff;
+    padding: 8px 14px; display: none; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 6px; border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 2px solid #b388ff; border-top: none;
+    z-index: 29;
+  }
+  .debug-bar.active { display: flex; }
+  .btn-dbg-act {
+    background: #ffea00; color: #222; border: none; padding: 4px 10px; border-radius: 8px;
+    font-weight: 900; font-size: 0.75rem; cursor: pointer; box-shadow: 0 2px 0 #c79100;
+  }
 
   /* ================= 3D アーケード筐体構造 ================= */
   .arcade-scene {
@@ -51,7 +106,6 @@
     filter: drop-shadow(0 28px 35px rgba(0,0,0,0.65));
   }
 
-  /* 上部ネオンマーキー（屋根） */
   .marquee-top {
     background: linear-gradient(180deg, var(--cab-main), var(--cab-dark));
     padding: 12px 16px 10px; border-radius: 26px 26px 0 0;
@@ -67,7 +121,6 @@
     box-shadow: inset 0 0 15px var(--cab-neon);
   }
 
-  /* ガラスケース＆左右ピラー（柱） */
   .glass-housing {
     display: flex; align-items: stretch;
     background: var(--cab-darker);
@@ -86,7 +139,6 @@
   }
   canvas { width: 100%; height: 100%; display: block; }
 
-  /* 前面アクリルガラスの光沢オーバーレイ */
   .glass-reflection {
     position: absolute; inset: 0; pointer-events: none; z-index: 10;
     background:
@@ -94,7 +146,6 @@
       inset 0 0 22px rgba(255,255,255,0.25);
   }
 
-  /* 手前に傾いた3Dコントロールデッキ */
   .control-deck-wrap {
     perspective: 700px; position: relative; z-index: 5; margin-top: -4px;
   }
@@ -118,7 +169,6 @@
   }
   .btn-row { display: flex; justify-content: space-around; align-items: center; }
 
-  /* 立体アーケード押しボタン */
   .btn-socket {
     background: radial-gradient(circle, #111 40%, #444 100%);
     padding: 7px; border-radius: 50%;
@@ -157,7 +207,6 @@
     box-shadow: 0 1px 0 #111, 0 2px 4px rgba(0,0,0,0.5);
   }
 
-  /* 筐体下部フロントパネル */
   .cabinet-base {
     background: linear-gradient(90deg, var(--cab-darker), var(--cab-dark) 20%, var(--cab-main) 50%, var(--cab-dark) 80%, var(--cab-darker));
     border: 4px solid var(--cab-trim); border-top: none;
@@ -181,7 +230,7 @@
   }
   .coin-hole { width: 6px; height: 22px; background: #111; border-radius: 3px; border: 1px solid #666; }
 
-  /* ================= コレクション図鑑（立体アクリルブロック加工） ================= */
+  /* ================= コレクション図鑑 ================= */
   .dex-section {
     width: 100%; max-width: 490px; margin-top: 28px; background: rgba(255,255,255,0.95);
     border-radius: 24px; padding: 18px; box-shadow: 0 12px 30px rgba(0,0,0,0.35);
@@ -203,7 +252,6 @@
     display: flex; justify-content: center; align-items: center;
   }
   .figure-card:hover .acrylic-stand { transform: rotateX(12deg) rotateY(-16deg) scale(1.08); }
-  /* JPG画像でも分厚いアクリルスタンド・ブロックに見える立体エフェクト */
   .acrylic-img {
     width: 84%; height: 84%; object-fit: cover; border-radius: 16px;
     border: 3px solid #ffffff; background: #fff;
@@ -225,14 +273,14 @@
     box-shadow: 0 5px 0 #7c93b0, 0 8px 12px rgba(0,0,0,0.28);
     border: 1.5px solid #fff; position: relative; z-index: 2;
   }
-  .char-name { font-size: 0.74rem; font-weight: 900; color: #333; margin-top: 4px; line-height: 1.2; }
+  .char-name { font-size: 0.72rem; font-weight: 900; color: #333; margin-top: 4px; line-height: 1.2; }
   .count-badge {
     position: absolute; top: 6px; right: 6px; background: var(--cab-dark); color: #fff;
     font-size: 0.7rem; font-weight: 900; padding: 2px 7px; border-radius: 10px; z-index: 5;
     box-shadow: 0 2px 5px rgba(0,0,0,0.25);
   }
 
-  /* 子ども向けで可愛いカットインアニメーション */
+  /* カットインアニメーション */
   .cutin-overlay {
     position: absolute; inset: 0; pointer-events: none; z-index: 25;
     display: flex; align-items: center; justify-content: center; overflow: hidden;
@@ -257,13 +305,13 @@
 
   /* モーダル共通 */
   .modal-bg {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 100;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 300;
     display: none; justify-content: center; align-items: center; padding: 16px;
     backdrop-filter: blur(4px);
   }
   .modal-bg.active { display: flex; }
   .modal-card {
-    background: #fff; border-radius: 26px; padding: 22px; width: 100%; max-width: 420px;
+    background: #fff; border-radius: 26px; padding: 22px; width: 100%; max-width: 440px;
     text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.5);
     animation: popIn 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
     max-height: 90vh; overflow-y: auto; border: 4px solid var(--cab-main);
@@ -281,7 +329,7 @@
     50% { transform: translateY(-10px) rotateY(14deg) rotateX(-6deg); }
   }
 
-  /* ショップタブ・アイテム */
+  /* ショップ＆管理メニューリスト */
   .shop-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
   .shop-tab {
     flex: 1; padding: 10px; border-radius: 12px; border: none; font-weight: 900;
@@ -298,23 +346,60 @@
     border: 2px solid #fff; box-shadow: 0 3px 6px rgba(0,0,0,0.2); flex-shrink: 0;
     display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
   }
+
+  /* 親の管理画面用カード */
+  .admin-user-card {
+    background: #f8f9fa; border: 2px solid #cfd8dc; border-radius: 14px; padding: 12px; margin-bottom: 10px; text-align: left;
+  }
+  .admin-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 6px; font-size: 0.8rem; font-weight: bold; }
+  .admin-input { width: 95px; padding: 6px; border-radius: 8px; border: 1px solid #999; font-weight: bold; text-align: right; }
 </style>
 </head>
 <body>
 
+<!-- ================= タイトル画面 ================= -->
+<div class="title-screen" id="titleScreen">
+  <div class="title-card">
+    <div style="font-size: 3rem; margin-bottom: 4px;">🛸🎀✨</div>
+    <h1 class="title-logo">ゆいキャッチャー</h1>
+    <div class="title-sub">〜 3D DX アクリルコレクション 〜</div>
+
+    <div class="user-select-box">
+      <label class="user-select-label" for="titleUserSelect">👤 あそぶユーザーをえらんでね</label>
+      <select id="titleUserSelect" class="user-select-dropdown"></select>
+    </div>
+
+    <button class="btn-start" onclick="startGameFromTitle()">🎮 ゲームスタート！</button>
+
+    <div>
+      <button class="btn-parent-menu" onclick="openParentAuthModal()">🔒 おうちのひとメニュー (管理)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= ゲーム上部ヘッダー ================= -->
 <header>
   <div class="user-box">
     <span class="user-badge" id="uiUserName">ゲスト</span>
-    <button class="btn-ui" onclick="openUserModal()">👤切替</button>
-    <button class="btn-ui" onclick="debugNextDay()">+1日</button>
+    <button class="btn-ui" onclick="returnToTitle()">🏠 タイトルへ</button>
   </div>
   <div class="user-box">
     <span class="point-badge">💰 <span id="uiPoints">0</span></span>
     <span class="ticket-badge">🎟️ <span id="uiTickets">0</span></span>
-    <button class="btn-ui btn-debug" onclick="debugAddTickets()" title="デバッグ：チケット+10枚">🎟️+10</button>
     <button class="btn-ui btn-shop" onclick="openShopModal()">🎨 着せ替え</button>
   </div>
 </header>
+
+<!-- 🛠️ デバッグモード専用バー（パスワード解除時のみ出現） -->
+<div class="debug-bar" id="debugBar">
+  <span style="font-size:0.75rem; font-weight:900;">🛠️ デバッグモード起動中</span>
+  <div style="display:flex; gap:6px;">
+    <button class="btn-dbg-act" onclick="debugAddPoints(1000)">💰+1000pt</button>
+    <button class="btn-dbg-act" onclick="debugAddTickets(10)">🎟️+10枚</button>
+    <button class="btn-dbg-act" onclick="debugNextDay()">📅+1日ボ</button>
+    <button class="btn-dbg-act" style="background:#ff5252; color:#fff;" onclick="disableDebugMode()">終了</button>
+  </div>
+</div>
 
 <!-- 3D アーケード筐体 -->
 <div class="arcade-scene">
@@ -373,8 +458,8 @@
 <!-- コレクション図鑑 -->
 <div class="dex-section">
   <div class="dex-header">
-    <h3 style="margin:0; font-size:1.05rem;">📖 ゆいちゃん立体アクリル図鑑</h3>
-    <span id="dexProgress" style="font-weight:900; color:var(--cab-dark);">0 / 11</span>
+    <h3 style="margin:0; font-size:1.05rem;">📖 ゆい＆フレンズ立体アクリル図鑑</h3>
+    <span id="dexProgress" style="font-weight:900; color:var(--cab-dark);">0 / 17</span>
   </div>
   <p style="font-size:0.76rem; color:#666; margin:0 0 12px;">※すでに持っているキャラクターをゲットすると、着せ替えチケット🎟️が1枚もらえます！</p>
   <div class="dex-grid" id="dexGrid"></div>
@@ -383,7 +468,7 @@
 <!-- 景品獲得モーダル -->
 <div class="modal-bg" id="prizeModal">
   <div class="modal-card">
-    <div style="color:var(--cab-dark); font-weight:900; font-size:1.5rem;">🎉 ゆいちゃん GET!! 🎉</div>
+    <div style="color:var(--cab-dark); font-weight:900; font-size:1.5rem;">🎉 プライズ GET!! 🎉</div>
     <div class="prize-showcase">
       <img id="modalCharImg" class="acrylic-img" src="" alt="prize">
       <div class="stand-base"></div>
@@ -411,22 +496,65 @@
   </div>
 </div>
 
-<!-- ユーザー切替モーダル -->
-<div class="modal-bg" id="userModal">
+<!-- 🔒 親の管理メニュー：パスワード認証モーダル -->
+<div class="modal-bg" id="parentAuthModal">
   <div class="modal-card">
-    <h3 style="margin-top:0;">👤 ユーザー管理</h3>
-    <div id="userList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px; max-height:180px; overflow-y:auto;"></div>
-    <div style="display:flex; gap:6px;">
-      <input type="text" id="newUserInput" placeholder="新しいユーザー名" style="flex:1; padding:8px; border-radius:8px; border:1px solid #ccc;">
-      <button class="btn-ui btn-shop" onclick="createNewUser()">作成</button>
+    <h3 style="margin-top:0;">🔒 おうちのひと確認</h3>
+    <p style="font-size:0.82rem; color:#666;">管理メニューを開くにはパスワードを入力してください。</p>
+    <input type="password" id="parentPassInput" placeholder="パスワードを入力" style="width:100%; padding:12px; font-size:1.1rem; border-radius:10px; border:2px solid #ccc; text-align:center; margin-bottom:12px;">
+    <div style="display:flex; gap:8px;">
+      <button class="btn-ui" style="flex:1; padding:12px;" onclick="closeParentAuthModal()">キャンセル</button>
+      <button class="btn-ui btn-shop" style="flex:1; padding:12px;" onclick="verifyParentPassword()">OK</button>
     </div>
-    <button class="btn-ui" style="margin-top:12px; width:100%; padding:10px;" onclick="closeUserModal()">閉じる</button>
+  </div>
+</div>
+
+<!-- ⚙️ 親の管理メニュー本体モーダル -->
+<div class="modal-bg" id="parentAdminModal">
+  <div class="modal-card">
+    <h3 style="margin:0 0 8px;">⚙️ 親の管理メニュー</h3>
+    <p style="font-size:0.75rem; color:#666; margin:0 0 12px;">ここで登録されたユーザーのみタイトル画面で選択できます。ユーザーごとの所持ポイント・ログインボーナス額を自由に変更できます。</p>
+
+    <!-- 新規ユーザー登録 -->
+    <div style="background:#fff0f6; padding:12px; border-radius:14px; border:2px solid #ff80ab; margin-bottom:14px; text-align:left;">
+      <div style="font-weight:900; font-size:0.85rem; color:#c93b76; margin-bottom:6px;">➕ 新しいユーザーを登録</div>
+      <div style="display:flex; gap:6px; margin-bottom:6px;">
+        <input type="text" id="adminNewUserName" placeholder="ユーザー名 (例: ゆい)" style="flex:1; padding:8px; border-radius:8px; border:1px solid #ccc; font-weight:bold;">
+        <input type="number" id="adminNewUserBonus" placeholder="毎日ボーナス" value="1000" style="width:95px; padding:8px; border-radius:8px; border:1px solid #ccc; font-weight:bold;">
+      </div>
+      <button class="btn-ui btn-shop" style="width:100%; padding:8px;" onclick="adminCreateUser()">このユーザーを登録する</button>
+    </div>
+
+    <!-- 登録済みユーザー一覧＆ポイント・ボーナス編集 -->
+    <div style="font-weight:900; font-size:0.85rem; text-align:left; margin-bottom:6px;">👤 登録ユーザーの編集</div>
+    <div id="adminUserList" style="max-height:240px; overflow-y:auto; margin-bottom:14px;"></div>
+
+    <!-- さらにパスワードを入れてデバッグモードへ突入 -->
+    <div style="background:#ede7f6; padding:12px; border-radius:14px; border:2px solid #9575cd; text-align:left; margin-bottom:12px;">
+      <div style="font-weight:900; font-size:0.85rem; color:#4527a0; margin-bottom:6px;">🛠️ デバッグモード切替 (要追加パスワード)</div>
+      <div style="display:flex; gap:6px;">
+        <input type="password" id="debugPassInput" placeholder="デバッグ用パスワード" style="flex:1; padding:8px; border-radius:8px; border:1px solid #ccc;">
+        <button class="btn-ui" style="background:#5e35b1; color:#fff;" onclick="verifyDebugPassword()">モードON</button>
+      </div>
+      <div id="debugStatusMsg" style="font-size:0.75rem; color:#d50000; font-weight:bold; margin-top:4px;">現在: 通常モード（ポイント・チケットの任意追加不可）</div>
+    </div>
+
+    <button class="btn-ui" style="width:100%; padding:12px; font-size:0.95rem;" onclick="closeParentAdminModal()">管理メニューを閉じる</button>
   </div>
 </div>
 
 <script>
 /**
- * 1. プライズ図鑑データ（画像一覧の11種類をすべて登録＆タイトルに合わせたコメント付き）
+ * 🔒 パスワード設定
+ * ・親の管理メニューパスワード: 0000
+ * ・デバッグモード突入パスワード: 9999
+ */
+const PARENT_PASS = '0000';
+const DEBUG_PASS  = '9999';
+let isDebugMode = false;
+
+/**
+ * 1. プライズ図鑑データ（全17種類！新着6種＋全角抜き天使ゆうたろう完全対応）
  */
 function createFallbackSvg(emoji, bgColor, rimColor) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
@@ -437,15 +565,20 @@ function createFallbackSvg(emoji, bgColor, rimColor) {
   return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
 
-// 画像読み込み失敗時（全角・半角スペースの違いや未アップロード時）の自動フォールバック処理
-function handleImgError(imgEl, altImg, fallbackSvg) {
-  if (altImg && !imgEl.dataset.triedAlt) {
-    imgEl.dataset.triedAlt = 'true';
-    imgEl.src = altImg;
-  } else {
-    imgEl.onerror = null;
-    imgEl.src = fallbackSvg;
-  }
+// 複数候補のファイル名を順番に試す賢い画像ローダー（スペース有無の違いを自動吸収）
+function setSmartImage(imgEl, charObj) {
+  const candidates = [charObj.img, ...(charObj.altImgs || [])];
+  let idx = 0;
+  imgEl.onerror = () => {
+    idx++;
+    if (idx < candidates.length) {
+      imgEl.src = candidates[idx];
+    } else {
+      imgEl.onerror = null;
+      imgEl.src = charObj.fallback;
+    }
+  };
+  imgEl.src = candidates[0];
 }
 
 const CHARACTERS = [
@@ -466,14 +599,14 @@ const CHARACTERS = [
   {
     id: 'yui_03',
     name: '雪だるまゆい',
-    desc: '真っ白ふわふわな雪だるまに変身！青いボタンがチャームポイントだよ⛄',
+    desc: '真っ白ふわふわな雪だるまに変身！水色のボタンがチャームポイントだよ⛄',
     img: '雪だるまゆい.jpg',
     fallback: createFallbackSvg('⛄', '#e1f5fe', '#29b6f6')
   },
   {
     id: 'yui_04',
     name: 'かぼちゃうさぽん',
-    desc: 'ハロウィンのかぼちゃパンツで登場！トリック・オア・トリートでお菓子ちょうだい🎃',
+    desc: 'ハロウィンのかぼちゃ帽子＆パンツで登場！トリック・オア・トリート🎃',
     img: 'かぼちゃうさぽん.jpg',
     fallback: createFallbackSvg('🎃', '#f3e5f5', '#ab47bc')
   },
@@ -486,10 +619,10 @@ const CHARACTERS = [
   },
   {
     id: 'yui_06',
-    name: 'ゆうたろう 天使',
+    name: 'ゆうたろう天使',
     desc: '小さな白い羽をパタパタさせて舞い降りた、ハートを届ける癒やしの天使ちゃん👼',
-    img: 'ゆうたろう　天使.jpg',
-    altImg: 'ゆうたろう 天使.jpg',
+    img: 'ゆうたろう天使.jpg',
+    altImgs: ['天使ゆうたろう.jpg', 'ゆうたろう 天使.jpg', 'ゆうたろう　天使.jpg'],
     fallback: createFallbackSvg('👼', '#f3e5f5', '#ce93d8')
   },
   {
@@ -526,6 +659,48 @@ const CHARACTERS = [
     desc: 'サクサクふわふわのメロンパンに包まれた甘いゆいちゃん！焼きたての香りがしそう🍈',
     img: 'メロンパンゆい.jpg',
     fallback: createFallbackSvg('🍈', '#dcedc8', '#7cb342')
+  },
+  {
+    id: 'yui_12',
+    name: 'ふつうのクマぽん',
+    desc: 'こんがりブラウンのまんまるボディがかわいい！のんびり屋さんなクマぽんだよ🐻',
+    img: 'ふつうのクマぽん.jpg',
+    fallback: createFallbackSvg('🐻', '#ffe0b2', '#e65100')
+  },
+  {
+    id: 'yui_13',
+    name: 'ふつうのうさぽん',
+    desc: 'ぴょこんと立ったお耳とパステルピンクがキュート！ふわふわ優しいうさぽん🐰',
+    img: 'ふつうのうさぽん.jpg',
+    fallback: createFallbackSvg('🐰', '#f8bbd0', '#ec407a')
+  },
+  {
+    id: 'yui_14',
+    name: 'くまうさぽん',
+    desc: 'うさぽんとクマぽんが夢の合体！？ピンクのお顔にブラウンの体がオシャレでしょ🐻🐰',
+    img: 'くまうさぽん.jpg',
+    fallback: createFallbackSvg('🧸', '#ffccbc', '#d84315')
+  },
+  {
+    id: 'yui_15',
+    name: 'ぞうぽん',
+    desc: '鮮やかなスカイブルーがとっても爽やか！長いお鼻が自慢の元気なぞうぽん🐘',
+    img: 'ぞうぽん.jpg',
+    fallback: createFallbackSvg('🐘', '#84ffff', '#00acc1')
+  },
+  {
+    id: 'yui_16',
+    name: 'コアラのこあぽん',
+    desc: '青いお耳とお洋服がクール！大きな丸いお鼻がチャームポイントのこあぽんだよ🐨',
+    img: 'コアラのこあぽん.jpg',
+    fallback: createFallbackSvg('🐨', '#bbdefb', '#1976d2')
+  },
+  {
+    id: 'yui_17',
+    name: 'ライオンのらいぽん',
+    desc: '太陽みたいに明るい黄金のたてがみがカッコいい！赤い髪飾りをつけた百獣の王らいぽん🦁',
+    img: 'ライオンのらいぽん.jpg',
+    fallback: createFallbackSvg('🦁', '#fff59d', '#ff8f00')
   }
 ];
 
@@ -629,16 +804,29 @@ const CLAW_SKINS = {
 };
 
 /**
- * 3. ユーザー管理 ＆ データ保存
+ * 3. ユーザー個別管理 ＆ 親の管理メニュー機能
  */
-const STORAGE_KEY = 'yui_catcher_users_v8';
+const STORAGE_KEY = 'yui_catcher_users_v9';
 let allUsers = {};
 try {
   allUsers = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
 } catch (e) {
   allUsers = {};
 }
-let currentUser = localStorage.getItem('yui_catcher_current_user') || 'ゆいファン1号';
+
+// 初期状態でユーザーが1人もいない場合はデフォルトユーザーを作成
+if (Object.keys(allUsers).length === 0) {
+  allUsers['ゆい'] = {
+    points: 1000, loginBonus: 1000, tickets: 0, lastLogin: '',
+    collection: {}, unlockedCabinets: ['pink'], currentCabinet: 'pink',
+    unlockedClaws: ['standard'], currentClaw: 'standard'
+  };
+}
+
+let currentUser = localStorage.getItem('yui_catcher_current_user');
+if (!currentUser || !allUsers[currentUser]) {
+  currentUser = Object.keys(allUsers)[0];
+}
 let currentShopTab = 'cabinet';
 
 function getTodayStr() {
@@ -646,51 +834,256 @@ function getTodayStr() {
   return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
 }
 
-function initUser(userName) {
-  if (!allUsers[userName]) {
-    allUsers[userName] = {
-      points: 0, tickets: 0, lastLogin: '', collection: {},
-      unlockedCabinets: ['pink'], currentCabinet: 'pink',
-      unlockedClaws: ['standard'], currentClaw: 'standard'
-    };
-  }
-  const u = allUsers[userName];
+function ensureUserFields(u) {
   if (typeof u.points !== 'number') u.points = 1000;
+  if (typeof u.loginBonus !== 'number') u.loginBonus = 1000;
   if (typeof u.tickets !== 'number') u.tickets = 0;
+  if (!u.collection) u.collection = {};
   if (!Array.isArray(u.unlockedCabinets)) u.unlockedCabinets = ['pink'];
   if (!CABINET_SKINS[u.currentCabinet]) u.currentCabinet = 'pink';
   if (!Array.isArray(u.unlockedClaws)) u.unlockedClaws = ['standard'];
   if (!CLAW_SKINS[u.currentClaw]) u.currentClaw = 'standard';
+}
 
-  currentUser = userName;
+Object.keys(allUsers).forEach(k => ensureUserFields(allUsers[k]));
+saveData();
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(allUsers));
+}
+
+// タイトル画面のプルダウンを更新
+function populateTitleDropdown() {
+  const select = document.getElementById('titleUserSelect');
+  select.innerHTML = '';
+  Object.keys(allUsers).forEach(uName => {
+    const u = allUsers[uName];
+    const opt = document.createElement('option');
+    opt.value = uName;
+    opt.textContent = `${uName} （💰 ${u.points.toLocaleString()} pt）`;
+    if (uName === currentUser) opt.selected = true;
+    select.appendChild(opt);
+  });
+}
+
+// タイトル画面からゲーム開始
+function startGameFromTitle() {
+  const select = document.getElementById('titleUserSelect');
+  const selectedUser = select.value;
+  if (!selectedUser || !allUsers[selectedUser]) {
+    alert('おうちのひとメニューからユーザーを登録してください！');
+    return;
+  }
+  currentUser = selectedUser;
   localStorage.setItem('yui_catcher_current_user', currentUser);
+  ensureUserFields(allUsers[currentUser]);
+
+  document.getElementById('titleScreen').classList.add('hidden');
+  applyCabinetSkin(allUsers[currentUser].currentCabinet);
   checkLoginBonus(false);
-  applyCabinetSkin(u.currentCabinet);
-  saveData();
   updateUI();
+}
+
+function returnToTitle() {
+  if (gameState !== 'IDLE' && gameState !== 'X_READY' && gameState !== 'Z_READY') return;
+  disableDebugMode();
+  populateTitleDropdown();
+  document.getElementById('titleScreen').classList.remove('hidden');
 }
 
 function checkLoginBonus(force) {
   const u = allUsers[currentUser];
   const today = getTodayStr();
+  const bonusAmount = (typeof u.loginBonus === 'number') ? u.loginBonus : 1000;
   if (force || u.lastLogin !== today) {
-    u.points += 1000;
+    u.points += bonusAmount;
     u.lastLogin = today;
     saveData();
     setTimeout(() => {
-      alert(`🎁【${currentUser}】さん、ログインボーナス！\n本日の 1,000 pt が支給されました！`);
+      alert(`🎁【${currentUser}】さん、ログインボーナス！\n本日の ${bonusAmount.toLocaleString()} pt が支給されました！`);
       updateUI();
     }, 80);
   }
 }
-function debugNextDay() { checkLoginBonus(true); }
-function debugAddTickets() {
-  allUsers[currentUser].tickets += 10;
+
+// 親の管理メニュー認証
+function openParentAuthModal() {
+  document.getElementById('parentPassInput').value = '';
+  document.getElementById('parentAuthModal').classList.add('active');
+}
+function closeParentAuthModal() {
+  document.getElementById('parentAuthModal').classList.remove('active');
+}
+function verifyParentPassword() {
+  const val = document.getElementById('parentPassInput').value.trim();
+  if (val === PARENT_PASS) {
+    closeParentAuthModal();
+    openParentAdminModal();
+  } else {
+    alert('パスワードが違います！');
+  }
+}
+
+// 親の管理メニュー本体
+function openParentAdminModal() {
+  document.getElementById('debugPassInput').value = '';
+  renderAdminUserList();
+  updateDebugStatusUI();
+  document.getElementById('parentAdminModal').classList.add('active');
+}
+function closeParentAdminModal() {
+  document.getElementById('parentAdminModal').classList.remove('active');
+  populateTitleDropdown();
+  updateUI();
+}
+
+function renderAdminUserList() {
+  const container = document.getElementById('adminUserList');
+  container.innerHTML = '';
+  Object.keys(allUsers).forEach((uName, idx) => {
+    const u = allUsers[uName];
+    const card = document.createElement('div');
+    card.className = 'admin-user-card';
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:900; font-size:0.95rem; color:#c93b76;">👤 ${uName}</span>
+        <span style="font-size:0.75rem; color:#006064; font-weight:bold;">🎟️チケット: ${u.tickets}枚</span>
+      </div>
+      <div class="admin-row">
+        <span>💰 現在の所持ポイント:</span>
+        <div>
+          <input type="number" class="admin-input" id="adm_pt_${idx}" value="${u.points}" min="0" step="100"> pt
+        </div>
+      </div>
+      <div class="admin-row">
+        <span>📅 毎日のログインボーナス:</span>
+        <div>
+          <input type="number" class="admin-input" id="adm_bn_${idx}" value="${u.loginBonus}" min="0" step="100"> pt
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
+        <button class="btn-ui" style="background:#ef5350; color:#fff;" onclick="adminDeleteUser('${uName}')">削除</button>
+        <button class="btn-ui btn-shop" onclick="adminSaveUser('${uName}', ${idx})">変更を保存</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function adminCreateUser() {
+  const nameInput = document.getElementById('adminNewUserName');
+  const bonusInput = document.getElementById('adminNewUserBonus');
+  const name = nameInput.value.trim();
+  const bonus = parseInt(bonusInput.value, 10);
+
+  if (!name) {
+    alert('新しいユーザー名を入力してください。');
+    return;
+  }
+  if (allUsers[name]) {
+    alert('そのユーザー名はすでに登録されています。');
+    return;
+  }
+  const validBonus = isNaN(bonus) ? 1000 : Math.max(0, bonus);
+  allUsers[name] = {
+    points: validBonus,
+    loginBonus: validBonus,
+    tickets: 0,
+    lastLogin: getTodayStr(),
+    collection: {},
+    unlockedCabinets: ['pink'],
+    currentCabinet: 'pink',
+    unlockedClaws: ['standard'],
+    currentClaw: 'standard'
+  };
+  currentUser = name;
+  localStorage.setItem('yui_catcher_current_user', currentUser);
+  nameInput.value = '';
+  saveData();
+  renderAdminUserList();
+  populateTitleDropdown();
+  alert(`👤「${name}」さんを登録しました！（初期ポイント: ${validBonus}pt）`);
+}
+
+function adminSaveUser(uName, idx) {
+  const ptVal = parseInt(document.getElementById(`adm_pt_${idx}`).value, 10);
+  const bnVal = parseInt(document.getElementById(`adm_bn_${idx}`).value, 10);
+  if (isNaN(ptVal) || isNaN(bnVal)) {
+    alert('正しい数値を入力してください。');
+    return;
+  }
+  allUsers[uName].points = Math.max(0, ptVal);
+  allUsers[uName].loginBonus = Math.max(0, bnVal);
+  saveData();
+  renderAdminUserList();
+  populateTitleDropdown();
+  updateUI();
+  alert(`✅「${uName}」さんの設定を保存しました！`);
+}
+
+function adminDeleteUser(uName) {
+  if (Object.keys(allUsers).length <= 1) {
+    alert('最低1人のユーザーが必要です。削除できません。');
+    return;
+  }
+  if (!confirm(`本当に「${uName}」さんのデータを削除しますか？`)) return;
+  delete allUsers[uName];
+  if (currentUser === uName) {
+    currentUser = Object.keys(allUsers)[0];
+    localStorage.setItem('yui_catcher_current_user', currentUser);
+  }
+  saveData();
+  renderAdminUserList();
+  populateTitleDropdown();
+  updateUI();
+}
+
+// 🛠️ デバッグモードのパスワード認証と操作（デバッグモード中のみ任意追加が許可される）
+function verifyDebugPassword() {
+  const pass = document.getElementById('debugPassInput').value.trim();
+  if (pass === DEBUG_PASS) {
+    isDebugMode = true;
+    document.getElementById('debugBar').classList.add('active');
+    updateDebugStatusUI();
+    alert('🛠️ デバッグモードがONになりました！\nゲーム画面上部のバーからいつでもポイントやチケットを追加できます。');
+  } else {
+    alert('デバッグ用パスワードが違います！');
+  }
+}
+
+function disableDebugMode() {
+  isDebugMode = false;
+  document.getElementById('debugBar').classList.remove('active');
+  updateDebugStatusUI();
+}
+
+function updateDebugStatusUI() {
+  const msg = document.getElementById('debugStatusMsg');
+  if (!msg) return;
+  if (isDebugMode) {
+    msg.style.color = '#00c853';
+    msg.textContent = '現在: 🛠️デバッグモードON（画面上部でポイント・チケット自由追加可能）';
+  } else {
+    msg.style.color = '#d50000';
+    msg.textContent = '現在: 通常モード（ポイント・チケットの任意追加不可）';
+  }
+}
+
+function debugAddPoints(amount) {
+  if (!isDebugMode) return;
+  allUsers[currentUser].points += amount;
+  saveData(); updateUI();
+}
+function debugAddTickets(amount) {
+  if (!isDebugMode) return;
+  allUsers[currentUser].tickets += amount;
   saveData(); updateUI();
   if (document.getElementById('shopModal').classList.contains('active')) renderShop();
-  alert('🎟️ デバッグ：着せ替えチケットを10枚追加しました！');
 }
-function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(allUsers)); }
+function debugNextDay() {
+  if (!isDebugMode) return;
+  checkLoginBonus(true);
+}
 
 function applyCabinetSkin(skinKey) {
   const s = CABINET_SKINS[skinKey] || CABINET_SKINS.pink;
@@ -706,6 +1099,7 @@ function applyCabinetSkin(skinKey) {
 
 function updateUI() {
   const u = allUsers[currentUser];
+  if (!u) return;
   document.getElementById('uiUserName').textContent = currentUser;
   document.getElementById('uiPoints').textContent = u.points.toLocaleString();
   document.getElementById('uiTickets').textContent = u.tickets.toLocaleString();
@@ -738,8 +1132,7 @@ function renderDex() {
     const imgEl = document.createElement('img');
     imgEl.className = 'acrylic-img';
     imgEl.alt = ch.name;
-    imgEl.src = ch.img;
-    imgEl.onerror = () => handleImgError(imgEl, ch.altImg, ch.fallback);
+    setSmartImage(imgEl, ch);
 
     stand.appendChild(imgEl);
     card.appendChild(stand);
@@ -1241,7 +1634,7 @@ function drawClawAndCapsule(clawSkin) {
 
 function renderStage() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const u = allUsers[currentUser];
+  const u = allUsers[currentUser] || Object.values(allUsers)[0];
   const cabSkin = CABINET_SKINS[u.currentCabinet] || CABINET_SKINS.pink;
   const clawSkin = CLAW_SKINS[u.currentClaw] || CLAW_SKINS.standard;
 
@@ -1280,7 +1673,7 @@ function startRight(e) {
   if (gameState === 'IDLE') {
     const u = allUsers[currentUser];
     if (u.points < 100) {
-      alert('ポイントが足りません！（1プレイ 100pt）\n上部の「+1日」ボタンでログインボーナスを受け取れます。');
+      alert('ポイントが足りません！（1プレイ 100pt）');
       return;
     }
     u.points -= 100; saveData(); updateUI();
@@ -1503,15 +1896,13 @@ function onWinPrize() {
 
   saveData();
   updateUI();
-  setStatus(`🎉 ゆいちゃん「${wonChar.name}」を獲得しました！`);
+  setStatus(`🎉 「${wonChar.name}」を獲得しました！`);
   showPrizeModal(wonChar, isDuplicate);
 }
 
 function showPrizeModal(charObj, isDuplicate) {
   const modalImg = document.getElementById('modalCharImg');
-  delete modalImg.dataset.triedAlt;
-  modalImg.onerror = () => handleImgError(modalImg, charObj.altImg, charObj.fallback);
-  modalImg.src = charObj.img;
+  setSmartImage(modalImg, charObj);
 
   document.getElementById('modalCharName').textContent = charObj.name;
   document.getElementById('modalCharDesc').textContent = charObj.desc;
@@ -1590,7 +1981,7 @@ function renderShop() {
 function buyItem(isCab, key, cost) {
   const u = allUsers[currentUser];
   if (u.tickets < cost) {
-    alert('着せ替えチケットが足りません！\n右上の「🎟️+10」ボタンでテスト用チケットを増やせます。');
+    alert('着せ替えチケットが足りません！\nすでに持っているキャラクターを重複ゲットするとチケットがもらえます。');
     return;
   }
   u.tickets -= cost;
@@ -1612,32 +2003,9 @@ function equipItem(isCab, key) {
   renderShop();
 }
 
-function openUserModal() {
-  const list = document.getElementById('userList');
-  list.innerHTML = '';
-  Object.keys(allUsers).forEach(uName => {
-    const btn = document.createElement('button');
-    btn.className = 'btn-ui';
-    btn.style.padding = '10px';
-    btn.style.background = uName === currentUser ? 'var(--cab-dark)' : '#f0f0f0';
-    btn.style.color = uName === currentUser ? '#fff' : '#333';
-    btn.textContent = `${uName} (💰${allUsers[uName].points} / 🎟️${allUsers[uName].tickets || 0})`;
-    btn.onclick = () => { initUser(uName); closeUserModal(); };
-    list.appendChild(btn);
-  });
-  document.getElementById('userModal').classList.add('active');
-}
-function closeUserModal() { document.getElementById('userModal').classList.remove('active'); }
-function createNewUser() {
-  const input = document.getElementById('newUserInput');
-  const name = input.value.trim();
-  if (!name) return;
-  input.value = '';
-  initUser(name);
-  closeUserModal();
-}
-
-initUser(currentUser);
+// 初期起動時はタイトル画面を表示してプルダウンを準備
+populateTitleDropdown();
+updateUI();
 updateButtons();
 requestAnimationFrame(gameLoop);
 </script>
