@@ -10,7 +10,9 @@
     --secondary: #5ec2ff;
     --accent: #ffd93d;
     --bg: #fdf6f9;
-    --cabinet: #ff85b3;
+    --cabinet-main: #ff85b3;
+    --cabinet-dark: #d8457c;
+    --stage-bg: linear-gradient(180deg, #dff3ff 0%, #ffffff 55%, #f3d5e5 55%, #e2b8ce 100%);
   }
   * { box-sizing: border-box; user-select: none; font-family: 'Hiragino Maru Gothic ProN', 'Rounded Mplus 1c', sans-serif; }
   body { margin: 0; background: var(--bg); color: #333; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
@@ -20,46 +22,65 @@
     width: 100%; max-width: 540px; background: #fff; padding: 10px 15px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-radius: 0 0 16px 16px;
     display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+    position: relative; z-index: 10;
   }
   .user-box { display: flex; align-items: center; gap: 6px; }
   .user-badge { background: var(--primary); color: #fff; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; }
   .point-badge { background: #fff8e1; border: 2px solid var(--accent); color: #d48806; padding: 4px 12px; border-radius: 20px; font-weight: bold; }
+  .ticket-badge { background: #e0f7fa; border: 2px solid #00bcd4; color: #00838f; padding: 4px 12px; border-radius: 20px; font-weight: bold; }
   .btn-sm { background: #eee; border: none; padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
   .btn-sm:hover { background: #ddd; }
+  .btn-shop { background: #ff4081; color: #fff; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
-  /* 筐体デザイン */
+  /* 筐体デザイン (立体感の強化) */
+  .cabinet-wrap {
+    perspective: 800px; width: 100%; max-width: 500px; margin-top: 16px;
+  }
   .cabinet {
-    width: 100%; max-width: 500px; margin-top: 12px;
-    background: linear-gradient(180deg, var(--cabinet), #ff5e97);
-    border-radius: 24px; padding: 14px;
-    box-shadow: 0 12px 28px rgba(255, 94, 151, 0.3), inset 0 4px 8px rgba(255,255,255,0.6);
+    width: 100%;
+    background: linear-gradient(135deg, var(--cabinet-main), var(--cabinet-dark));
+    border-radius: 24px; padding: 16px;
+    box-shadow: 
+      0 16px 0 var(--cabinet-dark), /* 底面の厚み */
+      0 24px 32px rgba(0,0,0,0.3),
+      inset 0 4px 12px rgba(255,255,255,0.5),
+      inset 0 -4px 12px rgba(0,0,0,0.2);
+    transform: rotateX(2deg); /* わずかに上を向かせて立体感を強調 */
+    border: 2px solid rgba(255,255,255,0.3);
   }
   .marquee {
     background: #fff; color: var(--primary); text-align: center; font-weight: 900;
-    font-size: 1.2rem; padding: 6px; border-radius: 14px; margin-bottom: 10px;
-    letter-spacing: 2px; box-shadow: inset 0 0 8px rgba(255,94,151,0.3);
+    font-size: 1.2rem; padding: 6px; border-radius: 14px; margin-bottom: 12px;
+    letter-spacing: 2px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.2);
+    border: 2px solid #eee;
   }
   .stage-wrap {
     position: relative; width: 100%; height: 340px;
-    background: linear-gradient(180deg, #dff3ff 0%, #ffffff 55%, #f3d5e5 55%, #e2b8ce 100%);
-    border-radius: 14px; overflow: hidden; border: 4px solid #fff;
-    box-shadow: inset 0 8px 20px rgba(0,0,0,0.12);
+    background: var(--stage-bg);
+    border-radius: 12px; overflow: hidden; 
+    border: 8px solid #fff;
+    /* ステージの奥行き（くぼみ）を表現するインナーシャドウ */
+    box-shadow: 
+      inset 0 16px 32px rgba(0,0,0,0.25), 
+      inset 0 -8px 16px rgba(0,0,0,0.1),
+      0 4px 8px rgba(0,0,0,0.2);
   }
   canvas { width: 100%; height: 100%; display: block; }
 
   /* 操作パネル */
   .control-panel {
-    background: #2c2c34; margin-top: 12px; padding: 16px; border-radius: 16px;
+    background: #2c2c34; margin-top: 16px; padding: 20px 16px; border-radius: 16px;
     display: flex; justify-content: space-around; align-items: center;
-    box-shadow: inset 0 4px 8px rgba(0,0,0,0.5);
+    box-shadow: inset 0 6px 12px rgba(0,0,0,0.6), 0 2px 0 #555;
+    border-top: 4px solid #1a1a20;
   }
   .arcade-btn {
     width: 90px; height: 90px; border-radius: 50%; border: none;
     font-weight: 900; font-size: 0.95rem; color: #fff; cursor: pointer;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
-    position: relative; transition: transform 0.08s, box-shadow 0.08s;
+    position: relative; transition: transform 0.08s, box-shadow 0.08s, filter 0.2s;
   }
-  .arcade-btn:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(0.5); }
+  .arcade-btn:disabled { filter: brightness(0.4) grayscale(0.8); cursor: not-allowed; }
   .btn-right { background: radial-gradient(circle at 30% 30%, #68d8ff, #0088cc); box-shadow: 0 7px 0 #005580, 0 10px 15px rgba(0,0,0,0.4); }
   .btn-back  { background: radial-gradient(circle at 30% 30%, #68ff9a, #00b347); box-shadow: 0 7px 0 #006629, 0 10px 15px rgba(0,0,0,0.4); }
   .btn-catch { background: radial-gradient(circle at 30% 30%, #ff7b9c, #e6004c); box-shadow: 0 7px 0 #80002a, 0 10px 15px rgba(0,0,0,0.4); font-size: 1.1rem; }
@@ -67,107 +88,68 @@
     transform: translateY(5px); box-shadow: 0 2px 0 #222, 0 4px 6px rgba(0,0,0,0.4);
   }
   .status-bar {
-    text-align: center; color: #fff; font-weight: bold; margin-top: 8px; font-size: 0.9rem; min-height: 1.4em;
+    text-align: center; color: #fff; font-weight: bold; margin-top: 10px; font-size: 0.9rem; min-height: 1.4em;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
   }
 
   /* 下部ナビ・図鑑セクション */
-  .tabs { width: 100%; max-width: 500px; margin: 16px 0 30px; background: #fff; border-radius: 20px; padding: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .tabs { width: 100%; max-width: 500px; margin: 24px 0 30px; background: #fff; border-radius: 20px; padding: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
   .dex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
   .dex-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 
-  /* イラストの立体的厚み表現（アクリルスタンド／立体カード風） */
+  /* イラストの立体的厚み表現 */
   .figure-card {
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    border-radius: 16px; padding: 10px; text-align: center; position: relative;
-    perspective: 600px; cursor: pointer; transition: transform 0.2s;
-    border: 2px solid #eee;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 16px; padding: 10px; text-align: center; position: relative;
+    perspective: 600px; cursor: pointer; transition: transform 0.2s; border: 2px solid #eee;
   }
-  .figure-card:hover { transform: translateY(-4px); }
+  .figure-card:hover { transform: translateY(-4px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
   .acrylic-stand {
     width: 100%; aspect-ratio: 1/1; margin: 0 auto; position: relative;
-    transform-style: preserve-3d; transition: transform 0.25s ease;
-    display: flex; justify-content: center; align-items: center;
+    transform-style: preserve-3d; transition: transform 0.25s ease; display: flex; justify-content: center; align-items: center;
   }
   .figure-card:hover .acrylic-stand { transform: rotateX(10deg) rotateY(-12deg) scale(1.05); }
-  /* 立体的な厚みレイヤー */
   .acrylic-img {
     width: 82%; height: 82%; object-fit: contain;
-    /* 多重ドロップシャドウでアクリル・フィギュアの物理的な厚みを表現 */
-    filter:
-      drop-shadow(0px 1px 0px #fff)
-      drop-shadow(0px -1px 0px #fff)
-      drop-shadow(1px 0px 0px #fff)
-      drop-shadow(-1px 0px 0px #fff)
-      drop-shadow(1px 2px 0px #cbd5e1)
-      drop-shadow(2px 4px 0px #94a3b8)
-      drop-shadow(3px 6px 0px #64748b)
-      drop-shadow(5px 10px 8px rgba(0,0,0,0.28));
+    filter: drop-shadow(0px 1px 0px #fff) drop-shadow(0px -1px 0px #fff) drop-shadow(1px 0px 0px #fff) drop-shadow(-1px 0px 0px #fff) drop-shadow(1px 2px 0px #cbd5e1) drop-shadow(2px 4px 0px #94a3b8) drop-shadow(3px 6px 0px #64748b) drop-shadow(5px 10px 8px rgba(0,0,0,0.28));
     transition: filter 0.3s;
   }
-  /* 未獲得時のシルエット処理 */
-  .unowned .acrylic-img {
-    filter: brightness(0) opacity(0.75)
-      drop-shadow(2px 3px 0px #475569)
-      drop-shadow(4px 6px 5px rgba(0,0,0,0.2));
-  }
+  .unowned .acrylic-img { filter: brightness(0) opacity(0.75) drop-shadow(2px 3px 0px #475569) drop-shadow(4px 6px 5px rgba(0,0,0,0.2)); }
   .stand-base {
     width: 70%; height: 12px; background: linear-gradient(90deg, rgba(255,255,255,0.6), rgba(200,230,255,0.9), rgba(255,255,255,0.6));
-    border-radius: 50%; margin: -6px auto 4px;
-    box-shadow: 0 4px 0 #94a3b8, 0 6px 10px rgba(0,0,0,0.2);
-    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 50%; margin: -6px auto 4px; box-shadow: 0 4px 0 #94a3b8, 0 6px 10px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.9);
   }
   .char-name { font-size: 0.8rem; font-weight: bold; margin-top: 4px; color: #444; }
   .count-badge {
     position: absolute; top: 6px; right: 6px; background: var(--primary); color: #fff;
-    font-size: 0.7rem; font-weight: bold; padding: 2px 7px; border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    font-size: 0.7rem; font-weight: bold; padding: 2px 7px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
 
-  /* カットイン演出オーバーレイ */
+  /* カットイン演出 */
   .cutin-overlay {
-    position: absolute; inset: 0; pointer-events: none; z-index: 20;
-    display: flex; align-items: center; justify-content: center; overflow: hidden;
-    opacity: 0; transition: opacity 0.2s;
+    position: absolute; inset: 0; pointer-events: none; z-index: 20; display: flex; align-items: center; justify-content: center; overflow: hidden; opacity: 0; transition: opacity 0.2s;
   }
   .cutin-overlay.active { opacity: 1; background: rgba(0,0,0,0.55); }
   .cutin-banner {
-    width: 120%; background: linear-gradient(90deg, #ff0055, #ffcc00, #ff0055);
-    padding: 18px 0; transform: rotate(-8deg) translateX(-120%);
-    text-align: center; color: #fff; font-weight: 900; font-size: 1.6rem;
-    text-shadow: 3px 3px 0 #000; box-shadow: 0 0 30px #ffcc00;
-    border-top: 4px solid #fff; border-bottom: 4px solid #fff;
+    width: 120%; background: linear-gradient(90deg, #ff0055, #ffcc00, #ff0055); padding: 18px 0; transform: rotate(-8deg) translateX(-120%); text-align: center; color: #fff; font-weight: 900; font-size: 1.6rem; text-shadow: 3px 3px 0 #000; box-shadow: 0 0 30px #ffcc00; border-top: 4px solid #fff; border-bottom: 4px solid #fff;
   }
-  .cutin-overlay.active .cutin-banner {
-    animation: cutinSlide 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-  @keyframes cutinSlide {
-    0%   { transform: rotate(-8deg) translateX(-120%); }
-    25%  { transform: rotate(-8deg) translateX(0%); }
-    75%  { transform: rotate(-8deg) translateX(0%) scale(1.05); }
-    100% { transform: rotate(-8deg) translateX(120%); }
-  }
+  .cutin-overlay.active .cutin-banner { animation: cutinSlide 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  @keyframes cutinSlide { 0% { transform: rotate(-8deg) translateX(-120%); } 25% { transform: rotate(-8deg) translateX(0%); } 75% { transform: rotate(-8deg) translateX(0%) scale(1.05); } 100% { transform: rotate(-8deg) translateX(120%); } }
 
-  /* モーダル（獲得演出・ユーザー切替） */
-  .modal-bg {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 100;
-    display: none; justify-content: center; align-items: center; padding: 20px;
-  }
+  /* モーダル */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; justify-content: center; align-items: center; padding: 20px; }
   .modal-bg.active { display: flex; }
   .modal-card {
-    background: #fff; border-radius: 24px; padding: 24px; width: 100%; max-width: 360px;
-    text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-    animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    background: #fff; border-radius: 24px; padding: 24px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   @keyframes popIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   .prize-showcase {
-    width: 180px; height: 180px; margin: 15px auto; position: relative;
-    background: radial-gradient(circle, #fff9c4 0%, transparent 70%);
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    animation: float3D 3s ease-in-out infinite;
+    width: 180px; height: 180px; margin: 15px auto; position: relative; background: radial-gradient(circle, #fff9c4 0%, transparent 70%); display: flex; flex-direction: column; justify-content: center; align-items: center; animation: float3D 3s ease-in-out infinite;
   }
-  @keyframes float3D {
-    0%, 100% { transform: translateY(0px) rotateY(-12deg) rotateX(6deg); }
-    50%      { transform: translateY(-8px) rotateY(12deg) rotateX(-4deg); }
+  @keyframes float3D { 0%, 100% { transform: translateY(0px) rotateY(-12deg) rotateX(6deg); } 50% { transform: translateY(-8px) rotateY(12deg) rotateX(-4deg); } }
+
+  /* ショップアイテム */
+  .shop-item {
+    display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8f9fa; border-radius: 12px; margin-bottom: 8px; border: 2px solid #eee;
   }
 </style>
 </head>
@@ -176,48 +158,48 @@
 <header>
   <div class="user-box">
     <span class="user-badge" id="uiUserName">ゲスト</span>
-    <button class="btn-sm" onclick="openUserModal()">ユーザー切替</button>
+    <button class="btn-sm" onclick="openUserModal()">切替</button>
   </div>
   <div class="user-box">
     <span class="point-badge">💰 <span id="uiPoints">0</span> pt</span>
-    <button class="btn-sm" title="テスト用：翌日ログインボーナスを受け取る" onclick="debugNextDay()">+1日(Bonus)</button>
+    <span class="ticket-badge">🎟️ <span id="uiTickets">0</span></span>
+    <button class="btn-sm btn-shop" onclick="openShopModal()">ショップ</button>
   </div>
 </header>
 
-<div class="cabinet">
-  <div class="marquee">✨ UI CATCHER ✨</div>
-  <div class="stage-wrap">
-    <canvas id="gameCanvas" width="460" height="340"></canvas>
-    <!-- 1/5 カットイン演出 -->
-    <div class="cutin-overlay" id="cutinOverlay">
-      <div class="cutin-banner">🔥 激アツ！確定キャッチ！？ 🔥</div>
+<div class="cabinet-wrap">
+  <div class="cabinet" id="mainCabinet">
+    <div class="marquee">✨ UI CATCHER ✨</div>
+    <div class="stage-wrap">
+      <canvas id="gameCanvas" width="460" height="340"></canvas>
+      <div class="cutin-overlay" id="cutinOverlay">
+        <div class="cutin-banner">🔥 激アツ！確定キャッチ！？ 🔥</div>
+      </div>
     </div>
-  </div>
-
-  <div class="status-bar" id="statusText">「Catch!」または「▶」でスタート！(1プレイ 100pt)</div>
-
-  <div class="control-panel">
-    <button class="arcade-btn btn-right" id="btnRight">
-      <span style="font-size:1.5rem">▶</span>
-      <span>よこ移動</span>
-    </button>
-    <button class="arcade-btn btn-back" id="btnBack" disabled>
-      <span style="font-size:1.5rem">▲</span>
-      <span>おく移動</span>
-    </button>
-    <button class="arcade-btn btn-catch" id="btnCatch" disabled>
-      <span>Catch!</span>
-    </button>
+    <div class="status-bar" id="statusText">「▶」を押してスタート！(1プレイ 100pt)</div>
+    <div class="control-panel">
+      <button class="arcade-btn btn-right" id="btnRight">
+        <span style="font-size:1.5rem">▶</span>
+        <span>よこ移動</span>
+      </button>
+      <button class="arcade-btn btn-back" id="btnBack" disabled>
+        <span style="font-size:1.5rem">▲</span>
+        <span>おく移動</span>
+      </button>
+      <button class="arcade-btn btn-catch" id="btnCatch" disabled>
+        <span>Catch!</span>
+      </button>
+    </div>
   </div>
 </div>
 
 <!-- コレクション図鑑 -->
 <div class="tabs">
   <div class="dex-header">
-    <h3 style="margin:0;">📖 キャラクター図鑑（コレクション）</h3>
+    <h3 style="margin:0;">📖 キャラクター図鑑</h3>
     <span id="dexProgress" style="font-weight:bold; color:var(--primary);">0 / 6</span>
   </div>
-  <p style="font-size:0.78rem; color:#777; margin:0 0 12px;">※獲得したキャラは立体アクリルスタンド風に表示されます（未獲得はシルエット）</p>
+  <p style="font-size:0.78rem; color:#777; margin:0 0 12px;">※獲得したキャラは立体アクリルスタンド風に表示されます。重複獲得で着せ替えチケットGET！</p>
   <div class="dex-grid" id="dexGrid"></div>
 </div>
 
@@ -230,7 +212,8 @@
       <div class="stand-base"></div>
     </div>
     <h3 id="modalCharName" style="margin:8px 0 4px;">キャラ名</h3>
-    <p id="modalCharDesc" style="font-size:0.85rem; color:#666; margin-bottom:16px;"></p>
+    <p id="modalCharDesc" style="font-size:0.85rem; color:#666; margin-bottom:8px;"></p>
+    <p id="modalTicketInfo" style="font-size:0.9rem; color:#00838f; font-weight:bold; margin-bottom:16px; display:none;">🎁 重複ボーナス！チケット+1枚</p>
     <button class="btn-sm" style="background:var(--primary); color:#fff; padding:10px 28px; font-size:1rem;" onclick="closePrizeModal()">やったね！</button>
   </div>
 </div>
@@ -238,7 +221,7 @@
 <!-- ユーザー管理モーダル -->
 <div class="modal-bg" id="userModal">
   <div class="modal-card">
-    <h3 style="margin-top:0;">👤 ユーザー選択・新規作成</h3>
+    <h3 style="margin-top:0;">👤 ユーザー選択</h3>
     <div id="userList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px; max-height:180px; overflow-y:auto;"></div>
     <div style="display:flex; gap:6px;">
       <input type="text" id="newUserInput" placeholder="新しいユーザー名" style="flex:1; padding:8px; border-radius:8px; border:1px solid #ccc;">
@@ -248,10 +231,37 @@
   </div>
 </div>
 
+<!-- ショップモーダル -->
+<div class="modal-bg" id="shopModal">
+  <div class="modal-card">
+    <h3 style="margin-top:0;">🛒 筐体カスタマイズ</h3>
+    <p style="font-size:0.8rem; color:#666;">重複キャラ獲得で手に入るチケットでデザインを変更！</p>
+    
+    <div class="shop-item">
+      <div style="text-align:left;">
+        <strong>🎀 ノーマル (ピンク)</strong>
+      </div>
+      <button class="btn-sm" id="btnEquipPink" onclick="equipTheme('pink')">装備中</button>
+    </div>
+    <div class="shop-item">
+      <div style="text-align:left;">
+        <strong>🧊 クール (ブルー)</strong><br><small style="color:#00838f">3 チケット</small>
+      </div>
+      <button class="btn-sm" id="btnBuyBlue" onclick="buyTheme('blue', 3)">購入</button>
+    </div>
+    <div class="shop-item">
+      <div style="text-align:left;">
+        <strong>👑 ゴージャス (ゴールド)</strong><br><small style="color:#00838f">5 チケット</small>
+      </div>
+      <button class="btn-sm" id="btnBuyGold" onclick="buyTheme('gold', 5)">購入</button>
+    </div>
+    
+    <button class="btn-sm" style="margin-top:12px; width:100%; background:#ccc;" onclick="closeShopModal()">閉じる</button>
+  </div>
+</div>
+
 <script>
-/**
- * 1. キャラクター図鑑データ
- */
+/** キャラクターデータ */
 function createSampleSvg(emoji, bgColor, ribbonColor) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
     <circle cx="80" cy="85" r="55" fill="${bgColor}" stroke="#444" stroke-width="5"/>
@@ -270,59 +280,61 @@ const CHARACTERS = [
   { id: 'ui_06', name: 'おうさまうい', desc: '王冠をかぶったレアな姿！', img: createSampleSvg('👑', '#fff8e1', '#ffab00') }
 ];
 
-/**
- * 2. ユーザー個別管理 & ログインボーナス (localStorage)
- */
-const STORAGE_KEY = 'ui_catcher_users_v1';
+/** ユーザー管理・ショップ機能 */
+const STORAGE_KEY = 'ui_catcher_users_v2';
 let allUsers = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-let currentUser = localStorage.getItem('ui_catcher_current_user') || 'ういファン1号';
+let currentUser = localStorage.getItem('ui_catcher_current_user') || 'ゲスト';
 
-function getTodayStr() {
-  const d = new Date();
-  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-}
+const THEMES = {
+  pink: { main: '#ff85b3', dark: '#d8457c', primary: '#ff5e97', stage: 'linear-gradient(180deg, #dff3ff 0%, #ffffff 55%, #f3d5e5 55%, #e2b8ce 100%)' },
+  blue: { main: '#64b5f6', dark: '#1976d2', primary: '#2196f3', stage: 'linear-gradient(180deg, #e3f2fd 0%, #ffffff 55%, #bbdefb 55%, #90caf9 100%)' },
+  gold: { main: '#ffd54f', dark: '#ff8f00', primary: '#ffb300', stage: 'linear-gradient(180deg, #fffde7 0%, #ffffff 55%, #ffecb3 55%, #ffe082 100%)' }
+};
+
+function getTodayStr() { const d = new Date(); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; }
 
 function initUser(userName) {
   if (!allUsers[userName]) {
-    allUsers[userName] = {
-      points: 0,
-      lastLogin: '',
-      collection: {}
-    };
+    allUsers[userName] = { points: 0, tickets: 0, lastLogin: '', collection: {}, unlockedThemes: ['pink'], currentTheme: 'pink' };
   }
+  // 過去データのマイグレーション用
+  if(allUsers[userName].tickets === undefined) allUsers[userName].tickets = 0;
+  if(!allUsers[userName].unlockedThemes) allUsers[userName].unlockedThemes = ['pink'];
+  if(!allUsers[userName].currentTheme) allUsers[userName].currentTheme = 'pink';
+
   currentUser = userName;
   localStorage.setItem('ui_catcher_current_user', currentUser);
-  checkLoginBonus(false);
+  checkLoginBonus();
   saveData();
+  applyTheme(allUsers[currentUser].currentTheme);
   updateUI();
 }
 
-function checkLoginBonus(forceBonus) {
+function checkLoginBonus() {
   const u = allUsers[currentUser];
   const today = getTodayStr();
-  if (forceBonus || u.lastLogin !== today) {
+  if (u.lastLogin !== today) {
     u.points += 1000;
     u.lastLogin = today;
-    saveData();
-    setTimeout(() => {
-      alert(`🎁【${currentUser}】さん、ログインボーナス！\n本日の1,000ポイントが支給されました！`);
-      updateUI();
-    }, 100);
+    setTimeout(() => alert(`🎁【${currentUser}】さん\n本日のログインボーナス1,000pt支給！`), 100);
   }
 }
+function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(allUsers)); }
 
-function debugNextDay() {
-  checkLoginBonus(true);
-}
-
-function saveData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(allUsers));
+function applyTheme(themeKey) {
+  const root = document.documentElement;
+  const t = THEMES[themeKey];
+  root.style.setProperty('--cabinet-main', t.main);
+  root.style.setProperty('--cabinet-dark', t.dark);
+  root.style.setProperty('--primary', t.primary);
+  root.style.setProperty('--stage-bg', t.stage);
 }
 
 function updateUI() {
   const u = allUsers[currentUser];
   document.getElementById('uiUserName').textContent = currentUser;
   document.getElementById('uiPoints').textContent = u.points.toLocaleString();
+  document.getElementById('uiTickets').textContent = u.tickets.toLocaleString();
   renderDex();
 }
 
@@ -331,61 +343,38 @@ function renderDex() {
   const grid = document.getElementById('dexGrid');
   grid.innerHTML = '';
   let ownedCount = 0;
-
   CHARACTERS.forEach(ch => {
     const count = u.collection[ch.id] || 0;
-    const isOwned = count > 0;
-    if (isOwned) ownedCount++;
-
+    if (count > 0) ownedCount++;
     const card = document.createElement('div');
-    card.className = `figure-card ${isOwned ? '' : 'unowned'}`;
-    card.innerHTML = `
-      ${isOwned ? `<div class="count-badge">×${count}</div>` : ''}
-      <div class="acrylic-stand">
-        <img class="acrylic-img" src="${ch.img}" alt="${ch.name}">
-      </div>
-      <div class="stand-base"></div>
-      <div class="char-name">${isOwned ? ch.name : '？？？'}</div>
-    `;
-    if (isOwned) {
-      card.onclick = () => showPrizeModal(ch, false);
-    }
+    card.className = `figure-card ${count > 0 ? '' : 'unowned'}`;
+    card.innerHTML = `${count > 0 ? `<div class="count-badge">×${count}</div>` : ''}<div class="acrylic-stand"><img class="acrylic-img" src="${ch.img}"></div><div class="stand-base"></div><div class="char-name">${count > 0 ? ch.name : '？？？'}</div>`;
     grid.appendChild(card);
   });
-
   document.getElementById('dexProgress').textContent = `${ownedCount} / ${CHARACTERS.length}`;
 }
 
-/**
- * 3. クレーンゲーム エンジン
- */
+/** 描画＆クレーンエンジン */
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-let gameState = 'IDLE';
+let gameState = 'IDLE'; // IDLE, X_READY, X_MOVING, Z_READY, Z_MOVING, DROPPING, RISING, RETURNING
+let isPressingRight = false;
+let isPressingBack = false;
 
-const claw = {
-  x: 65,
-  z: 0,
-  y: 45,
-  openAngle: 0.25,
-  willWin: false,
-  grabbedCapsule: null
-};
-
-const CAPSULE_SHAPES = ['circle', 'star', 'heart', 'diamond', 'hex'];
-const CAPSULE_COLORS = ['#ff6b8b', '#4dd0e1', '#ffd54f', '#aed581', '#ba68c8', '#ff8a65'];
+const claw = { x: 65, z: 0, y: 45, openAngle: 0.25, willWin: false, dropTiming: 0, grabbedCapsule: null };
 let capsules = [];
-
 function spawnCapsules() {
   capsules = [];
+  const SHAPES = ['circle', 'star', 'heart', 'diamond', 'hex'];
+  const COLORS = ['#ff6b8b', '#4dd0e1', '#ffd54f', '#aed581', '#ba68c8', '#ff8a65'];
   for (let i = 0; i < 16; i++) {
     capsules.push({
       id: i,
       x: 130 + (i % 5) * 62 + (Math.random() * 20 - 10),
       z: 15 + Math.floor(i / 5) * 32 + (Math.random() * 14 - 7),
-      shape: CAPSULE_SHAPES[Math.floor(Math.random() * CAPSULE_SHAPES.length)],
-      color: CAPSULE_COLORS[Math.floor(Math.random() * CAPSULE_COLORS.length)],
+      shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
       rot: (Math.random() - 0.5) * 0.5
     });
   }
@@ -395,350 +384,269 @@ spawnCapsules();
 
 function project3D(x, z, heightOffset = 0) {
   const floorY = 295 - (z * 0.85);
-  const scale = 1 - (z * 0.0028);
-  return { screenX: x, floorY, screenY: floorY - heightOffset, scale };
+  return { screenX: x, floorY, screenY: floorY - heightOffset, scale: 1 - (z * 0.0028) };
 }
 
 function drawCapsuleShape(ctx, shape, r) {
   ctx.beginPath();
-  if (shape === 'circle') {
-    ctx.arc(0, 0, r, 0, Math.PI * 2);
-  } else if (shape === 'diamond') {
-    ctx.moveTo(0, -r * 1.15); ctx.lineTo(r * 1.05, 0); ctx.lineTo(0, r * 1.15); ctx.lineTo(-r * 1.05, 0); ctx.closePath();
-  } else if (shape === 'hex') {
-    for (let i = 0; i < 6; i++) {
-      const ang = (Math.PI / 3) * i;
-      ctx[i === 0 ? 'moveTo' : 'lineTo'](Math.cos(ang) * r, Math.sin(ang) * r);
-    }
-    ctx.closePath();
-  } else if (shape === 'star') {
-    for (let i = 0; i < 10; i++) {
-      const rad = i % 2 === 0 ? r * 1.15 : r * 0.55;
-      const ang = (Math.PI / 5) * i - Math.PI / 2;
-      ctx[i === 0 ? 'moveTo' : 'lineTo'](Math.cos(ang) * rad, Math.sin(ang) * rad);
-    }
-    ctx.closePath();
-  } else if (shape === 'heart') {
-    ctx.moveTo(0, r * 0.35);
-    ctx.bezierCurveTo(-r * 1.2, -r * 0.4, -r * 0.6, -r * 1.2, 0, -r * 0.5);
-    ctx.bezierCurveTo(r * 0.6, -r * 1.2, r * 1.2, -r * 0.4, 0, r * 0.85);
-    ctx.closePath();
-  }
+  if (shape === 'circle') ctx.arc(0, 0, r, 0, Math.PI * 2);
+  else if (shape === 'diamond') { ctx.moveTo(0, -r*1.15); ctx.lineTo(r*1.05, 0); ctx.lineTo(0, r*1.15); ctx.lineTo(-r*1.05, 0); }
+  else if (shape === 'hex') { for(let i=0;i<6;i++){ const a=(Math.PI/3)*i; ctx[i===0?'moveTo':'lineTo'](Math.cos(a)*r, Math.sin(a)*r); } }
+  else if (shape === 'star') { for(let i=0;i<10;i++){ const rad=i%2===0?r*1.15:r*0.55; const a=(Math.PI/5)*i-Math.PI/2; ctx[i===0?'moveTo':'lineTo'](Math.cos(a)*rad, Math.sin(a)*rad); } }
+  else if (shape === 'heart') { ctx.moveTo(0, r*0.35); ctx.bezierCurveTo(-r*1.2, -r*0.4, -r*0.6, -r*1.2, 0, -r*0.5); ctx.bezierCurveTo(r*0.6, -r*1.2, r*1.2, -r*0.4, 0, r*0.85); }
+  ctx.closePath();
 }
 
 function drawSingleCapsule(cap, customScreenY = null) {
   const proj = project3D(cap.x, cap.z);
   const cy = customScreenY !== null ? customScreenY : proj.floorY - 14 * proj.scale;
   const r = 19 * proj.scale;
-
   ctx.save();
   if (customScreenY === null) {
     ctx.fillStyle = 'rgba(0,0,0,0.18)';
-    ctx.beginPath();
-    ctx.ellipse(proj.screenX, proj.floorY, r * 0.9, r * 0.35, 0, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.ellipse(proj.screenX, proj.floorY, r*0.9, r*0.35, 0, 0, Math.PI*2); ctx.fill();
   }
-  ctx.translate(proj.screenX, cy);
-  ctx.rotate(cap.rot);
-  ctx.fillStyle = cap.color;
-  ctx.strokeStyle = '#fff';
-  ctx.lineWidth = 2.5;
-  drawCapsuleShape(ctx, cap.shape, r);
-  ctx.fill(); ctx.stroke();
+  ctx.translate(proj.screenX, cy); ctx.rotate(cap.rot);
+  ctx.fillStyle = cap.color; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5;
+  drawCapsuleShape(ctx, cap.shape, r); ctx.fill(); ctx.stroke();
   ctx.fillStyle = 'rgba(255,255,255,0.45)';
-  ctx.beginPath();
-  ctx.arc(-r * 0.28, -r * 0.28, r * 0.35, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.beginPath(); ctx.arc(-r*0.28, -r*0.28, r*0.35, 0, Math.PI*2); ctx.fill();
   ctx.restore();
 }
 
 function renderStage() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.strokeStyle = 'rgba(255,255,255,0.45)';
-  ctx.lineWidth = 2;
-  for (let z = 0; z <= 100; z += 25) {
-    const y = 295 - z * 0.85;
-    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-  }
-  ctx.fillStyle = '#3a2e39';
-  ctx.fillRect(20, 235, 76, 75);
-  ctx.strokeStyle = '#ffdfeb';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(20, 235, 76, 75);
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 12px sans-serif';
-  ctx.fillText('GET HOLE', 26, 255);
-
-  capsules.forEach(c => {
-    if (c !== claw.grabbedCapsule) drawSingleCapsule(c);
-  });
+  // 床面グリッド
+  ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 2;
+  for (let z = 0; z <= 100; z += 25) { const y = 295 - z*0.85; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
+  // 取り出し口
+  ctx.fillStyle = '#3a2e39'; ctx.fillRect(20, 235, 76, 75);
+  ctx.strokeStyle = '#ffdfeb'; ctx.lineWidth = 4; ctx.strokeRect(20, 235, 76, 75);
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 12px sans-serif'; ctx.fillText('GET', 42, 275);
+  
+  capsules.forEach(c => { if (c !== claw.grabbedCapsule) drawSingleCapsule(c); });
 
   const proj = project3D(claw.x, claw.z);
   ctx.fillStyle = 'rgba(0, 110, 255, 0.28)';
-  ctx.beginPath();
-  ctx.ellipse(proj.screenX, proj.floorY, 24 * proj.scale, 9 * proj.scale, 0, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.beginPath(); ctx.ellipse(proj.screenX, proj.floorY, 24*proj.scale, 9*proj.scale, 0, 0, Math.PI*2); ctx.fill();
 
   const clawScreenY = claw.y + (100 - claw.z) * 0.25;
-  ctx.strokeStyle = '#555';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(proj.screenX, 0); ctx.lineTo(proj.screenX, clawScreenY);
-  ctx.stroke();
+  ctx.strokeStyle = '#555'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(proj.screenX, 0); ctx.lineTo(proj.screenX, clawScreenY); ctx.stroke();
 
   if (claw.grabbedCapsule) {
     claw.grabbedCapsule.x = claw.x; claw.grabbedCapsule.z = claw.z;
-    drawSingleCapsule(claw.grabbedCapsule, clawScreenY + 26 * proj.scale);
+    // 取り出し口での揺れ表現（失敗パターン3用）
+    let dropOffset = (gameState === 'RETURNING' && !claw.willWin && claw.dropTiming === 2 && claw.x < 150) ? Math.sin(Date.now()/50)*5 : 0;
+    drawSingleCapsule(claw.grabbedCapsule, clawScreenY + 26 * proj.scale + dropOffset);
   }
 
-  ctx.save();
-  ctx.translate(proj.screenX, clawScreenY);
-  ctx.scale(proj.scale, proj.scale);
-  ctx.fillStyle = '#ff4081';
-  ctx.beginPath();
-  ctx.roundRect(-18, -10, 36, 18, 8);
-  ctx.fill();
-  ctx.strokeStyle = '#fff';
-  ctx.lineWidth = 2;
-  ctx.stroke();
+  ctx.save(); ctx.translate(proj.screenX, clawScreenY); ctx.scale(proj.scale, proj.scale);
+  ctx.fillStyle = '#ff4081'; ctx.beginPath(); ctx.roundRect(-18, -10, 36, 18, 8); ctx.fill();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
 
-  ctx.strokeStyle = '#cfd8dc';
-  ctx.lineWidth = 5;
-  ctx.lineCap = 'round';
-  ctx.save();
-  ctx.translate(-12, 6);
-  ctx.rotate(claw.openAngle);
-  ctx.beginPath();
-  ctx.moveTo(0, 0); ctx.lineTo(-14, 18); ctx.lineTo(-4, 34);
-  ctx.stroke();
-  ctx.restore();
-
-  ctx.save();
-  ctx.translate(12, 6);
-  ctx.rotate(-claw.openAngle);
-  ctx.beginPath();
-  ctx.moveTo(0, 0); ctx.lineTo(14, 18); ctx.lineTo(4, 34);
-  ctx.stroke();
-  ctx.restore();
+  ctx.strokeStyle = '#cfd8dc'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+  ctx.save(); ctx.translate(-12, 6); ctx.rotate(claw.openAngle);
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-14, 18); ctx.lineTo(-4, 34); ctx.stroke(); ctx.restore();
+  ctx.save(); ctx.translate(12, 6); ctx.rotate(-claw.openAngle);
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(14, 18); ctx.lineTo(4, 34); ctx.stroke(); ctx.restore();
   ctx.restore();
 }
 
-/**
- * 4. 操作ロジック
- */
+/** 操作・ゲームロジック */
 const btnRight = document.getElementById('btnRight');
 const btnBack = document.getElementById('btnBack');
 const btnCatch = document.getElementById('btnCatch');
 const statusText = document.getElementById('statusText');
 
 function setStatus(msg) { statusText.textContent = msg; }
-
 function updateButtons() {
-  btnRight.disabled = !(gameState === 'IDLE' || gameState === 'MOVING_X');
-  btnBack.disabled  = !(gameState === 'READY_Z' || gameState === 'MOVING_Z');
-  btnCatch.disabled = !(gameState === 'READY_CATCH');
+  btnRight.disabled = !(gameState === 'IDLE' || gameState === 'X_READY' || gameState === 'X_MOVING');
+  btnBack.disabled  = !(gameState === 'X_READY' || gameState === 'X_MOVING' || gameState === 'Z_READY' || gameState === 'Z_MOVING');
+  btnCatch.disabled = !(gameState === 'Z_READY' || gameState === 'Z_MOVING');
 }
 
-function tryConsumePlayPoint() {
-  const u = allUsers[currentUser];
-  if (u.points < 100) {
-    alert('ポイントが足りません！');
-    return false;
+// よこ移動
+function startRight(e) {
+  e.preventDefault();
+  if(gameState === 'IDLE') {
+    if(allUsers[currentUser].points < 100) return alert('ポイントが足りません！');
+    allUsers[currentUser].points -= 100; saveData(); updateUI();
+    gameState = 'X_MOVING';
+  } else if(gameState === 'X_READY') {
+    gameState = 'X_MOVING';
   }
-  u.points -= 100;
-  saveData();
-  updateUI();
-  return true;
+  isPressingRight = true; btnRight.classList.add('pressing');
+  setStatus('▶ よこ移動中… 何回でも微調整できるよ！'); updateButtons();
+}
+function stopRight(e) {
+  e.preventDefault(); isPressingRight = false; btnRight.classList.remove('pressing');
+  if(gameState === 'X_MOVING') { gameState = 'X_READY'; setStatus('微調整するか「▲」で奥移動へ進もう！'); updateButtons(); }
 }
 
-function startMoveRight(e) {
+// おく移動
+function startBack(e) {
   e.preventDefault();
-  if (gameState === 'IDLE') {
-    if (!tryConsumePlayPoint()) return;
-    gameState = 'MOVING_X';
-    btnRight.classList.add('pressing');
-    setStatus('▶ よこ移動中… 狙いたい場所で指を離してね！');
-    updateButtons();
-  }
+  if(gameState === 'X_READY' || gameState === 'X_MOVING') gameState = 'Z_MOVING'; // Z軸に移行
+  else if(gameState === 'Z_READY') gameState = 'Z_MOVING';
+  isPressingBack = true; btnBack.classList.add('pressing');
+  setStatus('▲ おく移動中… カプセルに影を合わせよう！'); updateButtons();
 }
-function stopMoveRight(e) {
-  e.preventDefault();
-  if (gameState === 'MOVING_X') {
-    gameState = 'READY_Z';
-    btnRight.classList.remove('pressing');
-    setStatus('次は「▲ おく移動」ボタンを長押しして奥行きを合わせよう！');
-    updateButtons();
-  }
-}
-
-function startMoveBack(e) {
-  e.preventDefault();
-  if (gameState === 'READY_Z') {
-    gameState = 'MOVING_Z';
-    btnBack.classList.add('pressing');
-    setStatus('▲ おく移動中… 影をカプセルに合わせて離してね！');
-    updateButtons();
-  }
-}
-function stopMoveBack(e) {
-  e.preventDefault();
-  if (gameState === 'MOVING_Z') {
-    gameState = 'READY_CATCH';
-    btnBack.classList.remove('pressing');
-    setStatus('狙い完了！「Catch!」ボタンを押してカプセルを掴もう！');
-    updateButtons();
-  }
+function stopBack(e) {
+  e.preventDefault(); isPressingBack = false; btnBack.classList.remove('pressing');
+  if(gameState === 'Z_MOVING') { gameState = 'Z_READY'; setStatus('「Catch!」を押してカプセルを掴もう！'); updateButtons(); }
 }
 
 btnCatch.addEventListener('click', () => {
-  if (gameState !== 'READY_CATCH') return;
-  gameState = 'EVALUATING';
-  updateButtons();
+  if (gameState !== 'Z_READY' && gameState !== 'Z_MOVING') return;
+  gameState = 'DROPPING'; updateButtons();
 
-  let nearest = null;
-  let minDist = 999;
+  let nearest = null, minDist = 999;
   capsules.forEach(c => {
     const dist = Math.hypot(c.x - claw.x, (c.z - claw.z) * 1.1);
     if (dist < minDist) { minDist = dist; nearest = c; }
   });
 
-  const isNearCapsule = nearest && minDist <= 48;
-  claw.willWin = isNearCapsule && (Math.random() < (1 / 3));
-  const triggerCutin = claw.willWin && (Math.random() < 0.2);
-
-  if (triggerCutin) {
-    const overlay = document.getElementById('cutinOverlay');
-    overlay.classList.add('active');
-    setStatus('⚡ 激アツカットイン発生！！ ⚡');
-    setTimeout(() => {
-      overlay.classList.remove('active');
-      startDropSequence(nearest, isNearCapsule);
-    }, 1450);
+  const isNear = nearest && minDist <= 48;
+  claw.willWin = isNear && (Math.random() < (1/3));
+  // 失敗パターンの抽選 (0:すぐ落ちる, 1:途中で落ちる, 2:穴の近くで落ちる)
+  claw.dropTiming = Math.floor(Math.random() * 3);
+  
+  if (claw.willWin && Math.random() < 0.2) {
+    document.getElementById('cutinOverlay').classList.add('active'); setStatus('⚡ 激アツ！！ ⚡');
+    setTimeout(() => { document.getElementById('cutinOverlay').classList.remove('active'); startDrop(nearest, isNear); }, 1450);
   } else {
-    startDropSequence(nearest, isNearCapsule);
+    startDrop(nearest, isNear);
   }
 });
 
-function startDropSequence(nearest, isNearCapsule) {
-  gameState = 'DROPPING';
-  claw.openAngle = 0.45;
-  claw.targetCapsule = isNearCapsule ? nearest : null;
-  setStatus('アーム下降中…！');
-}
+function startDrop(nearest, isNear) { claw.openAngle = 0.45; claw.targetCapsule = isNear ? nearest : null; setStatus('アーム下降中…！'); }
 
 function gameLoop() {
-  if (gameState === 'MOVING_X') {
-    claw.x += 2.6;
-    if (claw.x >= 415) { claw.x = 415; stopMoveRight(new Event('auto')); }
-  } else if (gameState === 'MOVING_Z') {
-    claw.z += 1.2;
-    if (claw.z >= 95) { claw.z = 95; stopMoveBack(new Event('auto')); }
+  if (gameState === 'X_MOVING' && isPressingRight) {
+    claw.x += 2.0; if (claw.x >= 415) { claw.x = 415; stopRight(new Event('auto')); }
+  } else if (gameState === 'Z_MOVING' && isPressingBack) {
+    claw.z += 1.0; if (claw.z >= 95) { claw.z = 95; stopBack(new Event('auto')); }
   } else if (gameState === 'DROPPING') {
-    claw.y += 3.2;
-    const targetY = 175;
-    if (claw.y >= targetY) {
-      claw.y = targetY;
-      claw.openAngle = 0.08;
-      if (claw.targetCapsule) { claw.grabbedCapsule = claw.targetCapsule; }
+    claw.y += 2.5;
+    if (claw.y >= 175) {
+      claw.y = 175; claw.openAngle = 0.08;
+      if (claw.targetCapsule) claw.grabbedCapsule = claw.targetCapsule;
       gameState = 'RISING';
     }
   } else if (gameState === 'RISING') {
-    claw.y -= 2.4;
-    if (!claw.willWin && claw.grabbedCapsule && claw.y < 115) {
-      claw.openAngle = 0.35;
-      claw.grabbedCapsule = null;
-      setStatus('あぁっ！途中でこぼれ落ちてしまった…！');
+    claw.y -= 1.2; // 上昇をゆっくりに
+    // 失敗パターン1, 2の判定
+    if (!claw.willWin && claw.grabbedCapsule) {
+      if ((claw.dropTiming === 0 && claw.y < 155) || (claw.dropTiming === 1 && claw.y < 90)) {
+        claw.openAngle = 0.35; claw.grabbedCapsule = null; setStatus('あぁっ！こぼれ落ちてしまった…！');
+      }
     }
-    if (claw.y <= 45) {
-      claw.y = 45;
-      gameState = 'RETURNING';
-    }
+    if (claw.y <= 45) { claw.y = 45; gameState = 'RETURNING'; }
   } else if (gameState === 'RETURNING') {
     let moved = false;
-    if (claw.x > 60) { claw.x = Math.max(60, claw.x - 3.2); moved = true; }
-    if (claw.z > 0)  { claw.z = Math.max(0, claw.z - 2.0); moved = true; }
+    // 帰還スピードをゆっくりに
+    if (claw.x > 60) { claw.x = Math.max(60, claw.x - 1.8); moved = true; }
+    if (claw.z > 0)  { claw.z = Math.max(0, claw.z - 1.2); moved = true; }
+
+    // 失敗パターン3（穴の近くで落ちる）
+    if (!claw.willWin && claw.grabbedCapsule && claw.dropTiming === 2 && claw.x < 110) {
+      claw.openAngle = 0.35; claw.grabbedCapsule = null; setStatus('おしい！あと少しだったのに…！');
+    }
 
     if (!moved) {
       claw.openAngle = 0.4;
       if (claw.grabbedCapsule && claw.willWin) {
-        capsules = capsules.filter(c => c !== claw.grabbedCapsule);
-        claw.grabbedCapsule = null;
+        capsules = capsules.filter(c => c !== claw.grabbedCapsule); claw.grabbedCapsule = null;
         if (capsules.length < 6) spawnCapsules();
         onWinPrize();
-      } else {
-        setStatus('ざんねん！もう一回チャレンジしよう！(1プレイ 100pt)');
+      } else if (!claw.willWin) {
+        setStatus('ざんねん！もう一回チャレンジしよう！');
       }
-      claw.openAngle = 0.25;
-      gameState = 'IDLE';
-      updateButtons();
+      setTimeout(() => { claw.openAngle = 0.25; gameState = 'IDLE'; updateButtons(); }, 800);
+      gameState = 'RESETTING';
     }
   }
-  renderStage();
-  requestAnimationFrame(gameLoop);
+  renderStage(); requestAnimationFrame(gameLoop);
 }
 
-['mousedown', 'touchstart'].forEach(evt => {
-  btnRight.addEventListener(evt, startMoveRight);
-  btnBack.addEventListener(evt, startMoveBack);
-});
-['mouseup', 'mouseleave', 'touchend'].forEach(evt => {
-  btnRight.addEventListener(evt, stopMoveRight);
-  btnBack.addEventListener(evt, stopMoveBack);
-});
+['mousedown', 'touchstart'].forEach(evt => { btnRight.addEventListener(evt, startRight); btnBack.addEventListener(evt, startBack); });
+['mouseup', 'mouseleave', 'touchend'].forEach(evt => { btnRight.addEventListener(evt, stopRight); btnBack.addEventListener(evt, stopBack); });
 
-/**
- * 5. 景品獲得 & モーダル
- */
+/** 獲得・ショップ処理 */
 function onWinPrize() {
   const wonChar = CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
   const u = allUsers[currentUser];
+  const isDuplicate = (u.collection[wonChar.id] > 0);
+  
   u.collection[wonChar.id] = (u.collection[wonChar.id] || 0) + 1;
-  saveData();
-  updateUI();
-  setStatus(`🎉 おめでとう！「${wonChar.name}」を獲得しました！`);
-  showPrizeModal(wonChar, true);
-}
-
-function showPrizeModal(charObj, isNewWin) {
-  document.getElementById('modalCharImg').src = charObj.img;
-  document.getElementById('modalCharName').textContent = charObj.name;
-  document.getElementById('modalCharDesc').textContent = charObj.desc;
+  if (isDuplicate) u.tickets += 1;
+  
+  saveData(); updateUI();
+  
+  document.getElementById('modalCharImg').src = wonChar.img;
+  document.getElementById('modalCharName').textContent = wonChar.name;
+  document.getElementById('modalCharDesc').textContent = wonChar.desc;
+  document.getElementById('modalTicketInfo').style.display = isDuplicate ? 'block' : 'none';
   document.getElementById('prizeModal').classList.add('active');
+  setStatus(`🎉 おめでとう！「${wonChar.name}」を獲得しました！`);
 }
-function closePrizeModal() {
-  document.getElementById('prizeModal').classList.remove('active');
-}
+function closePrizeModal() { document.getElementById('prizeModal').classList.remove('active'); }
 
 function openUserModal() {
-  const list = document.getElementById('userList');
-  list.innerHTML = '';
+  const list = document.getElementById('userList'); list.innerHTML = '';
   Object.keys(allUsers).forEach(uName => {
-    const btn = document.createElement('button');
-    btn.className = 'btn-sm';
-    btn.style.padding = '10px';
+    const btn = document.createElement('button'); btn.className = 'btn-sm'; btn.style.padding = '10px';
     btn.style.background = uName === currentUser ? 'var(--primary)' : '#f0f0f0';
     btn.style.color = uName === currentUser ? '#fff' : '#333';
-    btn.textContent = `${uName} （💰 ${allUsers[uName].points} pt）`;
-    btn.onclick = () => { initUser(uName); closeUserModal(); };
-    list.appendChild(btn);
+    btn.textContent = `${uName} (💰${allUsers[uName].points})`;
+    btn.onclick = () => { initUser(uName); closeUserModal(); }; list.appendChild(btn);
   });
   document.getElementById('userModal').classList.add('active');
 }
-function closeUserModal() {
-  document.getElementById('userModal').classList.remove('active');
-}
+function closeUserModal() { document.getElementById('userModal').classList.remove('active'); }
 function createNewUser() {
-  const input = document.getElementById('newUserInput');
-  const name = input.value.trim();
-  if (!name) return;
-  input.value = '';
-  initUser(name);
-  closeUserModal();
+  const name = document.getElementById('newUserInput').value.trim();
+  if (name) { initUser(name); closeUserModal(); }
 }
 
-initUser(currentUser);
-updateButtons();
-requestAnimationFrame(gameLoop);
+function openShopModal() {
+  updateShopButtons();
+  document.getElementById('shopModal').classList.add('active');
+}
+function closeShopModal() { document.getElementById('shopModal').classList.remove('active'); }
+
+function updateShopButtons() {
+  const u = allUsers[currentUser];
+  ['pink', 'blue', 'gold'].forEach(color => {
+    const btnId = color === 'pink' ? 'btnEquipPink' : (color === 'blue' ? 'btnBuyBlue' : 'btnBuyGold');
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    if (u.unlockedThemes.includes(color)) {
+      btn.textContent = u.currentTheme === color ? '装備中' : '着せ替え';
+      btn.style.background = u.currentTheme === color ? 'var(--primary)' : '#5ec2ff';
+      btn.onclick = () => equipTheme(color);
+    } else {
+      btn.textContent = '購入'; btn.style.background = '#ccc';
+      const cost = color === 'blue' ? 3 : 5;
+      if (u.tickets >= cost) { btn.style.background = '#ffb300'; btn.onclick = () => buyTheme(color, cost); }
+      else { btn.onclick = () => alert('チケットが足りません！'); }
+    }
+  });
+}
+function buyTheme(theme, cost) {
+  const u = allUsers[currentUser];
+  if (u.tickets >= cost) {
+    u.tickets -= cost; u.unlockedThemes.push(theme);
+    saveData(); updateUI(); equipTheme(theme);
+  }
+}
+function equipTheme(theme) {
+  allUsers[currentUser].currentTheme = theme;
+  saveData(); applyTheme(theme); updateShopButtons();
+}
+
+initUser(currentUser); updateButtons(); requestAnimationFrame(gameLoop);
 </script>
 </body>
 </html>
