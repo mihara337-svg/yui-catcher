@@ -61,7 +61,7 @@
   }
   .marquee-sign {
     background: #1a1025; color: #fff; text-align: center; font-weight: 900;
-    font-size: 1.25rem; padding: 7px; border-radius: 14px; letter-spacing: 2px;
+    font-size: 1.2rem; padding: 7px; border-radius: 14px; letter-spacing: 2px;
     border: 3px solid var(--cab-trim);
     text-shadow: 0 0 8px var(--cab-neon), 0 0 16px var(--cab-neon);
     box-shadow: inset 0 0 15px var(--cab-neon);
@@ -239,7 +239,7 @@
   .cutin-banner {
     width: 130%; background: linear-gradient(90deg, #ff4081, #ffeb3b, #00e5ff, #ff4081);
     background-size: 200% 100%; padding: 18px 0; transform: rotate(-6deg) translateX(-120%);
-    text-align: center; color: #fff; font-weight: 900; font-size: 1.35rem;
+    text-align: center; color: #fff; font-weight: 900; font-size: 1.25rem;
     text-shadow: 2px 2px 0 #333, 0 0 12px #fff;
     border-top: 4px solid #fff; border-bottom: 4px solid #fff;
     box-shadow: 0 0 35px #ffeb3b;
@@ -260,7 +260,7 @@
   }
   .modal-bg.active { display: flex; }
   .modal-card {
-    background: #fff; border-radius: 26px; padding: 22px; width: 100%; max-width: 400px;
+    background: #fff; border-radius: 26px; padding: 22px; width: 100%; max-width: 420px;
     text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.5);
     animation: popIn 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
     max-height: 90vh; overflow-y: auto; border: 4px solid var(--cab-main);
@@ -282,17 +282,18 @@
   .shop-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
   .shop-tab {
     flex: 1; padding: 10px; border-radius: 12px; border: none; font-weight: 900;
-    background: #eee; color: #555; cursor: pointer;
+    background: #eee; color: #555; cursor: pointer; font-size: 0.82rem;
   }
   .shop-tab.active { background: var(--cab-dark); color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-  .shop-list { display: flex; flex-direction: column; gap: 10px; text-align: left; }
+  .shop-list { display: flex; flex-direction: column; gap: 8px; text-align: left; max-height: 52vh; overflow-y: auto; padding-right: 4px; }
   .shop-item {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 14px; background: #f8f9fa; border-radius: 14px; border: 2px solid #e2e8f0;
+    padding: 10px 12px; background: #f8f9fa; border-radius: 14px; border: 2px solid #e2e8f0;
   }
   .preview-dot {
     width: 36px; height: 36px; border-radius: 10px; margin-right: 10px;
     border: 2px solid #fff; box-shadow: 0 3px 6px rgba(0,0,0,0.2); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
   }
 </style>
 </head>
@@ -307,7 +308,7 @@
   <div class="user-box">
     <span class="point-badge">💰 <span id="uiPoints">0</span></span>
     <span class="ticket-badge">🎟️ <span id="uiTickets">0</span></span>
-    <button class="btn-ui btn-debug" onclick="debugAddTickets()" title="デバッグ：チケット+5枚">🎟️+5</button>
+    <button class="btn-ui btn-debug" onclick="debugAddTickets()" title="デバッグ：チケット+10枚">🎟️+10</button>
     <button class="btn-ui btn-shop" onclick="openShopModal()">🎨 着せ替え</button>
   </div>
 </header>
@@ -399,11 +400,11 @@
     <h3 style="margin:0 0 6px;">🎨 ゴージャス着せ替えショップ</h3>
     <p style="font-size:0.8rem; color:#666; margin:0 0 12px;">所持チケット: 🎟️ <strong id="shopTicketCount">0</strong> 枚</p>
     <div class="shop-tabs">
-      <button class="shop-tab active" id="tabCab" onclick="switchShopTab('cabinet')">🏠 筐体デザイン</button>
-      <button class="shop-tab" id="tabClaw" onclick="switchShopTab('claw')">🦾 アーム10種大改造</button>
+      <button class="shop-tab active" id="tabCab" onclick="switchShopTab('cabinet')">🏠 筐体デザイン (10種)</button>
+      <button class="shop-tab" id="tabClaw" onclick="switchShopTab('claw')">🦾 アーム＆ユニット (10種)</button>
     </div>
     <div class="shop-list" id="shopList"></div>
-    <button class="btn-ui" style="margin-top:16px; width:100%; padding:10px;" onclick="closeShopModal()">閉じる</button>
+    <button class="btn-ui" style="margin-top:14px; width:100%; padding:10px;" onclick="closeShopModal()">閉じる</button>
   </div>
 </div>
 
@@ -443,79 +444,114 @@ const CHARACTERS = [
 ];
 
 /**
- * 2. 筐体スキン ＆ 10種の大幅デザイン変化アームスキン
+ * 2. 筐体デザイン10種 ＆ アーム（ユニット＋腕）デザイン10種
  */
 const CABINET_SKINS = {
   pink: {
-    name: '🎀 ラブリーピンク (ノーマル)', cost: 0, preview: 'linear-gradient(135deg,#ff7eb3,#c93b76)',
+    name: '1. 🎀 ラブリーピンク', icon: '🎀', cost: 0, preview: 'linear-gradient(135deg,#ff7eb3,#c93b76)',
+    title: '✨ ゆいキャッチャー ✨',
     main: '#ff7eb3', dark: '#c93b76', darker: '#8f1d4d', trim: '#fff0f6', neon: '#ff007f', panel: '#262433',
     wallBack: '#ffeef6', wallSide: '#f8bbd0', floor1: '#f48fb1', floor2: '#fce4ec'
   },
+  mint: {
+    name: '2. 🌿 パステルミント', icon: '🌿', cost: 1, preview: 'linear-gradient(135deg,#64ffda,#00bfa5)',
+    title: '🌿 ミントゆいキャッチャー 🌿',
+    main: '#4db6ac', dark: '#00897b', darker: '#004d40', trim: '#e0f2f1', neon: '#1de9b6', panel: '#162c28',
+    wallBack: '#e0f7fa', wallSide: '#b2dfdb', floor1: '#80cbc4', floor2: '#e0f2f1'
+  },
+  candy: {
+    name: '3. 🍭 キャンディポップ', icon: '🍭', cost: 1, preview: 'linear-gradient(135deg,#ff80ab,#82b1ff)',
+    title: '🍭 キャンディゆいキャッチャー 🍭',
+    main: '#ff80ab', dark: '#536dfe', darker: '#304ffe', trim: '#fff9c4', neon: '#ff4081', panel: '#281e3a',
+    wallBack: '#fff9c4', wallSide: '#f8bbd0', floor1: '#bbdefb', floor2: '#fce4ec'
+  },
   cyber: {
-    name: '🧊 サイバーネオン', cost: 2, preview: 'linear-gradient(135deg,#00e5ff,#2979ff)',
+    name: '4. 🧊 サイバーネオン', icon: '🧊', cost: 2, preview: 'linear-gradient(135deg,#00e5ff,#2979ff)',
+    title: '⚡ CYBER YUI CATCHER ⚡',
     main: '#1e88e5', dark: '#0d47a1', darker: '#062356', trim: '#84ffff', neon: '#00e5ff', panel: '#0d1b2a',
     wallBack: '#0b192c', wallSide: '#112240', floor1: '#1d3557', floor2: '#0f2537'
   },
+  ocean: {
+    name: '5. 🐬 オーシャンマリン', icon: '🐬', cost: 2, preview: 'linear-gradient(135deg,#40c4ff,#01579b)',
+    title: '🐚 マリンゆいキャッチャー 🐚',
+    main: '#29b6f6', dark: '#0277bd', darker: '#01579b', trim: '#e1f5fe', neon: '#00e5ff', panel: '#0c2233',
+    wallBack: '#e1f5fe', wallSide: '#81d4fa', floor1: '#4fc3f7', floor2: '#b3e5fc'
+  },
+  forest: {
+    name: '6. 🧚 フォレストフェアリー', icon: '🧚', cost: 3, preview: 'linear-gradient(135deg,#aed581,#33691e)',
+    title: '🍀 フェアリーゆいキャッチャー 🍀',
+    main: '#9ccc65', dark: '#558b2f', darker: '#33691e', trim: '#f1f8e9', neon: '#76ff03', panel: '#241c14',
+    wallBack: '#f1f8e9', wallSide: '#dcedc8', floor1: '#aed581', floor2: '#f9fbe7'
+  },
+  halloween: {
+    name: '7. 🎃 ハロウィンナイト', icon: '🎃', cost: 3, preview: 'linear-gradient(135deg,#ff9100,#4a148c)',
+    title: '🎃 トリック・オア・ゆい！ 🎃',
+    main: '#ff6d00', dark: '#6a1b9a', darker: '#311b92', trim: '#ffe082', neon: '#ff9100', panel: '#1a0f24',
+    wallBack: '#2c1638', wallSide: '#4a148c', floor1: '#ff8f00', floor2: '#4a148c'
+  },
   royal: {
-    name: '👑 ロイヤルゴールド', cost: 4, preview: 'linear-gradient(135deg,#ffd54f,#ff8f00)',
+    name: '8. 👑 ロイヤルゴールド', icon: '👑', cost: 4, preview: 'linear-gradient(135deg,#ffd54f,#ff8f00)',
+    title: '👑 ロイヤルゆいキャッチャー 👑',
     main: '#ffd54f', dark: '#ff8f00', darker: '#b25900', trim: '#fff8e1', neon: '#ffea00', panel: '#2b1d0e',
     wallBack: '#fff8e1', wallSide: '#ffecb3', floor1: '#ffd54f', floor2: '#fff3e0'
   },
   gothic: {
-    name: '💎 ジュエルゴシック', cost: 5, preview: 'linear-gradient(135deg,#e040fb,#7b1fa2)',
+    name: '9. 💎 ジュエルゴシック', icon: '💎', cost: 5, preview: 'linear-gradient(135deg,#e040fb,#4a148c)',
+    title: '💎 ジュエルゆいキャッチャー 💎',
     main: '#9c27b0', dark: '#6a1b9a', darker: '#2a0845', trim: '#ea80fc', neon: '#e040fb', panel: '#1a0826',
     wallBack: '#2d1242', wallSide: '#1e0a2d', floor1: '#512da8', floor2: '#311b92'
+  },
+  galaxy: {
+    name: '10. 🌌 ギャラクシーコズミック', icon: '🌌', cost: 6, preview: 'linear-gradient(135deg,#00e5ff,#d500f9,#ffea00)',
+    title: '🌌 ギャラクシーゆいキャッチャー 🌌',
+    main: '#651fff', dark: '#311b92', darker: '#12005e', trim: '#84ffff', neon: '#00e5ff', panel: '#090418',
+    wallBack: '#0a061e', wallSide: '#150d3a', floor1: '#311b92', floor2: '#006064'
   }
 };
 
 const CLAW_SKINS = {
   standard: {
-    name: '1. 🦾 スタンダードアーム', cost: 0, type: 'standard', preview: '#cfd8dc',
-    head1: '#ff80ab', head2: '#c51162', arm: '#eceff1', tip: '#ff4081', wire: '#546e7a'
+    name: '1. 🦾 スタンダードユニット', icon: '🦾', cost: 0, type: 'standard', preview: 'linear-gradient(135deg,#ff80ab,#eceff1)', wire: '#546e7a'
   },
   flower: {
-    name: '2. 🌸 フラワーアーム (花付)', cost: 1, type: 'flower', preview: '#ff80ab',
-    head1: '#ff80ab', head2: '#ad1457', arm: '#fce4ec', tip: '#ff4081', wire: '#880e4f'
+    name: '2. 🌸 フラワーブロッサム (花型ユニット＆ツル腕)', icon: '🌸', cost: 1, type: 'flower', preview: 'linear-gradient(135deg,#ff80ab,#ffeb3b)', wire: '#66bb6a'
   },
   star: {
-    name: '3. ⭐ スターアーム (星付)', cost: 2, type: 'star', preview: '#ffd54f',
-    head1: '#ffe082', head2: '#ff8f00', arm: '#fffde7', tip: '#ffb300', wire: '#ff6f00'
+    name: '3. ⭐ トゥインクルスター (巨大星ユニット＆流星爪)', icon: '⭐', cost: 2, type: 'star', preview: 'linear-gradient(135deg,#ffee58,#ff8f00)', wire: '#ffd54f'
   },
   snow: {
-    name: '4. ❄️ スノーアーム (雪結晶)', cost: 2, type: 'snow', preview: '#80d8ff',
-    head1: '#81d4fa', head2: '#0288d1', arm: '#e0f7fa', tip: '#00b0ff', wire: '#01579b'
+    name: '4. ❄️ クリスタルスノー (氷結晶コア＆氷柱アーム)', icon: '❄️', cost: 2, type: 'snow', preview: 'linear-gradient(135deg,#e0f7fa,#00b0ff)', wire: '#80d8ff'
   },
   dragon: {
-    name: '5. 🔥 ドラゴンクロー (竜の口)', cost: 3, type: 'dragon', preview: '#ff3d00',
-    head1: '#ff6d00', head2: '#dd2c00', arm: '#ffab00', tip: '#d50000', wire: '#bf360c'
+    name: '5. 🔥 ドラゴニックジョー (竜頭ユニット＆大顎の牙)', icon: '🔥', cost: 3, type: 'dragon', preview: 'linear-gradient(135deg,#ff3d00,#b71c1c)', wire: '#dd2c00'
   },
   heart: {
-    name: '6. 💖 ラブハートアーム', cost: 2, type: 'heart', preview: '#ff4081',
-    head1: '#ff80ab', head2: '#c51162', arm: '#f8bbd0', tip: '#ff1744', wire: '#880e4f'
+    name: '6. 💖 ラブリーハート (立体ハート＆リボンアーム)', icon: '💖', cost: 2, type: 'heart', preview: 'linear-gradient(135deg,#ff4081,#f8bbd0)', wire: '#ff80ab'
   },
   angel: {
-    name: '7. 👼 エンジェルウィング', cost: 3, type: 'angel', preview: '#ffffff',
-    head1: '#e1f5fe', head2: '#0288d1', arm: '#ffffff', tip: '#00e5ff', wire: '#b0bec5'
+    name: '7. 👼 エンジェルセラフ (天使の輪・羽ばたく翼)', icon: '👼', cost: 3, type: 'angel', preview: 'linear-gradient(135deg,#ffffff,#80d8ff)', wire: '#fff59d'
   },
   devil: {
-    name: '8. 😈 デビルホーン', cost: 3, type: 'devil', preview: '#7c4dff',
-    head1: '#b388ff', head2: '#4527a0', arm: '#512da8', tip: '#ff1744', wire: '#212121'
+    name: '8. 😈 デビルナイトメア (悪魔の角・コウモリ翼)', icon: '😈', cost: 3, type: 'devil', preview: 'linear-gradient(135deg,#7c4dff,#212121)', wire: '#b388ff'
   },
   neko: {
-    name: '9. 🐾 にゃんこアーム', cost: 3, type: 'neko', preview: '#ffb74d',
-    head1: '#ffe0b2', head2: '#f57c00', arm: '#fff3e0', tip: '#ff9800', wire: '#e65100'
+    name: '9. 🐾 にゃんこパンチ (猫顔ユニット＆ぷにぷに肉球)', icon: '🐾', cost: 3, type: 'neko', preview: 'linear-gradient(135deg,#ffb74d,#fff3e0)', wire: '#ffa726'
   },
   ultimate: {
-    name: '10. 👑 ギガロイヤル竜神', cost: 5, type: 'ultimate', preview: 'linear-gradient(135deg,#ffd700,#ff3d00)',
-    head1: '#ffe57f', head2: '#ff6f00', arm: '#ffea00', tip: '#d50000', wire: '#ffab00'
+    name: '10. 👑 黄金神バハムート (王冠・後光・神竜の顎)', icon: '👑', cost: 5, type: 'ultimate', preview: 'linear-gradient(135deg,#ffd700,#ff1744,#00e5ff)', wire: '#ffea00'
   }
 };
 
 /**
- * 3. ユーザー個別管理 ＆ データ保存
+ * 3. ユーザー管理 ＆ データ保存
  */
-const STORAGE_KEY = 'yui_catcher_users_v6';
-let allUsers = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+const STORAGE_KEY = 'yui_catcher_users_v7';
+let allUsers = {};
+try {
+  allUsers = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+} catch (e) {
+  allUsers = {};
+}
 let currentUser = localStorage.getItem('yui_catcher_current_user') || 'ゆいファン1号';
 let currentShopTab = 'cabinet';
 
@@ -533,11 +569,12 @@ function initUser(userName) {
     };
   }
   const u = allUsers[userName];
-  if (u.tickets === undefined) u.tickets = 0;
-  if (!u.unlockedCabinets) u.unlockedCabinets = ['pink'];
-  if (!u.currentCabinet) u.currentCabinet = 'pink';
-  if (!u.unlockedClaws) u.unlockedClaws = ['standard'];
-  if (!u.currentClaw) u.currentClaw = 'standard';
+  if (typeof u.points !== 'number') u.points = 1000;
+  if (typeof u.tickets !== 'number') u.tickets = 0;
+  if (!Array.isArray(u.unlockedCabinets)) u.unlockedCabinets = ['pink'];
+  if (!CABINET_SKINS[u.currentCabinet]) u.currentCabinet = 'pink';
+  if (!Array.isArray(u.unlockedClaws)) u.unlockedClaws = ['standard'];
+  if (!CLAW_SKINS[u.currentClaw]) u.currentClaw = 'standard';
 
   currentUser = userName;
   localStorage.setItem('yui_catcher_current_user', currentUser);
@@ -562,9 +599,10 @@ function checkLoginBonus(force) {
 }
 function debugNextDay() { checkLoginBonus(true); }
 function debugAddTickets() {
-  allUsers[currentUser].tickets += 5;
+  allUsers[currentUser].tickets += 10;
   saveData(); updateUI();
-  alert('🎟️ デバッグ：着せ替えチケットを5枚追加しました！');
+  if (document.getElementById('shopModal').classList.contains('active')) renderShop();
+  alert('🎟️ デバッグ：着せ替えチケットを10枚追加しました！');
 }
 function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(allUsers)); }
 
@@ -577,7 +615,7 @@ function applyCabinetSkin(skinKey) {
   r.setProperty('--cab-trim', s.trim);
   r.setProperty('--cab-neon', s.neon);
   r.setProperty('--panel-bg', s.panel);
-  document.getElementById('marqueeSign').textContent = `✨ ${skinKey === 'royal' ? '👑 ロイヤル' : (skinKey === 'gothic' ? '💎 ジュエル' : 'ゆい')}キャッチャー ✨`;
+  document.getElementById('marqueeSign').textContent = s.title;
 }
 
 function updateUI() {
@@ -611,7 +649,7 @@ function renderDex() {
 }
 
 /**
- * 4. 3Dルーム＆カプセル＆大幅変化アーム描画エンジン
+ * 4. 3Dルーム＆カプセル＆ユニット＋アーム完全変形エンジン
  */
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -630,6 +668,30 @@ let fallingCapsule = null;
 const CAPSULE_SHAPES = ['circle', 'star', 'heart', 'diamond', 'hex'];
 const CAPSULE_COLORS = ['#ff5277', '#26c6da', '#ffca28', '#9ccc65', '#ab47bc', '#ffa726'];
 let capsules = [];
+
+// どのスマホブラウザでもエラーにならない角丸四角形ヘルパー
+function fillRoundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function drawStarPolygon(ctx, cx, cy, spikes, outerR, innerR) {
+  ctx.beginPath();
+  for (let i = 0; i < spikes * 2; i++) {
+    const rad = i % 2 === 0 ? outerR : innerR;
+    const ang = (Math.PI / spikes) * i - Math.PI / 2;
+    const x = cx + Math.cos(ang) * rad;
+    const y = cy + Math.sin(ang) * rad;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+}
 
 function spawnCapsules() {
   capsules = [];
@@ -657,7 +719,7 @@ function project3D(x, z) {
 }
 
 function draw3DRoom(skin) {
-  const W = canvas.width, H = canvas.height;
+  const W = canvas.width;
   const backTop = 30, backBottom = 217, leftBack = 38, rightBack = W - 38;
   const frontBottom = 325;
 
@@ -731,11 +793,8 @@ function drawCapsuleShape(ctx, shape, r) {
       ctx[i === 0 ? 'moveTo' : 'lineTo'](Math.cos(a) * r, Math.sin(a) * r);
     }
   } else if (shape === 'star') {
-    for (let i = 0; i < 10; i++) {
-      const rad = i % 2 === 0 ? r * 1.18 : r * 0.56;
-      const a = (Math.PI / 5) * i - Math.PI / 2;
-      ctx[i === 0 ? 'moveTo' : 'lineTo'](Math.cos(a) * rad, Math.sin(a) * rad);
-    }
+    drawStarPolygon(ctx, 0, 0, 5, r * 1.18, r * 0.56);
+    return;
   } else if (shape === 'heart') {
     ctx.moveTo(0, r * 0.35);
     ctx.bezierCurveTo(-r*1.2, -r*0.4, -r*0.6, -r*1.2, 0, -r*0.5);
@@ -781,95 +840,277 @@ function drawSingleCapsule(cap, customScreenY = null) {
   ctx.restore();
 }
 
-// アームの大幅な形変更を描画する関数
-function drawCustomClawArm(type, dir) {
+/**
+ * ★ 10種類のアーム「腕部分」の専用描画
+ */
+function drawCustomArmLimb(type, dir) {
   ctx.save();
   if (type === 'flower') {
-    // 1. お花アーム（花びら型のフレーム）
-    ctx.strokeStyle = '#ff80ab'; ctx.lineWidth = 6; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(dir * 16, 18); ctx.lineTo(dir * 6, 34); ctx.stroke();
-    // 爪先が大きなお花
-    ctx.translate(dir * 6, 34);
+    // 緑のツルと葉っぱ＋先端に花
+    ctx.strokeStyle = '#4caf50'; ctx.lineWidth = 5.5; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(dir * 20, 16, dir * 6, 35); ctx.stroke();
+    // 葉っぱ
+    ctx.fillStyle = '#81c784';
+    ctx.beginPath(); ctx.ellipse(dir * 14, 15, 7, 3.5, dir * 0.6, 0, Math.PI * 2); ctx.fill();
+    // 先端の花
+    ctx.translate(dir * 6, 35);
     ctx.fillStyle = '#ff4081';
     for (let i = 0; i < 5; i++) {
       ctx.rotate((Math.PI * 2) / 5);
-      ctx.beginPath(); ctx.arc(0, -6, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(0, -5.5, 4.2, 0, Math.PI * 2); ctx.fill();
     }
-    ctx.fillStyle = '#ffeb3b'; ctx.beginPath(); ctx.arc(0, 0, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ffeb3b'; ctx.beginPath(); ctx.arc(0, 0, 3.5, 0, Math.PI * 2); ctx.fill();
+
   } else if (type === 'star') {
-    // 2. スターアーム（星のフレーム＆先端星）
-    ctx.strokeStyle = '#ffd54f'; ctx.lineWidth = 6; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(dir * 14, 16); ctx.lineTo(dir * 6, 33); ctx.stroke();
-    ctx.translate(dir * 6, 33);
-    ctx.fillStyle = '#ffea00';
-    ctx.beginPath();
-    for (let i = 0; i < 5; i++) {
-      const a = (Math.PI * 2 / 5) * i - Math.PI / 2;
-      const x = Math.cos(a) * 8, y = Math.sin(a) * 8;
-      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-    }
-    ctx.closePath(); ctx.fill();
+    // 黄金の稲妻風アーム＋先端に立体スター
+    ctx.strokeStyle = '#ffd54f'; ctx.lineWidth = 5; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(dir * 17, 14); ctx.lineTo(dir * 9, 23); ctx.lineTo(dir * 6, 35); ctx.stroke();
+    ctx.translate(dir * 6, 35);
+    ctx.fillStyle = '#ffea00'; ctx.strokeStyle = '#ff6f00'; ctx.lineWidth = 1.5;
+    drawStarPolygon(ctx, 0, 0, 5, 9, 4.2);
+    ctx.fill(); ctx.stroke();
+
   } else if (type === 'snow') {
-    // 3. 雪の結晶アーム
-    ctx.strokeStyle = '#80d8ff'; ctx.lineWidth = 5; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(dir * 15, 18); ctx.lineTo(dir * 6, 34); ctx.stroke();
-    ctx.translate(dir * 6, 34);
-    ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 2.5;
+    // 鋭い氷柱クリスタルアーム＋雪の結晶
+    ctx.fillStyle = 'rgba(128, 216, 255, 0.88)'; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, 0); ctx.lineTo(dir * 18, 16); ctx.lineTo(dir * 5, 36); ctx.lineTo(dir * 9, 16);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.translate(dir * 5, 36);
+    ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 2;
     for (let i = 0; i < 3; i++) {
       ctx.rotate(Math.PI / 3);
       ctx.beginPath(); ctx.moveTo(0, -8); ctx.lineTo(0, 8); ctx.stroke();
     }
-    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, 3.5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, 3, 0, Math.PI * 2); ctx.fill();
+
   } else if (type === 'dragon' || type === 'ultimate') {
-    // 4 / 10. 竜の口（ガッチリしたトゲトゲのクローアーム）
-    ctx.strokeStyle = type === 'ultimate' ? '#ffea00' : '#ff3d00'; ctx.lineWidth = 7; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(dir * 15, 16); ctx.lineTo(dir * 4, 36); ctx.stroke();
-    // 竜の鋭い牙
-    ctx.translate(dir * 4, 36);
-    ctx.fillStyle = type === 'ultimate' ? '#d50000' : '#b71c1c';
-    ctx.beginPath(); ctx.moveTo(-6, -8); ctx.lineTo(6, -8); ctx.lineTo(0, 10); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.moveTo(-4, -5); ctx.lineTo(-1, 2); ctx.lineTo(-5, 0); ctx.closePath(); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(4, -5); ctx.lineTo(1, 2); ctx.lineTo(5, 0); ctx.closePath(); ctx.fill();
-  } else if (type === 'heart') {
-    // 5. ラブハートアーム
-    ctx.strokeStyle = '#ff80ab'; ctx.lineWidth = 6; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(dir * 15, 18); ctx.lineTo(dir * 6, 34); ctx.stroke();
-    ctx.translate(dir * 6, 34);
-    ctx.fillStyle = '#ff1744';
+    // 竜の下顎（ウロコ装甲＋白い牙が並んだ巨大なアギト）
+    const isUlt = (type === 'ultimate');
+    ctx.fillStyle = isUlt ? '#ffab00' : '#d50000';
+    ctx.strokeStyle = isUlt ? '#fff' : '#ff8a65'; ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(0, 5);
-    ctx.bezierCurveTo(-8, -3, -7, -9, 0, -3);
-    ctx.bezierCurveTo(7, -9, 8, -3, 0, 5);
-    ctx.fill();
+    ctx.moveTo(0, -2);
+    ctx.quadraticCurveTo(dir * 24, 15, dir * 5, 38);
+    ctx.quadraticCurveTo(dir * 12, 18, -dir * 2, 4);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    // 内側に並ぶ鋭い牙
+    ctx.fillStyle = '#ffffff';
+    [[dir*11, 14, dir*4, 18, dir*10, 21], [dir*9, 23, dir*2, 27, dir*8, 30], [dir*6, 32, -dir*1, 36, dir*5, 38]].forEach(pts => {
+      ctx.beginPath(); ctx.moveTo(pts[0], pts[1]); ctx.lineTo(pts[2], pts[3]); ctx.lineTo(pts[4], pts[5]); ctx.closePath(); ctx.fill();
+    });
+
+  } else if (type === 'heart') {
+    // ハート曲線アーム＋ぷっくりハート爪
+    ctx.strokeStyle = '#ff80ab'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(dir * 22, 10, dir * 20, 26, dir * 5, 35); ctx.stroke();
+    ctx.translate(dir * 5, 35);
+    ctx.fillStyle = '#ff1744'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, 6);
+    ctx.bezierCurveTo(-9, -2, -7, -9, 0, -3);
+    ctx.bezierCurveTo(7, -9, 9, -2, 0, 6);
+    ctx.fill(); ctx.stroke();
+
   } else if (type === 'angel') {
-    // 6. エンジェルウィング
-    ctx.strokeStyle = '#b0bec5'; ctx.lineWidth = 5; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(dir * 15, 18); ctx.lineTo(dir * 6, 34); ctx.stroke();
-    ctx.translate(dir * 6, 34);
-    ctx.fillStyle = '#00e5ff';
-    ctx.beginPath(); ctx.ellipse(-dir * 4, 0, 9, 4, dir * 0.5, 0, Math.PI * 2); ctx.fill();
+    // 白銀の羽根アーム
+    ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#81d4fa'; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(dir * 22, 10, dir * 16, 22);
+    ctx.quadraticCurveTo(dir * 19, 28, dir * 6, 36);
+    ctx.quadraticCurveTo(dir * 10, 18, 0, 4);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#00e5ff'; ctx.beginPath(); ctx.arc(dir * 6, 36, 4.5, 0, Math.PI * 2); ctx.fill();
+
   } else if (type === 'devil') {
-    // 7. デビルホーン
-    ctx.strokeStyle = '#7c4dff'; ctx.lineWidth = 6; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(dir * 15, 18); ctx.lineTo(dir * 6, 34); ctx.stroke();
+    // 悪魔の鉤爪＆槍尻尾風アーム
+    ctx.strokeStyle = '#4a148c'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(dir * 16, 17); ctx.lineTo(dir * 6, 34); ctx.stroke();
     ctx.translate(dir * 6, 34);
     ctx.fillStyle = '#ff1744';
-    ctx.beginPath(); ctx.moveTo(-6, -8); ctx.lineTo(-2, -2); ctx.lineTo(-8, -1); ctx.closePath(); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(6, -8); ctx.lineTo(2, -2); ctx.lineTo(8, -1); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(0, -6); ctx.lineTo(dir * 8, 2); ctx.lineTo(-dir * 3, 8); ctx.lineTo(-dir * 5, -2); ctx.closePath(); ctx.fill();
+
   } else if (type === 'neko') {
-    // 8. にゃんこアーム（肉球つき）
-    ctx.strokeStyle = '#ffb74d'; ctx.lineWidth = 6; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(dir * 15, 18); ctx.lineTo(dir * 6, 34); ctx.stroke();
+    // もふもふ猫の手＋ピンクの肉球
+    ctx.strokeStyle = '#ffe0b2'; ctx.lineWidth = 9; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(dir * 17, 16, dir * 6, 34); ctx.stroke();
     ctx.translate(dir * 6, 34);
-    ctx.fillStyle = '#ff9800'; ctx.beginPath(); ctx.arc(0, 0, 7, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#ff8a80'; ctx.beginPath(); ctx.arc(0, 1, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff3e0'; ctx.strokeStyle = '#ffb74d'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, 0, 8.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    // 肉球パッド
+    ctx.fillStyle = '#ff80ab';
+    ctx.beginPath(); ctx.arc(0, 2, 3.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(-4, -3, 1.8, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(0, -4.5, 1.8, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(4, -3, 1.8, 0, Math.PI * 2); ctx.fill();
+
   } else {
-    // 9. スタンダード
-    ctx.strokeStyle = clawSkin.arm; ctx.lineWidth = 5.5; ctx.lineCap = 'round';
+    // スタンダードメカアーム
+    ctx.strokeStyle = '#eceff1'; ctx.lineWidth = 5.5; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(dir * 15, 18); ctx.lineTo(dir * 5, 35); ctx.stroke();
     ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(dir * 15, 18, 3, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = clawSkin.tip; ctx.beginPath(); ctx.arc(dir * 5, 35, 4.5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ff4081'; ctx.beginPath(); ctx.arc(dir * 5, 35, 4.5, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+/**
+ * ★ 10種類の「ユニット（ヘッド本体）」の専用描画
+ */
+function drawCustomUnitBody(type) {
+  ctx.save();
+  const flap = Math.sin(Date.now() / 140) * 0.22;
+
+  if (type === 'flower') {
+    // 大輪のフラワーユニット
+    ctx.fillStyle = '#ff80ab'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
+    for (let i = 0; i < 6; i++) {
+      const a = (Math.PI / 3) * i + Date.now() / 2000;
+      ctx.beginPath(); ctx.arc(Math.cos(a) * 13, Math.sin(a) * 10, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    }
+    ctx.fillStyle = '#ffeb3b'; ctx.beginPath(); ctx.arc(0, 0, 11, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    // にっこりマーク
+    ctx.fillStyle = '#880e4f';
+    ctx.beginPath(); ctx.arc(-4, -2, 1.8, 0, Math.PI * 2); ctx.arc(4, -2, 1.8, 0, Math.PI * 2); ctx.fill();
+
+  } else if (type === 'star') {
+    // 巨大な立体スターユニット
+    ctx.fillStyle = '#ffea00'; ctx.strokeStyle = '#ff8f00'; ctx.lineWidth = 2.5;
+    drawStarPolygon(ctx, 0, 0, 5, 23, 10);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fffde7';
+    drawStarPolygon(ctx, 0, 0, 5, 11, 5);
+    ctx.fill();
+
+  } else if (type === 'snow') {
+    // 氷の六角クリスタルコア
+    ctx.fillStyle = '#80d8ff'; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const a = (Math.PI / 3) * i;
+      ctx[i === 0 ? 'moveTo' : 'lineTo'](Math.cos(a) * 19, Math.sin(a) * 15);
+    }
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = '#e0f7fa'; ctx.lineWidth = 2;
+    for (let i = 0; i < 3; i++) {
+      ctx.save(); ctx.rotate((Math.PI / 3) * i);
+      ctx.beginPath(); ctx.moveTo(-23, 0); ctx.lineTo(23, 0); ctx.stroke();
+      ctx.restore();
+    }
+
+  } else if (type === 'dragon' || type === 'ultimate') {
+    const isUlt = (type === 'ultimate');
+    // 究極竜神の場合は背後に輝く後光リングと王冠
+    if (isUlt) {
+      ctx.strokeStyle = 'rgba(255, 234, 0, 0.75)'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(0, -2, 28, 0, Math.PI * 2); ctx.stroke();
+    }
+    // 2本の巨大な竜の角
+    ctx.fillStyle = isUlt ? '#ffd700' : '#ffab00'; ctx.strokeStyle = '#3e2723'; ctx.lineWidth = 1.5;
+    [-1, 1].forEach(d => {
+      ctx.beginPath(); ctx.moveTo(d * 10, -8); ctx.lineTo(d * 28, -24); ctx.lineTo(d * 18, -2); ctx.closePath(); ctx.fill(); ctx.stroke();
+    });
+    // 竜の頭部アーマー
+    const dGrad = ctx.createLinearGradient(0, -16, 0, 12);
+    dGrad.addColorStop(0, isUlt ? '#ffea00' : '#ff3d00');
+    dGrad.addColorStop(1, isUlt ? '#ff6d00' : '#b71c1c');
+    ctx.fillStyle = dGrad; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(-20, -4); ctx.lineTo(-12, -15); ctx.lineTo(12, -15); ctx.lineTo(20, -4);
+    ctx.lineTo(15, 10); ctx.lineTo(0, 14); ctx.lineTo(-15, 10);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    // 輝く邪眼
+    ctx.fillStyle = isUlt ? '#00e5ff' : '#ffea00';
+    [-1, 1].forEach(d => {
+      ctx.beginPath(); ctx.moveTo(d * 5, -2); ctx.lineTo(d * 13, -6); ctx.lineTo(d * 11, 1); ctx.closePath(); ctx.fill();
+    });
+    // 王冠（ultimate専用）
+    if (isUlt) {
+      ctx.fillStyle = '#ffd700'; ctx.strokeStyle = '#d50000'; ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(-10, -15); ctx.lineTo(-12, -26); ctx.lineTo(-4, -19); ctx.lineTo(0, -28);
+      ctx.lineTo(4, -19); ctx.lineTo(12, -26); ctx.lineTo(10, -15);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+    }
+
+  } else if (type === 'heart') {
+    // ぷっくり大きな立体ハートユニット
+    ctx.fillStyle = '#ff4081'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(0, 14);
+    ctx.bezierCurveTo(-28, -2, -22, -22, 0, -8);
+    ctx.bezierCurveTo(22, -22, 28, -2, 0, 14);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.beginPath(); ctx.ellipse(-8, -7, 5, 2.5, -0.4, 0, Math.PI * 2); ctx.fill();
+
+  } else if (type === 'angel') {
+    // パタパタ羽ばたく天使の翼＋頭上の天使の輪
+    ctx.strokeStyle = '#ffea00'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.ellipse(0, -21, 15, 4.5, 0, 0, Math.PI * 2); ctx.stroke();
+    // 左右の翼
+    [-1, 1].forEach(d => {
+      ctx.save(); ctx.translate(d * 14, -2); ctx.rotate(d * flap);
+      ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#81d4fa'; ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, 0); ctx.quadraticCurveTo(d * 20, -16, d * 24, -4);
+      ctx.quadraticCurveTo(d * 18, 6, 0, 6); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.restore();
+    });
+    ctx.fillStyle = '#e1f5fe'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(0, 0, 15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+  } else if (type === 'devil') {
+    // コウモリの翼＋悪魔の湾曲角ユニット
+    [-1, 1].forEach(d => {
+      ctx.save(); ctx.translate(d * 14, 0); ctx.rotate(d * -flap);
+      ctx.fillStyle = '#311b92'; ctx.strokeStyle = '#ff1744'; ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, -4); ctx.lineTo(d * 24, -14); ctx.lineTo(d * 19, 4); ctx.lineTo(d * 9, 2); ctx.lineTo(0, 8);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.restore();
+      // 角
+      ctx.fillStyle = '#ff1744';
+      ctx.beginPath(); ctx.moveTo(d * 8, -10); ctx.quadraticCurveTo(d * 20, -24, d * 14, -26); ctx.quadraticCurveTo(d * 4, -18, d * 3, -12); ctx.fill();
+    });
+    ctx.fillStyle = '#4527a0'; ctx.strokeStyle = '#b388ff'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, 0, 15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#ffea00';
+    ctx.beginPath(); ctx.arc(-5, -1, 2.5, 0, Math.PI * 2); ctx.arc(5, -1, 2.5, 0, Math.PI * 2); ctx.fill();
+
+  } else if (type === 'neko') {
+    // ネコ耳・おヒゲ付きの猫顔ユニット
+    ctx.fillStyle = '#ffe0b2'; ctx.strokeStyle = '#f57c00'; ctx.lineWidth = 2;
+    // 耳
+    [-1, 1].forEach(d => {
+      ctx.beginPath(); ctx.moveTo(d * 6, -11); ctx.lineTo(d * 18, -24); ctx.lineTo(d * 18, -4); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#ff80ab';
+      ctx.beginPath(); ctx.moveTo(d * 8, -11); ctx.lineTo(d * 15, -20); ctx.lineTo(d * 15, -6); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#ffe0b2';
+    });
+    // 輪郭
+    ctx.beginPath(); ctx.ellipse(0, 0, 18, 14, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    // 目とピンクの鼻とヒゲ
+    ctx.fillStyle = '#4e342e';
+    ctx.beginPath(); ctx.arc(-6, -2, 2.2, 0, Math.PI * 2); ctx.arc(6, -2, 2.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ff4081';
+    ctx.beginPath(); ctx.arc(0, 2, 2.5, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#8d6e63'; ctx.lineWidth = 1.5;
+    [-1, 1].forEach(d => {
+      ctx.beginPath(); ctx.moveTo(d * 12, 0); ctx.lineTo(d * 22, -2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(d * 12, 4); ctx.lineTo(d * 22, 5); ctx.stroke();
+    });
+
+  } else {
+    // スタンダードカプセル型メカユニット
+    const headGrad = ctx.createLinearGradient(-20, -12, 20, 12);
+    headGrad.addColorStop(0, '#ff80ab');
+    headGrad.addColorStop(1, '#c51162');
+    ctx.fillStyle = headGrad;
+    fillRoundRect(ctx, -20, -12, 40, 20, 9);
+    ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
   }
   ctx.restore();
 }
@@ -879,22 +1120,26 @@ function drawClawAndCapsule(clawSkin) {
   const railY = 18 + (100 - claw.z) * 0.14;
   const clawScreenY = claw.y + (100 - claw.z) * 0.25;
 
+  // 照準ターゲットリング
   ctx.save();
   ctx.fillStyle = 'rgba(0, 229, 255, 0.25)';
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.ellipse(proj.screenX, proj.floorY, 24 * proj.scale, 9 * proj.scale, 0, 0, Math.PI * 2);
   ctx.fill(); ctx.stroke();
   ctx.restore();
 
+  // 天井レールスライダー
   ctx.fillStyle = '#37474f';
   ctx.fillRect(proj.screenX - 14, railY - 6, 28, 12);
 
+  // ワイヤー
   ctx.strokeStyle = clawSkin.wire;
   ctx.lineWidth = 3.5;
   ctx.beginPath(); ctx.moveTo(proj.screenX, railY + 6); ctx.lineTo(proj.screenX, clawScreenY); ctx.stroke();
 
+  // 掴んでいるカプセル
   if (claw.grabbedCapsule) {
     claw.grabbedCapsule.x = claw.x;
     claw.grabbedCapsule.z = claw.z;
@@ -906,21 +1151,17 @@ function drawClawAndCapsule(clawSkin) {
   ctx.scale(proj.scale, proj.scale);
   ctx.rotate(claw.swing);
 
-  const headGrad = ctx.createLinearGradient(-20, -12, 20, 12);
-  headGrad.addColorStop(0, clawSkin.head1);
-  headGrad.addColorStop(1, clawSkin.head2);
-  ctx.fillStyle = headGrad;
-  ctx.beginPath(); ctx.roundRect(-20, -12, 40, 20, 9); ctx.fill();
-  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
-
-  // 左右のアーム（カスタム形状を描画）
+  // 左右の腕を先に描画（ユニットの奥側から出るように）
   [-1, 1].forEach(dir => {
     ctx.save();
     ctx.translate(dir * 13, 6);
     ctx.rotate(dir * -claw.openAngle);
-    drawCustomClawArm(clawSkin.type, dir);
+    drawCustomArmLimb(clawSkin.type, dir);
     ctx.restore();
   });
+
+  // ユニット本体を手前に重ねて描画
+  drawCustomUnitBody(clawSkin.type);
 
   ctx.restore();
 }
@@ -961,7 +1202,7 @@ function updateButtons() {
 
 let xDir = 1;
 function startRight(e) {
-  e.preventDefault();
+  if (e.cancelable) e.preventDefault();
   if (btnRight.disabled) return;
   if (gameState === 'IDLE') {
     const u = allUsers[currentUser];
@@ -980,7 +1221,7 @@ function startRight(e) {
   updateButtons();
 }
 function stopRight(e) {
-  e.preventDefault();
+  if (e && e.cancelable) e.preventDefault();
   isPressingRight = false;
   btnRight.classList.remove('pressing');
   if (gameState === 'X_MOVING') {
@@ -992,7 +1233,7 @@ function stopRight(e) {
 
 let zDir = 1;
 function startBack(e) {
-  e.preventDefault();
+  if (e.cancelable) e.preventDefault();
   if (btnBack.disabled) return;
   if (gameState === 'X_READY' || gameState === 'X_MOVING') {
     isPressingRight = false;
@@ -1006,7 +1247,7 @@ function startBack(e) {
   updateButtons();
 }
 function stopBack(e) {
-  e.preventDefault();
+  if (e && e.cancelable) e.preventDefault();
   isPressingBack = false;
   btnBack.classList.remove('pressing');
   if (gameState === 'Z_MOVING') {
@@ -1168,8 +1409,8 @@ function gameLoop() {
 }
 
 ['mousedown', 'touchstart'].forEach(evt => {
-  btnRight.addEventListener(evt, startRight);
-  btnBack.addEventListener(evt, startBack);
+  btnRight.addEventListener(evt, startRight, { passive: false });
+  btnBack.addEventListener(evt, startBack, { passive: false });
 });
 ['mouseup', 'mouseleave', 'touchend'].forEach(evt => {
   btnRight.addEventListener(evt, stopRight);
@@ -1235,10 +1476,10 @@ function renderShop() {
     row.className = 'shop-item';
     row.innerHTML = `
       <div style="display:flex; align-items:center;">
-        <div class="preview-dot" style="background:${item.preview}"></div>
+        <div class="preview-dot" style="background:${item.preview}">${item.icon || ''}</div>
         <div>
-          <div style="font-weight:900; font-size:0.84rem;">${item.name}</div>
-          <div style="font-size:0.73rem; color:#00838f; font-weight:bold;">
+          <div style="font-weight:900; font-size:0.82rem;">${item.name}</div>
+          <div style="font-size:0.72rem; color:#00838f; font-weight:bold;">
             ${isUnlocked ? '入手済み' : `🎟️ チケット ${item.cost}枚`}
           </div>
         </div>
@@ -1247,6 +1488,7 @@ function renderShop() {
 
     const btn = document.createElement('button');
     btn.className = 'btn-ui';
+    btn.style.flexShrink = '0';
     if (isEquipped) {
       btn.textContent = '装備中';
       btn.style.background = 'var(--cab-dark)';
@@ -1271,7 +1513,7 @@ function renderShop() {
 function buyItem(isCab, key, cost) {
   const u = allUsers[currentUser];
   if (u.tickets < cost) {
-    alert('着せ替えチケットが足りません！\n右上の「🎟️+5」ボタンでテスト用チケットを増やせます。');
+    alert('着せ替えチケットが足りません！\n右上の「🎟️+10」ボタンでテスト用チケットを増やせます。');
     return;
   }
   u.tickets -= cost;
