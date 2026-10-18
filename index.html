@@ -581,7 +581,7 @@ function onWinPrize() {
   
   u.collection[wonChar.id] = (u.collection[wonChar.id] || 0) + 1;
   if (isDuplicate) u.tickets += 1;
-  
+
   saveData(); updateUI();
   
   document.getElementById('modalCharImg').src = wonChar.img;
