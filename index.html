@@ -1195,7 +1195,6 @@ function renderShop() {
       btn.style.color = u.tickets >= item.cost ? '#fff' : '#666';
       btn.onclick = () => buyItem(isCab, key, item.cost);
     }
-
     row.appendChild(btn);
     list.appendChild(row);
   });
