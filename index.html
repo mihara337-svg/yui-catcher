@@ -181,7 +181,7 @@
   }
   .coin-hole { width: 6px; height: 22px; background: #111; border-radius: 3px; border: 1px solid #666; }
 
-  /* ================= コレクション図鑑 ================= */
+  /* ================= コレクション図鑑（立体アクリルブロック加工） ================= */
   .dex-section {
     width: 100%; max-width: 490px; margin-top: 28px; background: rgba(255,255,255,0.95);
     border-radius: 24px; padding: 18px; box-shadow: 0 12px 30px rgba(0,0,0,0.35);
@@ -203,26 +203,29 @@
     display: flex; justify-content: center; align-items: center;
   }
   .figure-card:hover .acrylic-stand { transform: rotateX(12deg) rotateY(-16deg) scale(1.08); }
+  /* JPG画像でも分厚いアクリルスタンド・ブロックに見える立体エフェクト */
   .acrylic-img {
-    width: 84%; height: 84%; object-fit: contain;
+    width: 84%; height: 84%; object-fit: cover; border-radius: 16px;
+    border: 3px solid #ffffff; background: #fff;
     filter:
-      drop-shadow(0px 1px 0px #fff) drop-shadow(0px -1px 0px #fff)
-      drop-shadow(1px 0px 0px #fff) drop-shadow(-1px 0px 0px #fff)
-      drop-shadow(1px 2px 0px #d0d7de) drop-shadow(2px 4px 0px #b0bac6)
-      drop-shadow(3px 6px 0px #8c98a8) drop-shadow(4px 8px 0px #64748b)
+      drop-shadow(1px 2px 0px #d0d7de)
+      drop-shadow(2px 4px 0px #b0bac6)
+      drop-shadow(3px 6px 0px #8c98a8)
+      drop-shadow(4px 8px 0px #64748b)
       drop-shadow(6px 12px 10px rgba(0,0,0,0.35));
+    transition: filter 0.3s;
   }
   .unowned .acrylic-img {
     filter: brightness(0) opacity(0.75)
       drop-shadow(2px 4px 0px #475569) drop-shadow(4px 8px 6px rgba(0,0,0,0.25));
   }
   .stand-base {
-    width: 74%; height: 14px; margin: -6px auto 4px; border-radius: 50%;
+    width: 76%; height: 14px; margin: -5px auto 4px; border-radius: 50%;
     background: linear-gradient(90deg, rgba(200,235,255,0.7), rgba(255,255,255,0.95), rgba(200,235,255,0.7));
     box-shadow: 0 5px 0 #7c93b0, 0 8px 12px rgba(0,0,0,0.28);
-    border: 1.5px solid #fff;
+    border: 1.5px solid #fff; position: relative; z-index: 2;
   }
-  .char-name { font-size: 0.78rem; font-weight: 900; color: #333; margin-top: 4px; }
+  .char-name { font-size: 0.74rem; font-weight: 900; color: #333; margin-top: 4px; line-height: 1.2; }
   .count-badge {
     position: absolute; top: 6px; right: 6px; background: var(--cab-dark); color: #fff;
     font-size: 0.7rem; font-weight: 900; padding: 2px 7px; border-radius: 10px; z-index: 5;
@@ -371,7 +374,7 @@
 <div class="dex-section">
   <div class="dex-header">
     <h3 style="margin:0; font-size:1.05rem;">📖 ゆいちゃん立体アクリル図鑑</h3>
-    <span id="dexProgress" style="font-weight:900; color:var(--cab-dark);">0 / 6</span>
+    <span id="dexProgress" style="font-weight:900; color:var(--cab-dark);">0 / 11</span>
   </div>
   <p style="font-size:0.76rem; color:#666; margin:0 0 12px;">※すでに持っているキャラクターをゲットすると、着せ替えチケット🎟️が1枚もらえます！</p>
   <div class="dex-grid" id="dexGrid"></div>
@@ -386,7 +389,7 @@
       <div class="stand-base"></div>
     </div>
     <h3 id="modalCharName" style="margin:6px 0 4px;">キャラ名</h3>
-    <p id="modalCharDesc" style="font-size:0.85rem; color:#666; margin-bottom:8px;"></p>
+    <p id="modalCharDesc" style="font-size:0.85rem; color:#666; margin-bottom:8px; line-height:1.4;"></p>
     <div id="modalTicketInfo" style="background:#e0f7fa; color:#006064; padding:8px; border-radius:10px; font-weight:900; font-size:0.88rem; margin-bottom:14px; display:none;">
       🎁 重複ボーナス！着せ替えチケット +1枚獲得！
     </div>
@@ -423,24 +426,107 @@
 
 <script>
 /**
- * 1. キャラクター図鑑データ
+ * 1. プライズ図鑑データ（画像一覧の11種類をすべて登録＆タイトルに合わせたコメント付き）
  */
-function createYuiSvg(emoji, bgColor, rimColor) {
+function createFallbackSvg(emoji, bgColor, rimColor) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
     <defs><radialGradient id="g" cx="35%" cy="30%" r="70%"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="${bgColor}"/></radialGradient></defs>
-    <circle cx="80" cy="85" r="56" fill="url(#g)" stroke="${rimColor}" stroke-width="6"/>
-    <text x="80" y="106" font-size="64" text-anchor="middle">${emoji}</text>
+    <rect width="160" height="160" rx="28" fill="url(#g)" stroke="${rimColor}" stroke-width="6"/>
+    <text x="80" y="106" font-size="68" text-anchor="middle">${emoji}</text>
   </svg>`;
   return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
 
+// 画像読み込み失敗時（全角・半角スペースの違いや未アップロード時）の自動フォールバック処理
+function handleImgError(imgEl, altImg, fallbackSvg) {
+  if (altImg && !imgEl.dataset.triedAlt) {
+    imgEl.dataset.triedAlt = 'true';
+    imgEl.src = altImg;
+  } else {
+    imgEl.onerror = null;
+    imgEl.src = fallbackSvg;
+  }
+}
+
 const CHARACTERS = [
-  { id: 'yui_01', name: 'ノーマルゆい', desc: '元気いっぱい笑顔のゆいちゃん！', img: createYuiSvg('🎀', '#ffc1e3', '#ec407a') },
-  { id: 'yui_02', name: 'おすましゆい', desc: 'ちょっぴり大人っぽいおめかしスタイル。', img: createYuiSvg('👒', '#b2ebf2', '#00acc1') },
-  { id: 'yui_03', name: 'もぐもぐゆい', desc: '大好きなスイーツに夢中！', img: createYuiSvg('🍰', '#fff59d', '#fbc02d') },
-  { id: 'yui_04', name: 'おやすみゆい', desc: 'ふわふわパジャマですやすや夢の中。', img: createYuiSvg('🌙', '#d1c4e9', '#7e57c2') },
-  { id: 'yui_05', name: 'アイドルゆい', desc: 'キラキラステージで輝く特別衣装！', img: createYuiSvg('🎤', '#f8bbd0', '#d81b60') },
-  { id: 'yui_06', name: 'プリンセスゆい', desc: '豪華な王冠をかぶった最高レア姿！', img: createYuiSvg('👑', '#ffe082', '#fb8c00') }
+  {
+    id: 'yui_01',
+    name: 'おしゃれゆい',
+    desc: 'ピンクのお洋服でおめかしバッチリ！赤い髪飾りもとっても似合ってるでしょ？',
+    img: 'おしゃれゆい.jpg',
+    fallback: createFallbackSvg('🎀', '#ffc1e3', '#ec407a')
+  },
+  {
+    id: 'yui_02',
+    name: 'アイスクリームゆい',
+    desc: '冷たくてあま〜いアイスクリームをどうぞ！一緒に食べるとしあわせだね♪',
+    img: 'アイスクリームゆい.jpg',
+    fallback: createFallbackSvg('🍨', '#b2ebf2', '#00acc1')
+  },
+  {
+    id: 'yui_03',
+    name: '雪だるまゆい',
+    desc: '真っ白ふわふわな雪だるまに変身！青いボタンがチャームポイントだよ⛄',
+    img: '雪だるまゆい.jpg',
+    fallback: createFallbackSvg('⛄', '#e1f5fe', '#29b6f6')
+  },
+  {
+    id: 'yui_04',
+    name: 'かぼちゃうさぽん',
+    desc: 'ハロウィンのかぼちゃパンツで登場！トリック・オア・トリートでお菓子ちょうだい🎃',
+    img: 'かぼちゃうさぽん.jpg',
+    fallback: createFallbackSvg('🎃', '#f3e5f5', '#ab47bc')
+  },
+  {
+    id: 'yui_05',
+    name: '赤ずきんゆいな',
+    desc: '真っ赤なずきんがトレードマーク！森のなかをお散歩中のかわいいゆいなちゃん🍓',
+    img: '赤ずきんゆいな.jpg',
+    fallback: createFallbackSvg('🍓', '#ffcdd2', '#e53935')
+  },
+  {
+    id: 'yui_06',
+    name: 'ゆうたろう 天使',
+    desc: '小さな白い羽をパタパタさせて舞い降りた、ハートを届ける癒やしの天使ちゃん👼',
+    img: 'ゆうたろう　天使.jpg',
+    altImg: 'ゆうたろう 天使.jpg',
+    fallback: createFallbackSvg('👼', '#f3e5f5', '#ce93d8')
+  },
+  {
+    id: 'yui_07',
+    name: 'お月見ゆい',
+    desc: 'まんまるお月様を見ながらお月見団子をもぐもぐ！秋のおいしい夜長を楽しもう🌕',
+    img: 'お月見ゆい.jpg',
+    fallback: createFallbackSvg('🎑', '#fff9c4', '#fbc02d')
+  },
+  {
+    id: 'yui_08',
+    name: '今日ゆいになりました',
+    desc: 'キリッとした表情でシールドを構える頼もしい姿！今日から無敵のゆいちゃん誕生🛡️',
+    img: '今日ゆいになりました.jpg',
+    fallback: createFallbackSvg('🛡️', '#b3e5fc', '#0288d1')
+  },
+  {
+    id: 'yui_09',
+    name: 'お丸ゆい',
+    desc: 'まんまるフォルムとゆる〜い表情がたまらない！見ているだけで心がほっこり和むね⚪',
+    img: 'お丸ゆい.jpg',
+    fallback: createFallbackSvg('⚪', '#f5f5f5', '#9e9e9e')
+  },
+  {
+    id: 'yui_10',
+    name: 'ブラックゆい',
+    desc: 'ダークなオーラをまとったミステリアスな姿…！いつもと違うクールな魅力にドキッ🖤',
+    img: 'ブラックゆい.jpg',
+    fallback: createFallbackSvg('🖤', '#cfd8dc', '#455a64')
+  },
+  {
+    id: 'yui_11',
+    name: 'メロンパンゆい',
+    desc: 'サクサクふわふわのメロンパンに包まれた甘いゆいちゃん！焼きたての香りがしそう🍈',
+    img: 'メロンパンゆい.jpg',
+    fallback: createFallbackSvg('🍈', '#dcedc8', '#7cb342')
+  }
 ];
 
 /**
@@ -545,7 +631,7 @@ const CLAW_SKINS = {
 /**
  * 3. ユーザー管理 ＆ データ保存
  */
-const STORAGE_KEY = 'yui_catcher_users_v7';
+const STORAGE_KEY = 'yui_catcher_users_v8';
 let allUsers = {};
 try {
   allUsers = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -631,20 +717,46 @@ function renderDex() {
   const grid = document.getElementById('dexGrid');
   grid.innerHTML = '';
   let ownedCount = 0;
+
   CHARACTERS.forEach(ch => {
     const count = u.collection[ch.id] || 0;
     if (count > 0) ownedCount++;
+
     const card = document.createElement('div');
     card.className = `figure-card ${count > 0 ? '' : 'unowned'}`;
-    card.innerHTML = `
-      ${count > 0 ? `<div class="count-badge">×${count}</div>` : ''}
-      <div class="acrylic-stand"><img class="acrylic-img" src="${ch.img}" alt="${ch.name}"></div>
-      <div class="stand-base"></div>
-      <div class="char-name">${count > 0 ? ch.name : '？？？'}</div>
-    `;
+
+    if (count > 0) {
+      const badge = document.createElement('div');
+      badge.className = 'count-badge';
+      badge.textContent = `×${count}`;
+      card.appendChild(badge);
+    }
+
+    const stand = document.createElement('div');
+    stand.className = 'acrylic-stand';
+
+    const imgEl = document.createElement('img');
+    imgEl.className = 'acrylic-img';
+    imgEl.alt = ch.name;
+    imgEl.src = ch.img;
+    imgEl.onerror = () => handleImgError(imgEl, ch.altImg, ch.fallback);
+
+    stand.appendChild(imgEl);
+    card.appendChild(stand);
+
+    const base = document.createElement('div');
+    base.className = 'stand-base';
+    card.appendChild(base);
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'char-name';
+    nameEl.textContent = count > 0 ? ch.name : '？？？';
+    card.appendChild(nameEl);
+
     if (count > 0) card.onclick = () => showPrizeModal(ch, false);
     grid.appendChild(card);
   });
+
   document.getElementById('dexProgress').textContent = `${ownedCount} / ${CHARACTERS.length}`;
 }
 
@@ -669,7 +781,6 @@ const CAPSULE_SHAPES = ['circle', 'star', 'heart', 'diamond', 'hex'];
 const CAPSULE_COLORS = ['#ff5277', '#26c6da', '#ffca28', '#9ccc65', '#ab47bc', '#ffa726'];
 let capsules = [];
 
-// どのスマホブラウザでもエラーにならない角丸四角形ヘルパー
 function fillRoundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -846,13 +957,10 @@ function drawSingleCapsule(cap, customScreenY = null) {
 function drawCustomArmLimb(type, dir) {
   ctx.save();
   if (type === 'flower') {
-    // 緑のツルと葉っぱ＋先端に花
     ctx.strokeStyle = '#4caf50'; ctx.lineWidth = 5.5; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(dir * 20, 16, dir * 6, 35); ctx.stroke();
-    // 葉っぱ
     ctx.fillStyle = '#81c784';
     ctx.beginPath(); ctx.ellipse(dir * 14, 15, 7, 3.5, dir * 0.6, 0, Math.PI * 2); ctx.fill();
-    // 先端の花
     ctx.translate(dir * 6, 35);
     ctx.fillStyle = '#ff4081';
     for (let i = 0; i < 5; i++) {
@@ -862,7 +970,6 @@ function drawCustomArmLimb(type, dir) {
     ctx.fillStyle = '#ffeb3b'; ctx.beginPath(); ctx.arc(0, 0, 3.5, 0, Math.PI * 2); ctx.fill();
 
   } else if (type === 'star') {
-    // 黄金の稲妻風アーム＋先端に立体スター
     ctx.strokeStyle = '#ffd54f'; ctx.lineWidth = 5; ctx.lineJoin = 'round';
     ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(dir * 17, 14); ctx.lineTo(dir * 9, 23); ctx.lineTo(dir * 6, 35); ctx.stroke();
     ctx.translate(dir * 6, 35);
@@ -871,7 +978,6 @@ function drawCustomArmLimb(type, dir) {
     ctx.fill(); ctx.stroke();
 
   } else if (type === 'snow') {
-    // 鋭い氷柱クリスタルアーム＋雪の結晶
     ctx.fillStyle = 'rgba(128, 216, 255, 0.88)'; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(0, 0); ctx.lineTo(dir * 18, 16); ctx.lineTo(dir * 5, 36); ctx.lineTo(dir * 9, 16);
@@ -885,7 +991,6 @@ function drawCustomArmLimb(type, dir) {
     ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, 3, 0, Math.PI * 2); ctx.fill();
 
   } else if (type === 'dragon' || type === 'ultimate') {
-    // 竜の下顎（ウロコ装甲＋白い牙が並んだ巨大なアギト）
     const isUlt = (type === 'ultimate');
     ctx.fillStyle = isUlt ? '#ffab00' : '#d50000';
     ctx.strokeStyle = isUlt ? '#fff' : '#ff8a65'; ctx.lineWidth = 2;
@@ -894,14 +999,12 @@ function drawCustomArmLimb(type, dir) {
     ctx.quadraticCurveTo(dir * 24, 15, dir * 5, 38);
     ctx.quadraticCurveTo(dir * 12, 18, -dir * 2, 4);
     ctx.closePath(); ctx.fill(); ctx.stroke();
-    // 内側に並ぶ鋭い牙
     ctx.fillStyle = '#ffffff';
     [[dir*11, 14, dir*4, 18, dir*10, 21], [dir*9, 23, dir*2, 27, dir*8, 30], [dir*6, 32, -dir*1, 36, dir*5, 38]].forEach(pts => {
       ctx.beginPath(); ctx.moveTo(pts[0], pts[1]); ctx.lineTo(pts[2], pts[3]); ctx.lineTo(pts[4], pts[5]); ctx.closePath(); ctx.fill();
     });
 
   } else if (type === 'heart') {
-    // ハート曲線アーム＋ぷっくりハート爪
     ctx.strokeStyle = '#ff80ab'; ctx.lineWidth = 6; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(dir * 22, 10, dir * 20, 26, dir * 5, 35); ctx.stroke();
     ctx.translate(dir * 5, 35);
@@ -913,7 +1016,6 @@ function drawCustomArmLimb(type, dir) {
     ctx.fill(); ctx.stroke();
 
   } else if (type === 'angel') {
-    // 白銀の羽根アーム
     ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#81d4fa'; ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(0, 0);
@@ -924,7 +1026,6 @@ function drawCustomArmLimb(type, dir) {
     ctx.fillStyle = '#00e5ff'; ctx.beginPath(); ctx.arc(dir * 6, 36, 4.5, 0, Math.PI * 2); ctx.fill();
 
   } else if (type === 'devil') {
-    // 悪魔の鉤爪＆槍尻尾風アーム
     ctx.strokeStyle = '#4a148c'; ctx.lineWidth = 6; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(dir * 16, 17); ctx.lineTo(dir * 6, 34); ctx.stroke();
     ctx.translate(dir * 6, 34);
@@ -932,13 +1033,11 @@ function drawCustomArmLimb(type, dir) {
     ctx.beginPath(); ctx.moveTo(0, -6); ctx.lineTo(dir * 8, 2); ctx.lineTo(-dir * 3, 8); ctx.lineTo(-dir * 5, -2); ctx.closePath(); ctx.fill();
 
   } else if (type === 'neko') {
-    // もふもふ猫の手＋ピンクの肉球
     ctx.strokeStyle = '#ffe0b2'; ctx.lineWidth = 9; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(dir * 17, 16, dir * 6, 34); ctx.stroke();
     ctx.translate(dir * 6, 34);
     ctx.fillStyle = '#fff3e0'; ctx.strokeStyle = '#ffb74d'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(0, 0, 8.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    // 肉球パッド
     ctx.fillStyle = '#ff80ab';
     ctx.beginPath(); ctx.arc(0, 2, 3.5, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.arc(-4, -3, 1.8, 0, Math.PI * 2); ctx.fill();
@@ -946,7 +1045,6 @@ function drawCustomArmLimb(type, dir) {
     ctx.beginPath(); ctx.arc(4, -3, 1.8, 0, Math.PI * 2); ctx.fill();
 
   } else {
-    // スタンダードメカアーム
     ctx.strokeStyle = '#eceff1'; ctx.lineWidth = 5.5; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(dir * 15, 18); ctx.lineTo(dir * 5, 35); ctx.stroke();
     ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(dir * 15, 18, 3, 0, Math.PI * 2); ctx.fill();
@@ -963,19 +1061,16 @@ function drawCustomUnitBody(type) {
   const flap = Math.sin(Date.now() / 140) * 0.22;
 
   if (type === 'flower') {
-    // 大輪のフラワーユニット
     ctx.fillStyle = '#ff80ab'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
     for (let i = 0; i < 6; i++) {
       const a = (Math.PI / 3) * i + Date.now() / 2000;
       ctx.beginPath(); ctx.arc(Math.cos(a) * 13, Math.sin(a) * 10, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     }
     ctx.fillStyle = '#ffeb3b'; ctx.beginPath(); ctx.arc(0, 0, 11, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    // にっこりマーク
     ctx.fillStyle = '#880e4f';
     ctx.beginPath(); ctx.arc(-4, -2, 1.8, 0, Math.PI * 2); ctx.arc(4, -2, 1.8, 0, Math.PI * 2); ctx.fill();
 
   } else if (type === 'star') {
-    // 巨大な立体スターユニット
     ctx.fillStyle = '#ffea00'; ctx.strokeStyle = '#ff8f00'; ctx.lineWidth = 2.5;
     drawStarPolygon(ctx, 0, 0, 5, 23, 10);
     ctx.fill(); ctx.stroke();
@@ -984,7 +1079,6 @@ function drawCustomUnitBody(type) {
     ctx.fill();
 
   } else if (type === 'snow') {
-    // 氷の六角クリスタルコア
     ctx.fillStyle = '#80d8ff'; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.5;
     ctx.beginPath();
     for (let i = 0; i < 6; i++) {
@@ -1001,17 +1095,14 @@ function drawCustomUnitBody(type) {
 
   } else if (type === 'dragon' || type === 'ultimate') {
     const isUlt = (type === 'ultimate');
-    // 究極竜神の場合は背後に輝く後光リングと王冠
     if (isUlt) {
       ctx.strokeStyle = 'rgba(255, 234, 0, 0.75)'; ctx.lineWidth = 3;
       ctx.beginPath(); ctx.arc(0, -2, 28, 0, Math.PI * 2); ctx.stroke();
     }
-    // 2本の巨大な竜の角
     ctx.fillStyle = isUlt ? '#ffd700' : '#ffab00'; ctx.strokeStyle = '#3e2723'; ctx.lineWidth = 1.5;
     [-1, 1].forEach(d => {
       ctx.beginPath(); ctx.moveTo(d * 10, -8); ctx.lineTo(d * 28, -24); ctx.lineTo(d * 18, -2); ctx.closePath(); ctx.fill(); ctx.stroke();
     });
-    // 竜の頭部アーマー
     const dGrad = ctx.createLinearGradient(0, -16, 0, 12);
     dGrad.addColorStop(0, isUlt ? '#ffea00' : '#ff3d00');
     dGrad.addColorStop(1, isUlt ? '#ff6d00' : '#b71c1c');
@@ -1020,12 +1111,10 @@ function drawCustomUnitBody(type) {
     ctx.moveTo(-20, -4); ctx.lineTo(-12, -15); ctx.lineTo(12, -15); ctx.lineTo(20, -4);
     ctx.lineTo(15, 10); ctx.lineTo(0, 14); ctx.lineTo(-15, 10);
     ctx.closePath(); ctx.fill(); ctx.stroke();
-    // 輝く邪眼
     ctx.fillStyle = isUlt ? '#00e5ff' : '#ffea00';
     [-1, 1].forEach(d => {
       ctx.beginPath(); ctx.moveTo(d * 5, -2); ctx.lineTo(d * 13, -6); ctx.lineTo(d * 11, 1); ctx.closePath(); ctx.fill();
     });
-    // 王冠（ultimate専用）
     if (isUlt) {
       ctx.fillStyle = '#ffd700'; ctx.strokeStyle = '#d50000'; ctx.lineWidth = 1.5;
       ctx.beginPath();
@@ -1035,7 +1124,6 @@ function drawCustomUnitBody(type) {
     }
 
   } else if (type === 'heart') {
-    // ぷっくり大きな立体ハートユニット
     ctx.fillStyle = '#ff4081'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.moveTo(0, 14);
@@ -1046,10 +1134,8 @@ function drawCustomUnitBody(type) {
     ctx.beginPath(); ctx.ellipse(-8, -7, 5, 2.5, -0.4, 0, Math.PI * 2); ctx.fill();
 
   } else if (type === 'angel') {
-    // パタパタ羽ばたく天使の翼＋頭上の天使の輪
     ctx.strokeStyle = '#ffea00'; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.ellipse(0, -21, 15, 4.5, 0, 0, Math.PI * 2); ctx.stroke();
-    // 左右の翼
     [-1, 1].forEach(d => {
       ctx.save(); ctx.translate(d * 14, -2); ctx.rotate(d * flap);
       ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#81d4fa'; ctx.lineWidth = 1.5;
@@ -1062,7 +1148,6 @@ function drawCustomUnitBody(type) {
     ctx.beginPath(); ctx.arc(0, 0, 15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 
   } else if (type === 'devil') {
-    // コウモリの翼＋悪魔の湾曲角ユニット
     [-1, 1].forEach(d => {
       ctx.save(); ctx.translate(d * 14, 0); ctx.rotate(d * -flap);
       ctx.fillStyle = '#311b92'; ctx.strokeStyle = '#ff1744'; ctx.lineWidth = 1.5;
@@ -1070,7 +1155,6 @@ function drawCustomUnitBody(type) {
       ctx.moveTo(0, -4); ctx.lineTo(d * 24, -14); ctx.lineTo(d * 19, 4); ctx.lineTo(d * 9, 2); ctx.lineTo(0, 8);
       ctx.closePath(); ctx.fill(); ctx.stroke();
       ctx.restore();
-      // 角
       ctx.fillStyle = '#ff1744';
       ctx.beginPath(); ctx.moveTo(d * 8, -10); ctx.quadraticCurveTo(d * 20, -24, d * 14, -26); ctx.quadraticCurveTo(d * 4, -18, d * 3, -12); ctx.fill();
     });
@@ -1080,18 +1164,14 @@ function drawCustomUnitBody(type) {
     ctx.beginPath(); ctx.arc(-5, -1, 2.5, 0, Math.PI * 2); ctx.arc(5, -1, 2.5, 0, Math.PI * 2); ctx.fill();
 
   } else if (type === 'neko') {
-    // ネコ耳・おヒゲ付きの猫顔ユニット
     ctx.fillStyle = '#ffe0b2'; ctx.strokeStyle = '#f57c00'; ctx.lineWidth = 2;
-    // 耳
     [-1, 1].forEach(d => {
       ctx.beginPath(); ctx.moveTo(d * 6, -11); ctx.lineTo(d * 18, -24); ctx.lineTo(d * 18, -4); ctx.closePath(); ctx.fill(); ctx.stroke();
       ctx.fillStyle = '#ff80ab';
       ctx.beginPath(); ctx.moveTo(d * 8, -11); ctx.lineTo(d * 15, -20); ctx.lineTo(d * 15, -6); ctx.closePath(); ctx.fill();
       ctx.fillStyle = '#ffe0b2';
     });
-    // 輪郭
     ctx.beginPath(); ctx.ellipse(0, 0, 18, 14, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    // 目とピンクの鼻とヒゲ
     ctx.fillStyle = '#4e342e';
     ctx.beginPath(); ctx.arc(-6, -2, 2.2, 0, Math.PI * 2); ctx.arc(6, -2, 2.2, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#ff4081';
@@ -1103,7 +1183,6 @@ function drawCustomUnitBody(type) {
     });
 
   } else {
-    // スタンダードカプセル型メカユニット
     const headGrad = ctx.createLinearGradient(-20, -12, 20, 12);
     headGrad.addColorStop(0, '#ff80ab');
     headGrad.addColorStop(1, '#c51162');
@@ -1120,7 +1199,6 @@ function drawClawAndCapsule(clawSkin) {
   const railY = 18 + (100 - claw.z) * 0.14;
   const clawScreenY = claw.y + (100 - claw.z) * 0.25;
 
-  // 照準ターゲットリング
   ctx.save();
   ctx.fillStyle = 'rgba(0, 229, 255, 0.25)';
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
@@ -1130,16 +1208,13 @@ function drawClawAndCapsule(clawSkin) {
   ctx.fill(); ctx.stroke();
   ctx.restore();
 
-  // 天井レールスライダー
   ctx.fillStyle = '#37474f';
   ctx.fillRect(proj.screenX - 14, railY - 6, 28, 12);
 
-  // ワイヤー
   ctx.strokeStyle = clawSkin.wire;
   ctx.lineWidth = 3.5;
   ctx.beginPath(); ctx.moveTo(proj.screenX, railY + 6); ctx.lineTo(proj.screenX, clawScreenY); ctx.stroke();
 
-  // 掴んでいるカプセル
   if (claw.grabbedCapsule) {
     claw.grabbedCapsule.x = claw.x;
     claw.grabbedCapsule.z = claw.z;
@@ -1151,7 +1226,6 @@ function drawClawAndCapsule(clawSkin) {
   ctx.scale(proj.scale, proj.scale);
   ctx.rotate(claw.swing);
 
-  // 左右の腕を先に描画（ユニットの奥側から出るように）
   [-1, 1].forEach(dir => {
     ctx.save();
     ctx.translate(dir * 13, 6);
@@ -1160,7 +1234,6 @@ function drawClawAndCapsule(clawSkin) {
     ctx.restore();
   });
 
-  // ユニット本体を手前に重ねて描画
   drawCustomUnitBody(clawSkin.type);
 
   ctx.restore();
@@ -1435,7 +1508,11 @@ function onWinPrize() {
 }
 
 function showPrizeModal(charObj, isDuplicate) {
-  document.getElementById('modalCharImg').src = charObj.img;
+  const modalImg = document.getElementById('modalCharImg');
+  delete modalImg.dataset.triedAlt;
+  modalImg.onerror = () => handleImgError(modalImg, charObj.altImg, charObj.fallback);
+  modalImg.src = charObj.img;
+
   document.getElementById('modalCharName').textContent = charObj.name;
   document.getElementById('modalCharDesc').textContent = charObj.desc;
   document.getElementById('modalTicketInfo').style.display = isDuplicate ? 'block' : 'none';
