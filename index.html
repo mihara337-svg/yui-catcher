@@ -29,7 +29,7 @@
     margin: 0; padding: 0;
     width: 100%; height: 100dvh;
     background: var(--bg-grad); color: #333;
-    overflow: hidden; /* スクロール完全禁止で1画面フルフィット */
+    overflow: hidden;
     overscroll-behavior: none;
     touch-action: manipulation;
     display: flex; flex-direction: column; align-items: center; justify-content: space-between;
@@ -55,7 +55,7 @@
   }
   .title-sub { font-size: 0.82rem; color: #666; font-weight: bold; margin-bottom: 18px; }
   .user-select-box {
-    background: #fdf2f7; border: 3px solid #f8bbd0; border-radius: 18px; padding: 14px; margin-bottom: 18px;
+    background: #fdf2f7; border: 3px solid #f8bbd0; border-radius: 18px; padding: 14px; margin-bottom: 14px;
   }
   .user-select-label { display: block; font-weight: 900; font-size: 0.88rem; color: #c93b76; margin-bottom: 8px; }
   .user-select-dropdown {
@@ -95,7 +95,7 @@
   .btn-dex { background: linear-gradient(135deg, #29b6f6, #0288d1); color: #fff; box-shadow: 0 2px 0 #01579b; }
   .btn-shop { background: linear-gradient(135deg, #ff4081, #ff9100); color: #fff; box-shadow: 0 2px 0 #b21045; }
 
-  /* デバッグモード専用バー（通常時は完全非表示） */
+  /* デバッグモード専用バー */
   .debug-bar {
     width: 100%; max-width: 500px; background: #311b92; color: #fff;
     padding: 4px 10px; display: none; justify-content: space-between; align-items: center;
@@ -108,7 +108,7 @@
     font-weight: 900; font-size: 0.7rem; cursor: pointer;
   }
 
-  /* ================= 3D アーケード筐体（全画面フィット構造） ================= */
+  /* ================= 3D アーケード筐体 ================= */
   .arcade-scene {
     width: 100%; max-width: 480px; flex: 1;
     display: flex; flex-direction: column; justify-content: center;
@@ -121,7 +121,6 @@
     filter: drop-shadow(0 15px 25px rgba(0,0,0,0.65));
   }
 
-  /* 上部ネオンマーキー */
   .marquee-top {
     background: linear-gradient(180deg, var(--cab-main), var(--cab-dark));
     padding: 7px 14px 6px; border-radius: 22px 22px 0 0;
@@ -137,7 +136,6 @@
     box-shadow: inset 0 0 12px var(--cab-neon);
   }
 
-  /* ガラスケース（画面高さに合わせて自動伸縮） */
   .glass-housing {
     display: flex; align-items: stretch; flex: 1; min-height: 180px;
     background: var(--cab-darker);
@@ -163,7 +161,6 @@
       inset 0 0 18px rgba(255,255,255,0.2);
   }
 
-  /* コントロールデッキ */
   .control-deck-wrap {
     perspective: 700px; position: relative; z-index: 5; margin-top: -3px; flex-shrink: 0;
   }
@@ -225,7 +222,6 @@
     box-shadow: 0 1px 0 #111, 0 2px 4px rgba(0,0,0,0.5);
   }
 
-  /* 筐体下部フロントパネル */
   .cabinet-base {
     background: linear-gradient(90deg, var(--cab-darker), var(--cab-dark) 20%, var(--cab-main) 50%, var(--cab-dark) 80%, var(--cab-darker));
     border: 3px solid var(--cab-trim); border-top: none;
@@ -271,7 +267,7 @@
     100% { transform: rotate(-6deg) translateX(120%) scale(1); }
   }
 
-  /* ================= モーダル共通（図鑑・獲得・ショップ・管理） ================= */
+  /* ================= モーダル共通 ================= */
   .modal-bg {
     position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 300;
     display: none; justify-content: center; align-items: center; padding: 14px;
@@ -284,7 +280,6 @@
     max-height: 88dvh; overflow-y: auto; border: 4px solid var(--cab-main);
   }
 
-  /* 図鑑グリッド（モーダル内） */
   .dex-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-height: 58dvh; overflow-y: auto; padding: 4px; }
   .figure-card {
     background: radial-gradient(circle at 50% 30%, #ffffff, #e6ecf5);
@@ -331,7 +326,6 @@
     50% { transform: translateY(-8px) rotateY(14deg) rotateX(-6deg); }
   }
 
-  /* ショップ＆管理メニュー */
   .shop-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
   .shop-tab {
     flex: 1; padding: 9px; border-radius: 10px; border: none; font-weight: 900;
@@ -368,8 +362,12 @@
 
     <div class="user-select-box">
       <label class="user-select-label" for="titleUserSelect">👤 あそぶユーザーをえらんでね</label>
-      <select id="titleUserSelect" class="user-select-dropdown"></select>
+      <select id="titleUserSelect" class="user-select-dropdown">
+        <option value="">よみこみ中...</option>
+      </select>
     </div>
+
+    <div id="titleFeedbackMsg" class="inline-msg"></div>
 
     <button class="btn-start" onclick="startGameFromTitle()">🎮 ゲームスタート！</button>
 
@@ -382,7 +380,7 @@
 <!-- ================= ゲーム上部ヘッダー ================= -->
 <header>
   <div class="user-box">
-    <span class="user-badge" id="uiUserName">ゆい</span>
+    <span class="user-badge" id="uiUserName">未選択</span>
     <button class="btn-ui" onclick="returnToTitle()">🏠</button>
   </div>
   <div class="user-box">
@@ -393,7 +391,7 @@
   </div>
 </header>
 
-<!-- 🛠️ デバッグモード専用バー（パスワード解除時のみ表示） -->
+<!-- 🛠️ デバッグモード専用バー -->
 <div class="debug-bar" id="debugBar">
   <span style="font-size:0.72rem; font-weight:900;">🛠️ DEBUG</span>
   <div style="display:flex; gap:5px;">
@@ -404,7 +402,7 @@
   </div>
 </div>
 
-<!-- ================= 3D アーケード筐体（1画面全表示） ================= -->
+<!-- ================= 3D アーケード筐体 ================= -->
 <div class="arcade-scene">
   <div class="cabinet-3d">
     <div class="marquee-top">
@@ -520,22 +518,22 @@
 <!-- ⚙️ 親の管理メニュー本体モーダル -->
 <div class="modal-bg" id="parentAdminModal">
   <div class="modal-card">
-    <h3 style="margin:0 0 4px;">⚙️ 親の管理メニュー</h3>
+    <h3 style="margin:0 0 4px;">⚙️ 親の管理メニュー (クラウド共有)</h3>
     <div id="adminFeedbackMsg" class="inline-msg" style="color:#00897b;"></div>
 
     <!-- 新規ユーザー登録 -->
     <div style="background:#fff0f6; padding:10px; border-radius:12px; border:2px solid #ff80ab; margin-bottom:10px; text-align:left;">
       <div style="font-weight:900; font-size:0.82rem; color:#c93b76; margin-bottom:6px;">➕ 新しいユーザーを登録</div>
       <div style="display:flex; gap:6px; margin-bottom:6px;">
-        <input type="text" id="adminNewUserName" placeholder="ユーザー名 (例: ゆい)" style="flex:1; padding:7px; border-radius:8px; border:1px solid #ccc; font-weight:bold;">
+        <input type="text" id="adminNewUserName" placeholder="おなまえ (例: ゆい)" style="flex:1; padding:7px; border-radius:8px; border:1px solid #ccc; font-weight:bold;">
         <input type="number" id="adminNewUserBonus" placeholder="毎日ボーナス" value="1000" style="width:90px; padding:7px; border-radius:8px; border:1px solid #ccc; font-weight:bold;">
       </div>
-      <button class="btn-ui btn-shop" style="width:100%; padding:8px;" onclick="adminCreateUser()">このユーザーを登録する</button>
+      <button class="btn-ui btn-shop" style="width:100%; padding:8px;" onclick="adminCreateUser()">登録する</button>
     </div>
 
     <!-- 登録済みユーザー一覧＆ポイント・ボーナス編集 -->
     <div style="font-weight:900; font-size:0.82rem; text-align:left; margin-bottom:4px;">👤 登録ユーザーの編集</div>
-    <div id="adminUserList" style="max-height:200px; overflow-y:auto; margin-bottom:10px;"></div>
+    <div id="adminUserList" style="max-height:200px; overflow-y:auto; margin-bottom:10px;">よみこみ中...</div>
 
     <!-- デバッグモード切替 -->
     <div style="background:#ede7f6; padding:10px; border-radius:12px; border:2px solid #9575cd; text-align:left; margin-bottom:10px;">
@@ -551,7 +549,22 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCjexaJ7BxxQLyebCNZ6A3W1E22apRYiFU",
+  authDomain: "uijump-71d08.firebaseapp.com",
+  projectId: "uijump-71d08",
+  storageBucket: "uijump-71d08.firebasestorage.app",
+  messagingSenderId: "731671590590",
+  appId: "1:731671590590:web:98d478b2262ffedc0fd0ef"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 /**
  * 🔒 パスワード設定
  * ・親の管理メニューパスワード: 0000
@@ -638,33 +651,17 @@ const CLAW_SKINS = {
 };
 
 /**
- * 3. ユーザー個別管理 ＆ 親の管理メニュー機能
+ * 3. クラウドリアルタイム同期（Firebase Firestore）
  */
-const STORAGE_KEY = 'yui_catcher_users_v9';
 let allUsers = {};
-try {
-  allUsers = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-} catch (e) {
-  allUsers = {};
-}
-
-if (Object.keys(allUsers).length === 0) {
-  allUsers['ゆい'] = {
-    points: 1000, loginBonus: 1000, tickets: 0, lastLogin: '',
-    collection: {}, unlockedCabinets: ['pink'], currentCabinet: 'pink',
-    unlockedClaws: ['standard'], currentClaw: 'standard'
-  };
-}
-
-let currentUser = localStorage.getItem('yui_catcher_current_user');
-if (!currentUser || !allUsers[currentUser]) {
-  currentUser = Object.keys(allUsers)[0];
-}
+let currentUser = localStorage.getItem('yui_catcher_current_user') || '';
 let currentShopTab = 'cabinet';
 
+// どの端末でも一致する日本時間の日付文字列
 function getTodayStr() {
-  const d = new Date();
-  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+  const now = new Date();
+  const jstTime = new Date(now.getTime() + (9 * 60 + now.getTimezoneOffset()) * 60 * 1000);
+  return `${jstTime.getFullYear()}-${jstTime.getMonth()+1}-${jstTime.getDate()}`;
 }
 
 function ensureUserFields(u) {
@@ -678,30 +675,76 @@ function ensureUserFields(u) {
   if (!CLAW_SKINS[u.currentClaw]) u.currentClaw = 'standard';
 }
 
-Object.keys(allUsers).forEach(k => ensureUserFields(allUsers[k]));
-saveData();
+// クラウドの変更をリアルタイム監視（誰かが更新すると全スマホに即座に反映）
+onSnapshot(collection(db, "catcher_users"), (snapshot) => {
+  allUsers = {};
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    ensureUserFields(data);
+    allUsers[docSnap.id] = data;
+  });
 
-function saveData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(allUsers));
+  const names = Object.keys(allUsers).sort((a, b) => a.localeCompare(b, 'ja'));
+  if (names.length > 0 && (!currentUser || !allUsers[currentUser])) {
+    currentUser = names[0];
+  }
+
+  populateTitleDropdown();
+  if (allUsers[currentUser]) {
+    applyCabinetSkin(allUsers[currentUser].currentCabinet);
+    updateUI();
+  }
+  if (document.getElementById('parentAdminModal').classList.contains('active')) {
+    renderAdminUserList();
+  }
+  if (document.getElementById('shopModal').classList.contains('active')) {
+    renderShop();
+  }
+}, (err) => {
+  console.error("クラウド同期エラー:", err);
+  document.getElementById('titleUserSelect').innerHTML = '<option value="">通信エラー</option>';
+});
+
+async function saveUserData(uName) {
+  if (!uName || !allUsers[uName]) return;
+  try {
+    await setDoc(doc(db, "catcher_users", uName), allUsers[uName]);
+  } catch (e) {
+    console.error("保存エラー:", e);
+  }
 }
 
 function populateTitleDropdown() {
   const select = document.getElementById('titleUserSelect');
+  const prevVal = select.value || currentUser;
   select.innerHTML = '';
-  Object.keys(allUsers).forEach(uName => {
+
+  const names = Object.keys(allUsers).sort((a, b) => a.localeCompare(b, 'ja'));
+  if (names.length === 0) {
+    select.innerHTML = '<option value="">おうちのひとメニューで登録してね</option>';
+    return;
+  }
+
+  names.forEach(uName => {
     const u = allUsers[uName];
     const opt = document.createElement('option');
     opt.value = uName;
     opt.textContent = `${uName} （💰 ${u.points.toLocaleString()} pt）`;
-    if (uName === currentUser) opt.selected = true;
+    if (uName === prevVal) opt.selected = true;
     select.appendChild(opt);
   });
 }
 
-function startGameFromTitle() {
+async function startGameFromTitle() {
   const select = document.getElementById('titleUserSelect');
+  const msgEl = document.getElementById('titleFeedbackMsg');
   const selectedUser = select.value;
-  if (!selectedUser || !allUsers[selectedUser]) return;
+
+  if (!selectedUser || !allUsers[selectedUser]) {
+    msgEl.textContent = '⚠️ おうちのひとメニューからユーザーを登録してね';
+    return;
+  }
+  msgEl.textContent = '';
 
   currentUser = selectedUser;
   localStorage.setItem('yui_catcher_current_user', currentUser);
@@ -710,7 +753,7 @@ function startGameFromTitle() {
   document.getElementById('titleScreen').classList.add('hidden');
   applyCabinetSkin(allUsers[currentUser].currentCabinet);
 
-  const gotBonus = checkLoginBonus(false);
+  const gotBonus = await checkLoginBonus(false);
   if (!gotBonus) {
     setStatus('「▶ よこ移動」を押してスタート！(1プレイ 100pt)');
   }
@@ -724,15 +767,15 @@ function returnToTitle() {
   document.getElementById('titleScreen').classList.remove('hidden');
 }
 
-// ポップアップを出さずに電光掲示板でログインボーナスを通知
-function checkLoginBonus(force) {
+async function checkLoginBonus(force) {
   const u = allUsers[currentUser];
+  if (!u) return false;
   const today = getTodayStr();
   const bonusAmount = (typeof u.loginBonus === 'number') ? u.loginBonus : 1000;
   if (force || u.lastLogin !== today) {
     u.points += bonusAmount;
     u.lastLogin = today;
-    saveData();
+    await saveUserData(currentUser);
     updateUI();
     setStatus(`🎁 ログインボーナス！ +${bonusAmount.toLocaleString()}pt もらったよ！`);
     return true;
@@ -740,7 +783,9 @@ function checkLoginBonus(force) {
   return false;
 }
 
-// 親の管理メニュー認証
+/**
+ * 親の管理メニュー＆デバッグモード
+ */
 function openParentAuthModal() {
   document.getElementById('parentPassInput').value = '';
   document.getElementById('parentAuthMsg').textContent = '';
@@ -759,7 +804,6 @@ function verifyParentPassword() {
   }
 }
 
-// 親の管理メニュー本体
 function openParentAdminModal() {
   document.getElementById('debugPassInput').value = '';
   document.getElementById('adminFeedbackMsg').textContent = '';
@@ -782,7 +826,12 @@ function setAdminFeedback(msg, isError = false) {
 function renderAdminUserList() {
   const container = document.getElementById('adminUserList');
   container.innerHTML = '';
-  const userNames = Object.keys(allUsers);
+  const userNames = Object.keys(allUsers).sort((a, b) => a.localeCompare(b, 'ja'));
+
+  if (userNames.length === 0) {
+    container.innerHTML = '<div style="text-align:center; color:#888; padding:12px; font-size:0.8rem;">まだユーザーが登録されていません</div>';
+    return;
+  }
 
   userNames.forEach((uName, idx) => {
     const u = allUsers[uName];
@@ -818,12 +867,12 @@ function renderAdminUserList() {
     delBtn.className = 'btn-ui';
     delBtn.style.cssText = 'background:#ef5350; color:#fff;';
     delBtn.textContent = '削除';
-    delBtn.onclick = () => adminDeleteUserByIndex(idx);
+    delBtn.onclick = () => adminDeleteUser(uName);
 
     const saveBtn = document.createElement('button');
     saveBtn.className = 'btn-ui btn-shop';
     saveBtn.textContent = '変更を保存';
-    saveBtn.onclick = () => adminSaveUserByIndex(idx);
+    saveBtn.onclick = () => adminSaveUser(uName, idx);
 
     btnRow.appendChild(delBtn);
     btnRow.appendChild(saveBtn);
@@ -833,7 +882,7 @@ function renderAdminUserList() {
   });
 }
 
-function adminCreateUser() {
+async function adminCreateUser() {
   const nameInput = document.getElementById('adminNewUserName');
   const bonusInput = document.getElementById('adminNewUserBonus');
   const name = nameInput.value.trim();
@@ -862,15 +911,12 @@ function adminCreateUser() {
   currentUser = name;
   localStorage.setItem('yui_catcher_current_user', currentUser);
   nameInput.value = '';
-  saveData();
-  renderAdminUserList();
-  populateTitleDropdown();
-  setAdminFeedback(`✅「${name}」さんを登録しました！(初期 ${validBonus}pt)`);
+  await saveUserData(name);
+  setAdminFeedback(`✅「${name}」さんをクラウドに登録しました！`);
 }
 
-function adminSaveUserByIndex(idx) {
-  const uName = Object.keys(allUsers)[idx];
-  if (!uName) return;
+async function adminSaveUser(uName, idx) {
+  if (!allUsers[uName]) return;
   const ptVal = parseInt(document.getElementById(`adm_pt_${idx}`).value, 10);
   const bnVal = parseInt(document.getElementById(`adm_bn_${idx}`).value, 10);
   if (isNaN(ptVal) || isNaN(bnVal)) {
@@ -879,29 +925,22 @@ function adminSaveUserByIndex(idx) {
   }
   allUsers[uName].points = Math.max(0, ptVal);
   allUsers[uName].loginBonus = Math.max(0, bnVal);
-  saveData();
-  renderAdminUserList();
-  populateTitleDropdown();
-  updateUI();
+  await saveUserData(uName);
   setAdminFeedback(`✅「${uName}」さんの設定を保存しました！`);
 }
 
-function adminDeleteUserByIndex(idx) {
-  const keys = Object.keys(allUsers);
-  if (keys.length <= 1) {
-    setAdminFeedback('⚠️ 最低1人のユーザーが必要です', true);
-    return;
-  }
-  const uName = keys[idx];
+async function adminDeleteUser(uName) {
   delete allUsers[uName];
+  try {
+    await deleteDoc(doc(db, "catcher_users", uName));
+  } catch (e) {
+    console.error(e);
+  }
+  const remaining = Object.keys(allUsers);
   if (currentUser === uName) {
-    currentUser = Object.keys(allUsers)[0];
+    currentUser = remaining.length > 0 ? remaining[0] : '';
     localStorage.setItem('yui_catcher_current_user', currentUser);
   }
-  saveData();
-  renderAdminUserList();
-  populateTitleDropdown();
-  updateUI();
   setAdminFeedback(`🗑️「${uName}」さんを削除しました`);
 }
 
@@ -935,22 +974,24 @@ function updateDebugStatusUI() {
   }
 }
 
-function debugAddPoints(amount) {
-  if (!isDebugMode) return;
+async function debugAddPoints(amount) {
+  if (!isDebugMode || !allUsers[currentUser]) return;
   allUsers[currentUser].points += amount;
-  saveData(); updateUI();
+  await saveUserData(currentUser);
+  updateUI();
   setStatus(`🛠️ デバッグ: +${amount}pt 追加しました`);
 }
-function debugAddTickets(amount) {
-  if (!isDebugMode) return;
+async function debugAddTickets(amount) {
+  if (!isDebugMode || !allUsers[currentUser]) return;
   allUsers[currentUser].tickets += amount;
-  saveData(); updateUI();
+  await saveUserData(currentUser);
+  updateUI();
   if (document.getElementById('shopModal').classList.contains('active')) renderShop();
   setStatus(`🛠️ デバッグ: チケット+${amount}枚 追加しました`);
 }
-function debugNextDay() {
-  if (!isDebugMode) return;
-  checkLoginBonus(true);
+async function debugNextDay() {
+  if (!isDebugMode || !allUsers[currentUser]) return;
+  await checkLoginBonus(true);
 }
 
 function applyCabinetSkin(skinKey) {
@@ -984,12 +1025,13 @@ function closeDexModal() {
 
 function renderDex() {
   const u = allUsers[currentUser];
+  if (!u) return;
   const grid = document.getElementById('dexGrid');
   grid.innerHTML = '';
   let ownedCount = 0;
 
   CHARACTERS.forEach(ch => {
-    const count = u.collection[ch.id] || 0;
+    const count = (u.collection && u.collection[ch.id]) || 0;
     if (count > 0) ownedCount++;
 
     const card = document.createElement('div');
@@ -1505,9 +1547,9 @@ function drawClawAndCapsule(clawSkin) {
 
 function renderStage() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const u = allUsers[currentUser] || Object.values(allUsers)[0];
-  const cabSkin = CABINET_SKINS[u.currentCabinet] || CABINET_SKINS.pink;
-  const clawSkin = CLAW_SKINS[u.currentClaw] || CLAW_SKINS.standard;
+  const u = allUsers[currentUser];
+  const cabSkin = (u && CABINET_SKINS[u.currentCabinet]) ? CABINET_SKINS[u.currentCabinet] : CABINET_SKINS.pink;
+  const clawSkin = (u && CLAW_SKINS[u.currentClaw]) ? CLAW_SKINS[u.currentClaw] : CLAW_SKINS.standard;
 
   draw3DRoom(cabSkin);
 
@@ -1523,7 +1565,7 @@ function renderStage() {
 }
 
 /**
- * 5. 操作ロジック（Pointer Eventsでタッチ・マウスの二重発火を完全防止）
+ * 5. 操作ロジック
  */
 const btnRight = document.getElementById('btnRight');
 const btnBack = document.getElementById('btnBack');
@@ -1541,13 +1583,17 @@ let xDir = 1;
 function startRight(e) {
   if (e && e.cancelable) e.preventDefault();
   if (btnRight.disabled) return;
+  const u = allUsers[currentUser];
+  if (!u) return;
+
   if (gameState === 'IDLE') {
-    const u = allUsers[currentUser];
     if (u.points < 100) {
       setStatus('⚠️ ポイントが足りません！(1プレイ 100pt)');
       return;
     }
-    u.points -= 100; saveData(); updateUI();
+    u.points -= 100;
+    saveUserData(currentUser);
+    updateUI();
     gameState = 'X_MOVING';
   } else if (gameState === 'X_READY') {
     gameState = 'X_MOVING';
@@ -1762,15 +1808,17 @@ function gameLoop() {
 /**
  * 6. 景品獲得 ＆ ショップ処理
  */
-function onWinPrize() {
+async function onWinPrize() {
   const wonChar = CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
   const u = allUsers[currentUser];
+  if (!u) return;
+  if (!u.collection) u.collection = {};
   const isDuplicate = (u.collection[wonChar.id] || 0) > 0;
 
   u.collection[wonChar.id] = (u.collection[wonChar.id] || 0) + 1;
-  if (isDuplicate) u.tickets += 1;
+  if (isDuplicate) u.tickets = (u.tickets || 0) + 1;
 
-  saveData();
+  await saveUserData(currentUser);
   updateUI();
   setStatus(`🎉 「${wonChar.name}」を獲得しました！`);
   showPrizeModal(wonChar, isDuplicate, false);
@@ -1805,7 +1853,8 @@ function switchShopTab(tab) {
 
 function renderShop() {
   const u = allUsers[currentUser];
-  document.getElementById('shopTicketCount').textContent = u.tickets;
+  if (!u) return;
+  document.getElementById('shopTicketCount').textContent = u.tickets || 0;
   const list = document.getElementById('shopList');
   list.innerHTML = '';
 
@@ -1847,8 +1896,8 @@ function renderShop() {
       btn.onclick = () => equipItem(isCab, key);
     } else {
       btn.textContent = `購入 (${item.cost})`;
-      btn.style.background = u.tickets >= item.cost ? '#ffb300' : '#ccc';
-      btn.style.color = u.tickets >= item.cost ? '#fff' : '#666';
+      btn.style.background = (u.tickets || 0) >= item.cost ? '#ffb300' : '#ccc';
+      btn.style.color = (u.tickets || 0) >= item.cost ? '#fff' : '#666';
       btn.onclick = () => buyItem(isCab, key, item.cost);
     }
 
@@ -1857,10 +1906,11 @@ function renderShop() {
   });
 }
 
-function buyItem(isCab, key, cost) {
+async function buyItem(isCab, key, cost) {
   const u = allUsers[currentUser];
+  if (!u) return;
   const msgEl = document.getElementById('shopFeedbackMsg');
-  if (u.tickets < cost) {
+  if ((u.tickets || 0) < cost) {
     msgEl.style.color = '#d50000';
     msgEl.textContent = '⚠️ チケットが足りません！（キャラ重複ゲットで+1枚）';
     return;
@@ -1870,25 +1920,46 @@ function buyItem(isCab, key, cost) {
   else u.unlockedClaws.push(key);
   msgEl.style.color = '#00897b';
   msgEl.textContent = '🎉 新しいデザインを購入して着せ替えました！';
-  equipItem(isCab, key);
+  await equipItem(isCab, key);
 }
 
-function equipItem(isCab, key) {
+async function equipItem(isCab, key) {
   const u = allUsers[currentUser];
+  if (!u) return;
   if (isCab) {
     u.currentCabinet = key;
     applyCabinetSkin(key);
   } else {
     u.currentClaw = key;
   }
-  saveData();
+  await saveUserData(currentUser);
   updateUI();
   renderShop();
 }
 
-// 初期起動
-populateTitleDropdown();
-updateUI();
+// HTMLのonclick属性から呼べるようにグローバル登録
+Object.assign(window, {
+  startGameFromTitle,
+  returnToTitle,
+  openParentAuthModal,
+  closeParentAuthModal,
+  verifyParentPassword,
+  openParentAdminModal,
+  closeParentAdminModal,
+  adminCreateUser,
+  verifyDebugPassword,
+  disableDebugMode,
+  debugAddPoints,
+  debugAddTickets,
+  debugNextDay,
+  openDexModal,
+  closeDexModal,
+  closePrizeModal,
+  openShopModal,
+  closeShopModal,
+  switchShopTab
+});
+
 updateButtons();
 requestAnimationFrame(gameLoop);
 </script>
