@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ういキャッチャー 3D DX</title>
+<title>ゆいキャッチャー 3D DX</title>
 <style>
   :root {
     --cab-main: #ff7eb3;
@@ -28,16 +28,17 @@
     display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
     z-index: 30; backdrop-filter: blur(6px); border-bottom: 3px solid var(--cab-main);
   }
-  .user-box { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .user-badge { background: var(--cab-dark); color: #fff; padding: 4px 10px; border-radius: 20px; font-weight: 900; font-size: 0.85rem; }
-  .point-badge { background: #fff8e1; border: 2px solid #ffc107; color: #b26a00; padding: 3px 10px; border-radius: 20px; font-weight: 900; font-size: 0.85rem; }
-  .ticket-badge { background: #e0f7fa; border: 2px solid #00bcd4; color: #006064; padding: 3px 10px; border-radius: 20px; font-weight: 900; font-size: 0.85rem; }
+  .user-box { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+  .user-badge { background: var(--cab-dark); color: #fff; padding: 4px 10px; border-radius: 20px; font-weight: 900; font-size: 0.82rem; }
+  .point-badge { background: #fff8e1; border: 2px solid #ffc107; color: #b26a00; padding: 3px 9px; border-radius: 20px; font-weight: 900; font-size: 0.82rem; }
+  .ticket-badge { background: #e0f7fa; border: 2px solid #00bcd4; color: #006064; padding: 3px 9px; border-radius: 20px; font-weight: 900; font-size: 0.82rem; }
   .btn-ui {
-    background: #eee; border: none; padding: 6px 10px; border-radius: 10px; cursor: pointer;
-    font-size: 0.78rem; font-weight: 800; box-shadow: 0 3px 0 #ccc; transition: transform 0.1s;
+    background: #eee; border: none; padding: 5px 9px; border-radius: 10px; cursor: pointer;
+    font-size: 0.75rem; font-weight: 800; box-shadow: 0 3px 0 #ccc; transition: transform 0.1s;
   }
   .btn-ui:active { transform: translateY(2px); box-shadow: 0 1px 0 #ccc; }
   .btn-shop { background: linear-gradient(135deg, #ff4081, #ff9100); color: #fff; box-shadow: 0 3px 0 #b21045; }
+  .btn-debug { background: #ab47bc; color: #fff; box-shadow: 0 3px 0 #6a1b9a; font-size: 0.7rem; }
 
   /* ================= 3D アーケード筐体構造 ================= */
   .arcade-scene {
@@ -60,7 +61,7 @@
   }
   .marquee-sign {
     background: #1a1025; color: #fff; text-align: center; font-weight: 900;
-    font-size: 1.25rem; padding: 7px; border-radius: 14px; letter-spacing: 3px;
+    font-size: 1.25rem; padding: 7px; border-radius: 14px; letter-spacing: 2px;
     border: 3px solid var(--cab-trim);
     text-shadow: 0 0 8px var(--cab-neon), 0 0 16px var(--cab-neon);
     box-shadow: inset 0 0 15px var(--cab-neon);
@@ -131,7 +132,6 @@
     transition: transform 0.07s, box-shadow 0.07s, filter 0.2s;
     text-shadow: 0 2px 3px rgba(0,0,0,0.5);
   }
-  /* ボタン上部のドームハイライト */
   .arcade-btn::before {
     content: ''; position: absolute; top: 6px; left: 16px; right: 16px; height: 26px;
     background: linear-gradient(180deg, rgba(255,255,255,0.65), rgba(255,255,255,0.05));
@@ -157,7 +157,7 @@
     box-shadow: 0 1px 0 #111, 0 2px 4px rgba(0,0,0,0.5);
   }
 
-  /* 筐体下部フロントパネル（コイン＆景品取り出し口） */
+  /* 筐体下部フロントパネル */
   .cabinet-base {
     background: linear-gradient(90deg, var(--cab-darker), var(--cab-dark) 20%, var(--cab-main) 50%, var(--cab-dark) 80%, var(--cab-darker));
     border: 4px solid var(--cab-trim); border-top: none;
@@ -181,7 +181,7 @@
   }
   .coin-hole { width: 6px; height: 22px; background: #111; border-radius: 3px; border: 1px solid #666; }
 
-  /* ================= コレクション図鑑（立体アクリルスタンド） ================= */
+  /* ================= コレクション図鑑 ================= */
   .dex-section {
     width: 100%; max-width: 490px; margin-top: 28px; background: rgba(255,255,255,0.95);
     border-radius: 24px; padding: 18px; box-shadow: 0 12px 30px rgba(0,0,0,0.35);
@@ -203,16 +203,13 @@
     display: flex; justify-content: center; align-items: center;
   }
   .figure-card:hover .acrylic-stand { transform: rotateX(12deg) rotateY(-16deg) scale(1.08); }
-  /* 多重レイヤーによる分厚いアクリルスタンド表現 */
   .acrylic-img {
     width: 84%; height: 84%; object-fit: contain;
     filter:
       drop-shadow(0px 1px 0px #fff) drop-shadow(0px -1px 0px #fff)
       drop-shadow(1px 0px 0px #fff) drop-shadow(-1px 0px 0px #fff)
-      drop-shadow(1px 2px 0px #d0d7de)
-      drop-shadow(2px 4px 0px #b0bac6)
-      drop-shadow(3px 6px 0px #8c98a8)
-      drop-shadow(4px 8px 0px #64748b)
+      drop-shadow(1px 2px 0px #d0d7de) drop-shadow(2px 4px 0px #b0bac6)
+      drop-shadow(3px 6px 0px #8c98a8) drop-shadow(4px 8px 0px #64748b)
       drop-shadow(6px 12px 10px rgba(0,0,0,0.35));
   }
   .unowned .acrylic-img {
@@ -232,27 +229,27 @@
     box-shadow: 0 2px 5px rgba(0,0,0,0.25);
   }
 
-  /* カットイン演出 */
+  /* 子ども向けで可愛いカットインアニメーション */
   .cutin-overlay {
     position: absolute; inset: 0; pointer-events: none; z-index: 25;
     display: flex; align-items: center; justify-content: center; overflow: hidden;
     opacity: 0; transition: opacity 0.2s;
   }
-  .cutin-overlay.active { opacity: 1; background: rgba(0,0,0,0.6); }
+  .cutin-overlay.active { opacity: 1; background: rgba(0,0,0,0.5); }
   .cutin-banner {
-    width: 130%; background: linear-gradient(90deg, #ff0055, #ffdd00, #00e5ff, #ff0055);
-    background-size: 200% 100%; padding: 20px 0; transform: rotate(-9deg) translateX(-120%);
-    text-align: center; color: #fff; font-weight: 900; font-size: 1.55rem;
-    text-shadow: 3px 3px 0 #000, 0 0 15px #fff;
-    border-top: 5px solid #fff; border-bottom: 5px solid #fff;
-    box-shadow: 0 0 40px #ffdd00;
+    width: 130%; background: linear-gradient(90deg, #ff4081, #ffeb3b, #00e5ff, #ff4081);
+    background-size: 200% 100%; padding: 18px 0; transform: rotate(-6deg) translateX(-120%);
+    text-align: center; color: #fff; font-weight: 900; font-size: 1.35rem;
+    text-shadow: 2px 2px 0 #333, 0 0 12px #fff;
+    border-top: 4px solid #fff; border-bottom: 4px solid #fff;
+    box-shadow: 0 0 35px #ffeb3b;
   }
-  .cutin-overlay.active .cutin-banner { animation: cutinAnim 1.45s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-  @keyframes cutinAnim {
-    0% { transform: rotate(-9deg) translateX(-120%); }
-    25% { transform: rotate(-9deg) translateX(0%) scale(1.05); }
-    75% { transform: rotate(-9deg) translateX(0%) scale(1.1); }
-    100% { transform: rotate(-9deg) translateX(120%); }
+  .cutin-overlay.active .cutin-banner { animation: cutinCute 1.4s cubic-bezier(0.17, 0.89, 0.32, 1.28) forwards; }
+  @keyframes cutinCute {
+    0% { transform: rotate(-6deg) translateX(-120%) scale(0.8); }
+    30% { transform: rotate(-6deg) translateX(0%) scale(1.08); }
+    70% { transform: rotate(-6deg) translateX(0%) scale(1.02); }
+    100% { transform: rotate(-6deg) translateX(120%) scale(1); }
   }
 
   /* モーダル共通 */
@@ -294,7 +291,7 @@
     padding: 12px 14px; background: #f8f9fa; border-radius: 14px; border: 2px solid #e2e8f0;
   }
   .preview-dot {
-    width: 34px; height: 34px; border-radius: 10px; margin-right: 10px;
+    width: 36px; height: 36px; border-radius: 10px; margin-right: 10px;
     border: 2px solid #fff; box-shadow: 0 3px 6px rgba(0,0,0,0.2); flex-shrink: 0;
   }
 </style>
@@ -305,11 +302,12 @@
   <div class="user-box">
     <span class="user-badge" id="uiUserName">ゲスト</span>
     <button class="btn-ui" onclick="openUserModal()">👤切替</button>
-    <button class="btn-ui" onclick="debugNextDay()">+1日(Bonus)</button>
+    <button class="btn-ui" onclick="debugNextDay()">+1日</button>
   </div>
   <div class="user-box">
     <span class="point-badge">💰 <span id="uiPoints">0</span></span>
     <span class="ticket-badge">🎟️ <span id="uiTickets">0</span></span>
+    <button class="btn-ui btn-debug" onclick="debugAddTickets()" title="デバッグ：チケット+5枚">🎟️+5</button>
     <button class="btn-ui btn-shop" onclick="openShopModal()">🎨 着せ替え</button>
   </div>
 </header>
@@ -318,7 +316,7 @@
 <div class="arcade-scene">
   <div class="cabinet-3d">
     <div class="marquee-top">
-      <div class="marquee-sign" id="marqueeSign">✨ UI CATCHER 3D ✨</div>
+      <div class="marquee-sign" id="marqueeSign">✨ ゆいキャッチャー ✨</div>
     </div>
 
     <div class="glass-housing">
@@ -327,7 +325,7 @@
         <canvas id="gameCanvas" width="460" height="350"></canvas>
         <div class="glass-reflection"></div>
         <div class="cutin-overlay" id="cutinOverlay">
-          <div class="cutin-banner">⚡ 激アツ！CATCH確定！？ ⚡</div>
+          <div class="cutin-banner">🌟 大チャンス！ゆいちゃんをゲットしよう！ 🌟</div>
         </div>
       </div>
       <div class="pillar"></div>
@@ -371,17 +369,17 @@
 <!-- コレクション図鑑 -->
 <div class="dex-section">
   <div class="dex-header">
-    <h3 style="margin:0; font-size:1.05rem;">📖 立体アクリル図鑑</h3>
+    <h3 style="margin:0; font-size:1.05rem;">📖 ゆいちゃん立体アクリル図鑑</h3>
     <span id="dexProgress" style="font-weight:900; color:var(--cab-dark);">0 / 6</span>
   </div>
-  <p style="font-size:0.76rem; color:#666; margin:0 0 12px;">※すでに持っているキャラを獲得すると「着せ替えチケット🎟️」が1枚もらえます！</p>
+  <p style="font-size:0.76rem; color:#666; margin:0 0 12px;">※すでに持っているキャラクターをゲットすると、着せ替えチケット🎟️が1枚もらえます！</p>
   <div class="dex-grid" id="dexGrid"></div>
 </div>
 
 <!-- 景品獲得モーダル -->
 <div class="modal-bg" id="prizeModal">
   <div class="modal-card">
-    <div style="color:var(--cab-dark); font-weight:900; font-size:1.5rem;">🎉 GET!! 🎉</div>
+    <div style="color:var(--cab-dark); font-weight:900; font-size:1.5rem;">🎉 ゆいちゃん GET!! 🎉</div>
     <div class="prize-showcase">
       <img id="modalCharImg" class="acrylic-img" src="" alt="prize">
       <div class="stand-base"></div>
@@ -395,10 +393,10 @@
   </div>
 </div>
 
-<!-- カスタマイズショップモーダル（筐体＆アーム別管理） -->
+<!-- カスタマイズショップモーダル（筐体＆アーム段階的ゴージャス進化） -->
 <div class="modal-bg" id="shopModal">
   <div class="modal-card">
-    <h3 style="margin:0 0 6px;">🎨 カスタマイズショップ</h3>
+    <h3 style="margin:0 0 6px;">🎨 ゴージャス着せ替えショップ</h3>
     <p style="font-size:0.8rem; color:#666; margin:0 0 12px;">所持チケット: 🎟️ <strong id="shopTicketCount">0</strong> 枚</p>
     <div class="shop-tabs">
       <button class="shop-tab active" id="tabCab" onclick="switchShopTab('cabinet')">🏠 筐体デザイン</button>
@@ -424,9 +422,9 @@
 
 <script>
 /**
- * 1. キャラクター図鑑データ（後からイラストURLを差し替え可能）
+ * 1. キャラクター図鑑データ（ゆいちゃんバリエーション）
  */
-function createSampleSvg(emoji, bgColor, rimColor) {
+function createYuiSvg(emoji, bgColor, rimColor) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
     <defs><radialGradient id="g" cx="35%" cy="30%" r="70%"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="${bgColor}"/></radialGradient></defs>
     <circle cx="80" cy="85" r="56" fill="url(#g)" stroke="${rimColor}" stroke-width="6"/>
@@ -436,65 +434,65 @@ function createSampleSvg(emoji, bgColor, rimColor) {
 }
 
 const CHARACTERS = [
-  { id: 'ui_01', name: 'ノーマルうい', desc: '元気いっぱいの基本スタイル！', img: createSampleSvg('🎀', '#ffc1e3', '#ec407a') },
-  { id: 'ui_02', name: 'おすましうい', desc: 'ちょっぴり大人っぽい表情。', img: createSampleSvg('👒', '#b2ebf2', '#00acc1') },
-  { id: 'ui_03', name: 'もぐもぐうい', desc: 'おいしいおやつに夢中！', img: createSampleSvg('🍰', '#fff59d', '#fbc02d') },
-  { id: 'ui_04', name: 'おやすみうい', desc: 'ふわふわたまご布団でスヤスヤ。', img: createSampleSvg('🌙', '#d1c4e9', '#7e57c2') },
-  { id: 'ui_05', name: 'アイドルうい', desc: 'ステージで輝く特別衣装！', img: createSampleSvg('🎤', '#f8bbd0', '#d81b60') },
-  { id: 'ui_06', name: 'おうさまうい', desc: '王冠をかぶったレアな姿！', img: createSampleSvg('👑', '#ffe082', '#fb8c00') }
+  { id: 'yui_01', name: 'ノーマルゆい', desc: '元気いっぱい笑顔のゆいちゃん！', img: createYuiSvg('🎀', '#ffc1e3', '#ec407a') },
+  { id: 'yui_02', name: 'おすましゆい', desc: 'ちょっぴり大人っぽいおめかしスタイル。', img: createYuiSvg('👒', '#b2ebf2', '#00acc1') },
+  { id: 'yui_03', name: 'もぐもぐゆい', desc: '大好きなスイーツに夢中！', img: createYuiSvg('🍰', '#fff59d', '#fbc02d') },
+  { id: 'yui_04', name: 'おやすみゆい', desc: 'ふわふわパジャマですやすや夢の中。', img: createYuiSvg('🌙', '#d1c4e9', '#7e57c2') },
+  { id: 'yui_05', name: 'アイドルゆい', desc: 'キラキラステージで輝く特別衣装！', img: createYuiSvg('🎤', '#f8bbd0', '#d81b60') },
+  { id: 'yui_06', name: 'プリンセスゆい', desc: '豪華な王冠をかぶった最高レア姿！', img: createYuiSvg('👑', '#ffe082', '#fb8c00') }
 ];
 
 /**
- * 2. 筐体スキン ＆ アームスキン定義
+ * 2. 筐体スキン ＆ アームスキン（段階的にゴージャスに進化）
  */
 const CABINET_SKINS = {
   pink: {
-    name: 'ラブリーピンク', cost: 0, preview: 'linear-gradient(135deg,#ff7eb3,#c93b76)',
+    name: '🎀 ラブリーピンク (ノーマル)', cost: 0, preview: 'linear-gradient(135deg,#ff7eb3,#c93b76)',
     main: '#ff7eb3', dark: '#c93b76', darker: '#8f1d4d', trim: '#fff0f6', neon: '#ff007f', panel: '#262433',
     wallBack: '#ffeef6', wallSide: '#f8bbd0', floor1: '#f48fb1', floor2: '#fce4ec'
   },
   cyber: {
-    name: 'サイバーネオン', cost: 2, preview: 'linear-gradient(135deg,#00e5ff,#2979ff)',
+    name: '🧊 サイバーネオン (アドバンス)', cost: 2, preview: 'linear-gradient(135deg,#00e5ff,#2979ff)',
     main: '#1e88e5', dark: '#0d47a1', darker: '#062356', trim: '#84ffff', neon: '#00e5ff', panel: '#0d1b2a',
     wallBack: '#0b192c', wallSide: '#112240', floor1: '#1d3557', floor2: '#0f2537'
   },
   royal: {
-    name: 'ロイヤルゴールド', cost: 4, preview: 'linear-gradient(135deg,#ffd54f,#ff8f00)',
+    name: '👑 ロイヤルゴールド (ゴージャス)', cost: 4, preview: 'linear-gradient(135deg,#ffd54f,#ff8f00)',
     main: '#ffd54f', dark: '#ff8f00', darker: '#b25900', trim: '#fff8e1', neon: '#ffea00', panel: '#2b1d0e',
     wallBack: '#fff8e1', wallSide: '#ffecb3', floor1: '#ffd54f', floor2: '#fff3e0'
   },
   gothic: {
-    name: 'ゴシックノワール', cost: 5, preview: 'linear-gradient(135deg,#9c27b0,#311b92)',
-    main: '#7b1fa2', dark: '#4a148c', darker: '#1a0633', trim: '#e1bee7', neon: '#e040fb', panel: '#12081c',
-    wallBack: '#241434', wallSide: '#1a0e26', floor1: '#3c1e56', floor2: '#231133'
+    name: '💎 ジュエルゴシック (超豪華)', cost: 6, preview: 'linear-gradient(135deg,#e040fb,#7b1fa2)',
+    main: '#9c27b0', dark: '#6a1b9a', darker: '#2a0845', trim: '#ea80fc', neon: '#e040fb', panel: '#1a0826',
+    wallBack: '#2d1242', wallSide: '#1e0a2d', floor1: '#512da8', floor2: '#311b92'
   }
 };
 
 const CLAW_SKINS = {
   standard: {
-    name: 'スタンダードピンク', cost: 0, preview: 'linear-gradient(135deg,#ff4081,#cfd8dc)',
+    name: '🦾 スタンダードアーム', cost: 0, preview: 'linear-gradient(135deg,#ff4081,#cfd8dc)',
     head1: '#ff80ab', head2: '#c51162', arm: '#eceff1', tip: '#ff4081', wire: '#546e7a'
   },
   gold: {
-    name: 'ゴールデンアーム', cost: 2, preview: 'linear-gradient(135deg,#ffee58,#f57f17)',
+    name: '✨ ゴールドアーム', cost: 2, preview: 'linear-gradient(135deg,#ffee58,#f57f17)',
     head1: '#fff176', head2: '#f57f17', arm: '#ffd54f', tip: '#d50000', wire: '#8d6e63'
   },
   laser: {
-    name: 'レーザーブレード', cost: 3, preview: 'linear-gradient(135deg,#18ffff,#00b0ff)',
+    name: '⚡ クリスタルレーザー', cost: 3, preview: 'linear-gradient(135deg,#18ffff,#00b0ff)',
     head1: '#84ffff', head2: '#006064', arm: '#00e5ff', tip: '#ffea00', wire: '#00e5ff'
   },
-  monster: {
-    name: 'デビルクロー', cost: 4, preview: 'linear-gradient(135deg,#b388ff,#311b92)',
-    head1: '#b388ff', head2: '#311b92', arm: '#4a148c', tip: '#ff1744', wire: '#212121'
+  dragon: {
+    name: '🔥 ドラゴンエナジー (究極)', cost: 5, preview: 'linear-gradient(135deg,#ff3d00,#ffea00)',
+    head1: '#ff6d00', head2: '#dd2c00', arm: '#ffab00', tip: '#6200ea', wire: '#ff3d00'
   }
 };
 
 /**
- * 3. ユーザー管理 & データ保存
+ * 3. ユーザー個別管理 ＆ データ保存
  */
-const STORAGE_KEY = 'ui_catcher_users_v3';
+const STORAGE_KEY = 'yui_catcher_users_v4';
 let allUsers = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-let currentUser = localStorage.getItem('ui_catcher_current_user') || 'ういファン1号';
+let currentUser = localStorage.getItem('yui_catcher_current_user') || 'ゆいファン1号';
 let currentShopTab = 'cabinet';
 
 function getTodayStr() {
@@ -518,7 +516,7 @@ function initUser(userName) {
   if (!u.currentClaw) u.currentClaw = 'standard';
 
   currentUser = userName;
-  localStorage.setItem('ui_catcher_current_user', currentUser);
+  localStorage.setItem('yui_catcher_current_user', currentUser);
   checkLoginBonus(false);
   applyCabinetSkin(u.currentCabinet);
   saveData();
@@ -539,6 +537,11 @@ function checkLoginBonus(force) {
   }
 }
 function debugNextDay() { checkLoginBonus(true); }
+function debugAddTickets() {
+  allUsers[currentUser].tickets += 5;
+  saveData(); updateUI();
+  alert('🎟️ デバッグ：着せ替えチケットを5枚追加しました！');
+}
 function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(allUsers)); }
 
 function applyCabinetSkin(skinKey) {
@@ -550,6 +553,7 @@ function applyCabinetSkin(skinKey) {
   r.setProperty('--cab-trim', s.trim);
   r.setProperty('--cab-neon', s.neon);
   r.setProperty('--panel-bg', s.panel);
+  document.getElementById('marqueeSign').textContent = `✨ ${skinKey === 'royal' ? '👑 ロイヤル' : (skinKey === 'gothic' ? '💎 ジュエル' : 'ゆい')}キャッチャー ✨`;
 }
 
 function updateUI() {
@@ -588,7 +592,7 @@ function renderDex() {
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-let gameState = 'IDLE'; // IDLE, X_READY, X_MOVING, Z_READY, Z_MOVING, DROPPING, RISING, RETURNING, RESETTING
+let gameState = 'IDLE';
 let isPressingRight = false;
 let isPressingBack = false;
 
@@ -597,7 +601,6 @@ const claw = {
   willWin: false, failPattern: 0, grabbedCapsule: null, swing: 0
 };
 
-// 落下して転がるカプセルのアニメーション管理
 let fallingCapsule = null;
 
 const CAPSULE_SHAPES = ['circle', 'star', 'heart', 'diamond', 'hex'];
@@ -620,46 +623,39 @@ function spawnCapsules() {
 }
 spawnCapsules();
 
-// 奥行き(z: 0〜100)を台形パース座標へ変換
 function project3D(x, z) {
-  const t = z / 100; // 0(手前) -> 1(奥)
-  const floorY = 312 - t * 95; // 312 -> 217
-  const scale = 1 - t * 0.28;  // 奥ほど縮小
+  const t = z / 100;
+  const floorY = 312 - t * 95;
+  const scale = 1 - t * 0.28;
   const centerX = canvas.width / 2;
   const screenX = centerX + (x - centerX) * (1 - t * 0.16);
   return { screenX, floorY, scale };
 }
 
-// 3Dボックス空間（奥壁・左右の壁・パース床・照明・3Dホール）を描画
 function draw3DRoom(skin) {
   const W = canvas.width, H = canvas.height;
   const backTop = 30, backBottom = 217, leftBack = 38, rightBack = W - 38;
   const frontBottom = 325;
 
-  // 1. 奥の壁
   ctx.fillStyle = skin.wallBack;
   ctx.fillRect(leftBack, backTop, rightBack - leftBack, backBottom - backTop);
 
-  // 奥壁の装飾ストライプ
   ctx.fillStyle = 'rgba(255,255,255,0.12)';
   for (let x = leftBack + 20; x < rightBack; x += 40) {
     ctx.fillRect(x, backTop, 16, backBottom - backTop);
   }
 
-  // 2. 左の壁（台形）
   ctx.fillStyle = skin.wallSide;
   ctx.beginPath();
   ctx.moveTo(0, 0); ctx.lineTo(leftBack, backTop);
   ctx.lineTo(leftBack, backBottom); ctx.lineTo(0, frontBottom);
   ctx.closePath(); ctx.fill();
 
-  // 3. 右の壁（台形）
   ctx.beginPath();
   ctx.moveTo(W, 0); ctx.lineTo(rightBack, backTop);
   ctx.lineTo(rightBack, backBottom); ctx.lineTo(W, frontBottom);
   ctx.closePath(); ctx.fill();
 
-  // 4. 床面（奥行きパース付きチェッカーボード）
   const rows = 5, cols = 8;
   for (let r = 0; r < rows; r++) {
     const z1 = (r / rows) * 100, z2 = ((r + 1) / rows) * 100;
@@ -675,9 +671,8 @@ function draw3DRoom(skin) {
     }
   }
 
-  // 5. 立体シューター（左手前の景品落とし穴）
+  // シューター（取り出し口）
   ctx.save();
-  // 穴の内部（深い暗がり）
   const holeGrad = ctx.createLinearGradient(18, 240, 18, 315);
   holeGrad.addColorStop(0, '#09060e');
   holeGrad.addColorStop(1, '#2b1d38');
@@ -686,7 +681,6 @@ function draw3DRoom(skin) {
   ctx.moveTo(14, 312); ctx.lineTo(26, 248); ctx.lineTo(102, 248); ctx.lineTo(96, 312);
   ctx.closePath(); ctx.fill();
 
-  // 穴を取り囲む3D透明ガードレール（厚みのあるアクリル壁）
   ctx.strokeStyle = skin.trim;
   ctx.lineWidth = 4;
   ctx.stroke();
@@ -697,7 +691,6 @@ function draw3DRoom(skin) {
   ctx.fillText('▼ DROP ZONE ▼', 17, 244);
   ctx.restore();
 
-  // 6. 天井レール＆スポットライト
   const railY = 18 + (100 - claw.z) * 0.14;
   ctx.strokeStyle = 'rgba(180,190,205,0.85)';
   ctx.lineWidth = 5;
@@ -734,7 +727,6 @@ function drawSingleCapsule(cap, customScreenY = null) {
   const r = 19 * proj.scale;
 
   ctx.save();
-  // 接地シャドウ
   if (customScreenY === null) {
     ctx.fillStyle = 'rgba(0,0,0,0.28)';
     ctx.beginPath();
@@ -745,7 +737,6 @@ function drawSingleCapsule(cap, customScreenY = null) {
   ctx.translate(proj.screenX, cy);
   ctx.rotate(cap.rot);
 
-  // 球体グラデーションでカプセル自体を立体化
   const grad = ctx.createRadialGradient(-r * 0.3, -r * 0.3, r * 0.1, 0, 0, r * 1.1);
   grad.addColorStop(0, '#ffffff');
   grad.addColorStop(0.28, cap.color);
@@ -758,7 +749,6 @@ function drawSingleCapsule(cap, customScreenY = null) {
   ctx.fill();
   ctx.stroke();
 
-  // カプセルの継ぎ目リングと光沢ハイライト
   ctx.strokeStyle = 'rgba(255,255,255,0.45)';
   ctx.lineWidth = 1.5;
   ctx.beginPath(); ctx.moveTo(-r*0.7, 0); ctx.lineTo(r*0.7, 0); ctx.stroke();
@@ -773,7 +763,6 @@ function drawClawAndCapsule(clawSkin) {
   const railY = 18 + (100 - claw.z) * 0.14;
   const clawScreenY = claw.y + (100 - claw.z) * 0.25;
 
-  // 床面レーザー照準リング
   ctx.save();
   ctx.fillStyle = 'rgba(0, 229, 255, 0.25)';
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
@@ -783,29 +772,24 @@ function drawClawAndCapsule(clawSkin) {
   ctx.fill(); ctx.stroke();
   ctx.restore();
 
-  // 天井キャリアボックス
   ctx.fillStyle = '#37474f';
   ctx.fillRect(proj.screenX - 14, railY - 6, 28, 12);
 
-  // ワイヤー
   ctx.strokeStyle = clawSkin.wire;
   ctx.lineWidth = 3.5;
   ctx.beginPath(); ctx.moveTo(proj.screenX, railY + 6); ctx.lineTo(proj.screenX, clawScreenY); ctx.stroke();
 
-  // 掴んでいるカプセルの描画
   if (claw.grabbedCapsule) {
     claw.grabbedCapsule.x = claw.x;
     claw.grabbedCapsule.z = claw.z;
     drawSingleCapsule(claw.grabbedCapsule, clawScreenY + 27 * proj.scale);
   }
 
-  // アーム本体
   ctx.save();
   ctx.translate(proj.screenX, clawScreenY);
   ctx.scale(proj.scale, proj.scale);
   ctx.rotate(claw.swing);
 
-  // 3Dシリンダーヘッド
   const headGrad = ctx.createLinearGradient(-20, -12, 20, 12);
   headGrad.addColorStop(0, clawSkin.head1);
   headGrad.addColorStop(1, clawSkin.head2);
@@ -813,7 +797,6 @@ function drawClawAndCapsule(clawSkin) {
   ctx.beginPath(); ctx.roundRect(-20, -12, 40, 20, 9); ctx.fill();
   ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
 
-  // 左右の多関節アーム
   [-1, 1].forEach(dir => {
     ctx.save();
     ctx.translate(dir * 13, 6);
@@ -829,11 +812,9 @@ function drawClawAndCapsule(clawSkin) {
     ctx.lineTo(dir * 5, 35);
     ctx.stroke();
 
-    // 関節リベット
     ctx.fillStyle = '#fff';
     ctx.beginPath(); ctx.arc(dir * 15, 18, 3, 0, Math.PI * 2); ctx.fill();
 
-    // 爪先のラバーパッド
     ctx.fillStyle = clawSkin.tip;
     ctx.beginPath(); ctx.arc(dir * 5, 35, 4.5, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
@@ -854,7 +835,6 @@ function renderStage() {
     if (c !== claw.grabbedCapsule) drawSingleCapsule(c);
   });
 
-  // 落下中のカプセルアニメーション
   if (fallingCapsule) {
     drawSingleCapsule(fallingCapsule.cap, fallingCapsule.y);
   }
@@ -863,7 +843,7 @@ function renderStage() {
 }
 
 /**
- * 5. 操作ロジック（何回でも移動やり直し可・ゆっくり上昇＆帰還・3種の失敗演出）
+ * 5. 操作ロジック
  */
 const btnRight = document.getElementById('btnRight');
 const btnBack = document.getElementById('btnBack');
@@ -877,7 +857,6 @@ function updateButtons() {
   btnCatch.disabled = !(gameState === 'Z_READY' || gameState === 'Z_MOVING');
 }
 
-// ① よこ移動（何回でも押して微調整可能、端に到達すると折り返す）
 let xDir = 1;
 function startRight(e) {
   e.preventDefault();
@@ -885,7 +864,7 @@ function startRight(e) {
   if (gameState === 'IDLE') {
     const u = allUsers[currentUser];
     if (u.points < 100) {
-      alert('ポイントが足りません！（1プレイ 100pt）\n上部の「+1日(Bonus)」でログインボーナスを受け取れます。');
+      alert('ポイントが足りません！（1プレイ 100pt）\n上部の「+1日」ボタンでログインボーナスを受け取れます。');
       return;
     }
     u.points -= 100; saveData(); updateUI();
@@ -895,7 +874,7 @@ function startRight(e) {
   }
   isPressingRight = true;
   btnRight.classList.add('pressing');
-  setStatus('▶ よこ移動中… 何回でも押し直して微調整できます！');
+  setStatus('▶ よこ移動中… 何回でも微調整できます！');
   updateButtons();
 }
 function stopRight(e) {
@@ -909,7 +888,6 @@ function stopRight(e) {
   }
 }
 
-// ② おく移動（何回でも押して微調整可能）
 let zDir = 1;
 function startBack(e) {
   e.preventDefault();
@@ -922,7 +900,7 @@ function startBack(e) {
   }
   isPressingBack = true;
   btnBack.classList.add('pressing');
-  setStatus('▲ おく移動中… 青いターゲット影をカプセルに合わせよう！');
+  setStatus('▲ おく移動中… 影をカプセルに合わせよう！');
   updateButtons();
 }
 function stopBack(e) {
@@ -936,7 +914,6 @@ function stopBack(e) {
   }
 }
 
-// ③ Catch! ボタン（1/3確率 ＆ 当選時1/5カットイン）
 btnCatch.addEventListener('click', () => {
   if (gameState !== 'Z_READY' && gameState !== 'Z_MOVING') return;
   isPressingBack = false;
@@ -951,17 +928,14 @@ btnCatch.addEventListener('click', () => {
 
   const isNear = nearest && minDist <= 48;
   claw.willWin = isNear && (Math.random() < (1 / 3));
-
-  // 失敗時の3パターン抽選 (0: その場ですぐ落ちる, 1: 持ち上げ途中で落ちる, 2: ホール手前で揺れて落ちる)
   claw.failPattern = Math.floor(Math.random() * 3);
 
-  // 取れる場合のみ、5回に1回（20%）カットイン発生
   const showCutin = claw.willWin && (Math.random() < 0.2);
 
   if (showCutin) {
     const ov = document.getElementById('cutinOverlay');
     ov.classList.add('active');
-    setStatus('⚡ 激アツカットイン発生！！ ⚡');
+    setStatus('🌟 大チャンス！ゆいちゃんゲットの予感…！？ 🌟');
     setTimeout(() => {
       ov.classList.remove('active');
       beginDrop(nearest, isNear);
@@ -978,7 +952,6 @@ function beginDrop(nearest, isNear) {
   setStatus('アームがゆっくり下降しています…');
 }
 
-// カプセル落下＆バウンド演出を開始
 function triggerCapsuleDrop(cap, currentScreenY, msg) {
   const proj = project3D(cap.x, cap.z);
   fallingCapsule = {
@@ -994,7 +967,6 @@ function triggerCapsuleDrop(cap, currentScreenY, msg) {
 }
 
 function gameLoop() {
-  // 落下カプセルの物理バウンド更新
   if (fallingCapsule) {
     fallingCapsule.vy += 0.55;
     fallingCapsule.y += fallingCapsule.vy;
@@ -1031,16 +1003,13 @@ function gameLoop() {
       setTimeout(() => { gameState = 'RISING'; }, 480);
     }
   } else if (gameState === 'RISING') {
-    claw.y -= 0.95; // ゆっくり上昇してドキドキ感を演出
+    claw.y -= 0.95;
     const clawScreenY = claw.y + (100 - claw.z) * 0.25;
 
     if (!claw.willWin && claw.grabbedCapsule) {
-      // パターン0: その場ですぐポロッと落ちる
       if (claw.failPattern === 0 && claw.y < 162) {
         triggerCapsuleDrop(claw.grabbedCapsule, clawScreenY + 24, 'あっ…！持ち上がらずその場で落ちてしまった！');
-      }
-      // パターン1: 上昇の途中で滑り落ちる
-      else if (claw.failPattern === 1 && claw.y < 100) {
+      } else if (claw.failPattern === 1 && claw.y < 100) {
         triggerCapsuleDrop(claw.grabbedCapsule, clawScreenY + 24, 'あぁっ！持ち上げる途中で滑り落ちてしまった…！');
       }
     }
@@ -1048,23 +1017,20 @@ function gameLoop() {
     if (claw.y <= 42) {
       claw.y = 42;
       gameState = 'RETURNING';
-      if (claw.grabbedCapsule) setStatus('そのままホールへゆっくり運んでいます…！');
+      if (claw.grabbedCapsule) setStatus('ホールへゆっくり運んでいます…！');
     }
   } else if (gameState === 'RETURNING') {
     let moved = false;
-    // ゆっくりホール(x:60, z:0)へ移動
     if (claw.x > 60) { claw.x = Math.max(60, claw.x - 1.35); moved = true; }
     if (claw.z > 0)  { claw.z = Math.max(0, claw.z - 0.95); moved = true; }
 
-    // 移動中のアームの揺れ
     claw.swing = moved ? Math.sin(Date.now() / 110) * 0.05 : 0;
 
-    // パターン2: ホールのすぐ手前まで運んでから落ちる
     if (!claw.willWin && claw.grabbedCapsule && claw.failPattern === 2 && claw.x < 122) {
       const clawScreenY = claw.y + (100 - claw.z) * 0.25;
-      claw.grabbedCapsule.x = 118; // ホールのフチの外側へ転がる
+      claw.grabbedCapsule.x = 118;
       claw.grabbedCapsule.z = Math.max(12, claw.z);
-      triggerCapsuleDrop(claw.grabbedCapsule, clawScreenY + 24, 'おしいっ！！ホールのすぐ目の前で落ちてしまった…！');
+      triggerCapsuleDrop(claw.grabbedCapsule, clawScreenY + 24, 'おしいっ！！ホールの目の前で落ちてしまった…！');
     }
 
     if (!moved) {
@@ -1109,7 +1075,7 @@ function gameLoop() {
 });
 
 /**
- * 6. 景品獲得 ＆ ショップ（筐体・アーム別着せ替え）
+ * 6. 景品獲得 ＆ ショップ処理
  */
 function onWinPrize() {
   const wonChar = CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
@@ -1121,7 +1087,7 @@ function onWinPrize() {
 
   saveData();
   updateUI();
-  setStatus(`🎉 おめでとう！「${wonChar.name}」を獲得しました！`);
+  setStatus(`🎉 ゆいちゃん「${wonChar.name}」を獲得しました！`);
   showPrizeModal(wonChar, isDuplicate);
 }
 
@@ -1134,7 +1100,6 @@ function showPrizeModal(charObj, isDuplicate) {
 }
 function closePrizeModal() { document.getElementById('prizeModal').classList.remove('active'); }
 
-// カスタマイズショップ処理
 function openShopModal() {
   renderShop();
   document.getElementById('shopModal').classList.add('active');
@@ -1170,9 +1135,9 @@ function renderShop() {
       <div style="display:flex; align-items:center;">
         <div class="preview-dot" style="background:${item.preview}"></div>
         <div>
-          <div style="font-weight:900; font-size:0.9rem;">${item.name}</div>
+          <div style="font-weight:900; font-size:0.88rem;">${item.name}</div>
           <div style="font-size:0.75rem; color:#00838f; font-weight:bold;">
-            ${isUnlocked ? '購入済み' : `🎟️ チケット ${item.cost}枚`}
+            ${isUnlocked ? '入手済み' : `🎟️ チケット ${item.cost}枚`}
           </div>
         </div>
       </div>
@@ -1195,6 +1160,7 @@ function renderShop() {
       btn.style.color = u.tickets >= item.cost ? '#fff' : '#666';
       btn.onclick = () => buyItem(isCab, key, item.cost);
     }
+
     row.appendChild(btn);
     list.appendChild(row);
   });
@@ -1203,7 +1169,7 @@ function renderShop() {
 function buyItem(isCab, key, cost) {
   const u = allUsers[currentUser];
   if (u.tickets < cost) {
-    alert('着せ替えチケットが足りません！\nすでに持っているキャラを重複獲得するとチケットがもらえます。');
+    alert('着せ替えチケットが足りません！\n右上の「🎟️+5」ボタンでテスト用チケットを増やせます。');
     return;
   }
   u.tickets -= cost;
@@ -1225,7 +1191,6 @@ function equipItem(isCab, key) {
   renderShop();
 }
 
-// ユーザー切替モーダル
 function openUserModal() {
   const list = document.getElementById('userList');
   list.innerHTML = '';
