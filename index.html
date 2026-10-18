@@ -2,7 +2,11 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#161224">
 <title>ゆいキャッチャー 3D DX</title>
 <style>
   :root {
@@ -14,11 +18,21 @@
     --panel-bg: #262433;
     --bg-grad: radial-gradient(circle at 50% 20%, #3a2d4c 0%, #161224 100%);
   }
-  * { box-sizing: border-box; user-select: none; -webkit-user-select: none; font-family: 'Hiragino Maru Gothic ProN', 'Rounded Mplus 1c', sans-serif; }
-  body {
-    margin: 0; background: var(--bg-grad); color: #333;
-    display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-    overflow-x: hidden; padding-bottom: 40px;
+  * {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    font-family: 'Hiragino Maru Gothic ProN', 'Rounded Mplus 1c', sans-serif;
+  }
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100dvh;
+    background: var(--bg-grad); color: #333;
+    overflow: hidden; /* スクロール完全禁止で1画面フルフィット */
+    overscroll-behavior: none;
+    touch-action: manipulation;
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between;
   }
 
   /* ================= タイトル画面 ================= */
@@ -29,256 +43,210 @@
   }
   .title-screen.hidden { display: none; }
   .title-card {
-    background: rgba(255, 255, 255, 0.96); border-radius: 30px; padding: 28px 24px;
-    width: 100%; max-width: 420px; text-align: center;
+    background: rgba(255, 255, 255, 0.96); border-radius: 30px; padding: 26px 22px;
+    width: 100%; max-width: 400px; text-align: center;
     border: 5px solid #fff; box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px #ff4081;
-    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   .title-logo {
     background: linear-gradient(135deg, #ff007f, #ff9100);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    font-size: 2rem; font-weight: 900; margin: 0 0 6px; letter-spacing: 1px;
+    font-size: 1.9rem; font-weight: 900; margin: 0 0 4px; letter-spacing: 1px;
     filter: drop-shadow(0 3px 0 rgba(0,0,0,0.12));
   }
-  .title-sub { font-size: 0.85rem; color: #666; font-weight: bold; margin-bottom: 20px; }
+  .title-sub { font-size: 0.82rem; color: #666; font-weight: bold; margin-bottom: 18px; }
   .user-select-box {
-    background: #fdf2f7; border: 3px solid #f8bbd0; border-radius: 18px; padding: 16px; margin-bottom: 20px;
+    background: #fdf2f7; border: 3px solid #f8bbd0; border-radius: 18px; padding: 14px; margin-bottom: 18px;
   }
-  .user-select-label { display: block; font-weight: 900; font-size: 0.9rem; color: #c93b76; margin-bottom: 8px; }
+  .user-select-label { display: block; font-weight: 900; font-size: 0.88rem; color: #c93b76; margin-bottom: 8px; }
   .user-select-dropdown {
-    width: 100%; padding: 12px 14px; font-size: 1.05rem; font-weight: 900;
+    width: 100%; padding: 10px 12px; font-size: 1rem; font-weight: 900;
     border-radius: 12px; border: 2px solid #ff7eb3; background: #fff; color: #333;
     outline: none; cursor: pointer;
   }
   .btn-start {
-    width: 100%; padding: 15px; border-radius: 50px; border: none;
+    width: 100%; padding: 14px; border-radius: 50px; border: none;
     background: linear-gradient(135deg, #ff4081, #ff9100); color: #fff;
-    font-size: 1.25rem; font-weight: 900; cursor: pointer;
+    font-size: 1.2rem; font-weight: 900; cursor: pointer;
     box-shadow: 0 6px 0 #b21045, 0 12px 20px rgba(255,64,129,0.4);
-    transition: transform 0.1s, box-shadow 0.1s; margin-bottom: 16px;
+    transition: transform 0.1s, box-shadow 0.1s; margin-bottom: 14px;
   }
   .btn-start:active { transform: translateY(4px); box-shadow: 0 2px 0 #b21045; }
   .btn-parent-menu {
     background: #eceff1; color: #455a64; border: 2px solid #cfd8dc;
-    padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 0.82rem; cursor: pointer;
+    padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; cursor: pointer;
   }
 
-  /* 上部ステータスバー */
+  /* ================= 上部ステータスバー ================= */
   header {
-    width: 100%; max-width: 520px; background: rgba(255,255,255,0.95); padding: 10px 14px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4); border-radius: 0 0 20px 20px;
-    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
-    z-index: 30; backdrop-filter: blur(6px); border-bottom: 3px solid var(--cab-main);
+    width: 100%; max-width: 500px; background: rgba(255,255,255,0.95); padding: 6px 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4); border-radius: 0 0 16px 16px;
+    display: flex; justify-content: space-between; align-items: center; gap: 4px;
+    z-index: 30; border-bottom: 3px solid var(--cab-main); flex-shrink: 0;
   }
-  .user-box { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
-  .user-badge { background: var(--cab-dark); color: #fff; padding: 4px 10px; border-radius: 20px; font-weight: 900; font-size: 0.82rem; }
-  .point-badge { background: #fff8e1; border: 2px solid #ffc107; color: #b26a00; padding: 3px 9px; border-radius: 20px; font-weight: 900; font-size: 0.82rem; }
-  .ticket-badge { background: #e0f7fa; border: 2px solid #00bcd4; color: #006064; padding: 3px 9px; border-radius: 20px; font-weight: 900; font-size: 0.82rem; }
+  .user-box { display: flex; align-items: center; gap: 4px; }
+  .user-badge { background: var(--cab-dark); color: #fff; padding: 3px 8px; border-radius: 14px; font-weight: 900; font-size: 0.78rem; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .point-badge { background: #fff8e1; border: 2px solid #ffc107; color: #b26a00; padding: 2px 7px; border-radius: 14px; font-weight: 900; font-size: 0.78rem; }
+  .ticket-badge { background: #e0f7fa; border: 2px solid #00bcd4; color: #006064; padding: 2px 7px; border-radius: 14px; font-weight: 900; font-size: 0.78rem; }
   .btn-ui {
-    background: #eee; border: none; padding: 5px 9px; border-radius: 10px; cursor: pointer;
-    font-size: 0.75rem; font-weight: 800; box-shadow: 0 3px 0 #ccc; transition: transform 0.1s;
+    background: #eee; border: none; padding: 5px 8px; border-radius: 9px; cursor: pointer;
+    font-size: 0.74rem; font-weight: 800; box-shadow: 0 2px 0 #ccc; transition: transform 0.1s;
   }
-  .btn-ui:active { transform: translateY(2px); box-shadow: 0 1px 0 #ccc; }
-  .btn-shop { background: linear-gradient(135deg, #ff4081, #ff9100); color: #fff; box-shadow: 0 3px 0 #b21045; }
+  .btn-ui:active { transform: translateY(2px); box-shadow: none; }
+  .btn-dex { background: linear-gradient(135deg, #29b6f6, #0288d1); color: #fff; box-shadow: 0 2px 0 #01579b; }
+  .btn-shop { background: linear-gradient(135deg, #ff4081, #ff9100); color: #fff; box-shadow: 0 2px 0 #b21045; }
 
   /* デバッグモード専用バー（通常時は完全非表示） */
   .debug-bar {
-    width: 100%; max-width: 520px; background: #311b92; color: #fff;
-    padding: 8px 14px; display: none; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 6px; border-radius: 0 0 14px 14px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 2px solid #b388ff; border-top: none;
-    z-index: 29;
+    width: 100%; max-width: 500px; background: #311b92; color: #fff;
+    padding: 4px 10px; display: none; justify-content: space-between; align-items: center;
+    gap: 4px; border-radius: 0 0 12px 12px;
+    border: 2px solid #b388ff; border-top: none; z-index: 29; flex-shrink: 0;
   }
   .debug-bar.active { display: flex; }
   .btn-dbg-act {
-    background: #ffea00; color: #222; border: none; padding: 4px 10px; border-radius: 8px;
-    font-weight: 900; font-size: 0.75rem; cursor: pointer; box-shadow: 0 2px 0 #c79100;
+    background: #ffea00; color: #222; border: none; padding: 3px 8px; border-radius: 6px;
+    font-weight: 900; font-size: 0.7rem; cursor: pointer;
   }
 
-  /* ================= 3D アーケード筐体構造 ================= */
+  /* ================= 3D アーケード筐体（全画面フィット構造） ================= */
   .arcade-scene {
-    width: 100%; max-width: 490px; margin-top: 14px; padding: 0 10px;
-    perspective: 1100px;
+    width: 100%; max-width: 480px; flex: 1;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 4px 8px 8px; perspective: 1100px; min-height: 0;
   }
   .cabinet-3d {
-    position: relative; width: 100%;
+    position: relative; width: 100%; height: 100%; max-height: 760px;
+    display: flex; flex-direction: column;
     transform-style: preserve-3d;
-    filter: drop-shadow(0 28px 35px rgba(0,0,0,0.65));
+    filter: drop-shadow(0 15px 25px rgba(0,0,0,0.65));
   }
 
+  /* 上部ネオンマーキー */
   .marquee-top {
     background: linear-gradient(180deg, var(--cab-main), var(--cab-dark));
-    padding: 12px 16px 10px; border-radius: 26px 26px 0 0;
-    border: 4px solid var(--cab-trim); border-bottom: none;
-    box-shadow: inset 0 6px 12px rgba(255,255,255,0.5), 0 -4px 20px var(--cab-neon);
-    position: relative; z-index: 4;
+    padding: 7px 14px 6px; border-radius: 22px 22px 0 0;
+    border: 3px solid var(--cab-trim); border-bottom: none;
+    box-shadow: inset 0 4px 8px rgba(255,255,255,0.5), 0 -2px 15px var(--cab-neon);
+    position: relative; z-index: 4; flex-shrink: 0;
   }
   .marquee-sign {
     background: #1a1025; color: #fff; text-align: center; font-weight: 900;
-    font-size: 1.2rem; padding: 7px; border-radius: 14px; letter-spacing: 2px;
-    border: 3px solid var(--cab-trim);
-    text-shadow: 0 0 8px var(--cab-neon), 0 0 16px var(--cab-neon);
-    box-shadow: inset 0 0 15px var(--cab-neon);
+    font-size: 1.05rem; padding: 4px; border-radius: 10px; letter-spacing: 2px;
+    border: 2px solid var(--cab-trim);
+    text-shadow: 0 0 8px var(--cab-neon);
+    box-shadow: inset 0 0 12px var(--cab-neon);
   }
 
+  /* ガラスケース（画面高さに合わせて自動伸縮） */
   .glass-housing {
-    display: flex; align-items: stretch;
+    display: flex; align-items: stretch; flex: 1; min-height: 180px;
     background: var(--cab-darker);
-    border-left: 4px solid var(--cab-trim); border-right: 4px solid var(--cab-trim);
+    border-left: 3px solid var(--cab-trim); border-right: 3px solid var(--cab-trim);
     position: relative; z-index: 2;
   }
   .pillar {
-    width: 20px;
+    width: 14px;
     background: linear-gradient(90deg, var(--cab-dark), var(--cab-main) 45%, var(--cab-darker));
-    box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
   }
   .stage-window {
-    flex: 1; position: relative; height: 350px; overflow: hidden;
+    flex: 1; position: relative; width: 100%; height: 100%; overflow: hidden;
     background: #000;
-    box-shadow: inset 0 15px 35px rgba(0,0,0,0.6);
+    box-shadow: inset 0 12px 30px rgba(0,0,0,0.6);
   }
   canvas { width: 100%; height: 100%; display: block; }
 
   .glass-reflection {
     position: absolute; inset: 0; pointer-events: none; z-index: 10;
     background:
-      linear-gradient(115deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.03) 32%, transparent 32.5%, transparent 65%, rgba(255,255,255,0.1) 65.5%, transparent 85%),
-      inset 0 0 22px rgba(255,255,255,0.25);
+      linear-gradient(115deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.02) 32%, transparent 32.5%, transparent 65%, rgba(255,255,255,0.08) 65.5%, transparent 85%),
+      inset 0 0 18px rgba(255,255,255,0.2);
   }
 
+  /* コントロールデッキ */
   .control-deck-wrap {
-    perspective: 700px; position: relative; z-index: 5; margin-top: -4px;
+    perspective: 700px; position: relative; z-index: 5; margin-top: -3px; flex-shrink: 0;
   }
   .control-deck {
     background: linear-gradient(180deg, var(--panel-bg), #15131e);
-    border: 4px solid var(--cab-main);
-    border-radius: 10px 10px 22px 22px;
-    padding: 14px 16px 18px;
-    transform: rotateX(18deg); transform-origin: top center;
+    border: 3px solid var(--cab-main);
+    border-radius: 8px 8px 18px 18px;
+    padding: 8px 12px 12px;
+    transform: rotateX(12deg); transform-origin: top center;
     box-shadow:
-      0 16px 0 var(--cab-darker),
-      0 22px 25px rgba(0,0,0,0.6),
-      inset 0 4px 12px rgba(255,255,255,0.18);
+      0 10px 0 var(--cab-darker),
+      0 14px 18px rgba(0,0,0,0.6),
+      inset 0 3px 8px rgba(255,255,255,0.18);
   }
   .status-led {
-    background: #0d0b14; color: #4effa1; font-weight: bold; font-size: 0.85rem;
-    text-align: center; padding: 6px 10px; border-radius: 8px; margin-bottom: 14px;
-    border: 2px solid #333; box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
-    text-shadow: 0 0 6px rgba(78,255,161,0.5);
-    min-height: 2.1em; display: flex; align-items: center; justify-content: center;
+    background: #0d0b14; color: #4effa1; font-weight: bold; font-size: 0.8rem;
+    text-align: center; padding: 5px 8px; border-radius: 7px; margin-bottom: 10px;
+    border: 2px solid #333; box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
+    text-shadow: 0 0 5px rgba(78,255,161,0.4);
+    min-height: 2em; display: flex; align-items: center; justify-content: center;
   }
   .btn-row { display: flex; justify-content: space-around; align-items: center; }
 
   .btn-socket {
     background: radial-gradient(circle, #111 40%, #444 100%);
-    padding: 7px; border-radius: 50%;
-    box-shadow: 0 5px 10px rgba(0,0,0,0.7), inset 0 2px 4px rgba(255,255,255,0.2);
+    padding: 6px; border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.7), inset 0 2px 4px rgba(255,255,255,0.2);
   }
   .arcade-btn {
-    width: 82px; height: 82px; border-radius: 50%; border: none;
-    font-weight: 900; font-size: 0.85rem; color: #fff; cursor: pointer;
+    width: 74px; height: 74px; border-radius: 50%; border: none;
+    font-weight: 900; font-size: 0.8rem; color: #fff; cursor: pointer;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
-    position: relative; transform: translateY(-6px);
+    position: relative; transform: translateY(-5px);
     transition: transform 0.07s, box-shadow 0.07s, filter 0.2s;
     text-shadow: 0 2px 3px rgba(0,0,0,0.5);
   }
   .arcade-btn::before {
-    content: ''; position: absolute; top: 6px; left: 16px; right: 16px; height: 26px;
+    content: ''; position: absolute; top: 5px; left: 14px; right: 14px; height: 22px;
     background: linear-gradient(180deg, rgba(255,255,255,0.65), rgba(255,255,255,0.05));
     border-radius: 50%; pointer-events: none;
   }
   .arcade-btn:disabled { filter: brightness(0.45) grayscale(0.7); cursor: not-allowed; transform: translateY(-2px); }
   .btn-right {
     background: radial-gradient(circle at 50% 35%, #40e0ff, #0077cc);
-    box-shadow: 0 8px 0 #004477, 0 12px 15px rgba(0,0,0,0.5), inset 0 -4px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 7px 0 #004477, 0 10px 12px rgba(0,0,0,0.5), inset 0 -3px 6px rgba(0,0,0,0.3);
   }
   .btn-back {
     background: radial-gradient(circle at 50% 35%, #50ff95, #00a843);
-    box-shadow: 0 8px 0 #005c24, 0 12px 15px rgba(0,0,0,0.5), inset 0 -4px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 7px 0 #005c24, 0 10px 12px rgba(0,0,0,0.5), inset 0 -3px 6px rgba(0,0,0,0.3);
   }
   .btn-catch {
-    width: 90px; height: 90px;
+    width: 82px; height: 82px;
     background: radial-gradient(circle at 50% 35%, #ff6b9d, #d80048);
-    box-shadow: 0 9px 0 #7a0026, 0 12px 18px rgba(255,0,85,0.45), inset 0 -4px 8px rgba(0,0,0,0.3);
-    font-size: 1.05rem;
+    box-shadow: 0 8px 0 #7a0026, 0 10px 14px rgba(255,0,85,0.45), inset 0 -3px 6px rgba(0,0,0,0.3);
+    font-size: 1rem;
   }
   .arcade-btn:active:not(:disabled), .arcade-btn.pressing:not(:disabled) {
     transform: translateY(1px);
     box-shadow: 0 1px 0 #111, 0 2px 4px rgba(0,0,0,0.5);
   }
 
+  /* 筐体下部フロントパネル */
   .cabinet-base {
     background: linear-gradient(90deg, var(--cab-darker), var(--cab-dark) 20%, var(--cab-main) 50%, var(--cab-dark) 80%, var(--cab-darker));
-    border: 4px solid var(--cab-trim); border-top: none;
-    border-radius: 0 0 24px 24px; padding: 18px 20px 14px; margin-top: -6px;
+    border: 3px solid var(--cab-trim); border-top: none;
+    border-radius: 0 0 20px 20px; padding: 12px 16px 10px; margin-top: -4px;
     display: flex; justify-content: space-between; align-items: center;
-    box-shadow: 0 12px 0 var(--cab-darker);
+    box-shadow: 0 8px 0 var(--cab-darker); flex-shrink: 0;
   }
   .chute-door {
-    width: 130px; height: 54px; background: #1a1626; border-radius: 12px;
-    border: 3px solid #ddd; box-shadow: inset 0 8px 16px rgba(0,0,0,0.85);
+    width: 120px; height: 42px; background: #1a1626; border-radius: 10px;
+    border: 2px solid #ddd; box-shadow: inset 0 6px 12px rgba(0,0,0,0.85);
     display: flex; align-items: center; justify-content: center;
-    color: rgba(255,255,255,0.5); font-weight: 900; font-size: 0.78rem; letter-spacing: 1px;
-    position: relative; overflow: hidden;
+    color: rgba(255,255,255,0.5); font-weight: 900; font-size: 0.72rem; letter-spacing: 1px;
   }
   .chute-door.glow { animation: chuteFlash 0.8s ease infinite alternate; }
   @keyframes chuteFlash { from { box-shadow: inset 0 0 15px #ffeb3b; } to { box-shadow: inset 0 0 35px #ff4081; } }
   .coin-slot {
-    background: #e0e0e0; border: 3px solid #999; border-radius: 10px; padding: 6px 12px;
-    display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 0.75rem; color: #333;
-    box-shadow: inset 0 2px 4px #fff, 0 4px 8px rgba(0,0,0,0.3);
+    background: #e0e0e0; border: 2px solid #999; border-radius: 8px; padding: 4px 10px;
+    display: flex; align-items: center; gap: 6px; font-weight: 900; font-size: 0.68rem; color: #333;
+    box-shadow: inset 0 2px 4px #fff, 0 3px 6px rgba(0,0,0,0.3);
   }
-  .coin-hole { width: 6px; height: 22px; background: #111; border-radius: 3px; border: 1px solid #666; }
-
-  /* ================= コレクション図鑑 ================= */
-  .dex-section {
-    width: 100%; max-width: 490px; margin-top: 28px; background: rgba(255,255,255,0.95);
-    border-radius: 24px; padding: 18px; box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-    border: 3px solid var(--cab-main);
-  }
-  .dex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .dex-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-
-  .figure-card {
-    background: radial-gradient(circle at 50% 30%, #ffffff, #e6ecf5);
-    border-radius: 16px; padding: 10px 8px; text-align: center; position: relative;
-    perspective: 700px; cursor: pointer; border: 2px solid #dce4f0;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.08); transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .figure-card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px rgba(0,0,0,0.15); }
-  .acrylic-stand {
-    width: 100%; aspect-ratio: 1/1; position: relative;
-    transform-style: preserve-3d; transition: transform 0.3s ease;
-    display: flex; justify-content: center; align-items: center;
-  }
-  .figure-card:hover .acrylic-stand { transform: rotateX(12deg) rotateY(-16deg) scale(1.08); }
-  .acrylic-img {
-    width: 84%; height: 84%; object-fit: cover; border-radius: 16px;
-    border: 3px solid #ffffff; background: #fff;
-    filter:
-      drop-shadow(1px 2px 0px #d0d7de)
-      drop-shadow(2px 4px 0px #b0bac6)
-      drop-shadow(3px 6px 0px #8c98a8)
-      drop-shadow(4px 8px 0px #64748b)
-      drop-shadow(6px 12px 10px rgba(0,0,0,0.35));
-    transition: filter 0.3s;
-  }
-  .unowned .acrylic-img {
-    filter: brightness(0) opacity(0.75)
-      drop-shadow(2px 4px 0px #475569) drop-shadow(4px 8px 6px rgba(0,0,0,0.25));
-  }
-  .stand-base {
-    width: 76%; height: 14px; margin: -5px auto 4px; border-radius: 50%;
-    background: linear-gradient(90deg, rgba(200,235,255,0.7), rgba(255,255,255,0.95), rgba(200,235,255,0.7));
-    box-shadow: 0 5px 0 #7c93b0, 0 8px 12px rgba(0,0,0,0.28);
-    border: 1.5px solid #fff; position: relative; z-index: 2;
-  }
-  .char-name { font-size: 0.72rem; font-weight: 900; color: #333; margin-top: 4px; line-height: 1.2; }
-  .count-badge {
-    position: absolute; top: 6px; right: 6px; background: var(--cab-dark); color: #fff;
-    font-size: 0.7rem; font-weight: 900; padding: 2px 7px; border-radius: 10px; z-index: 5;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
-  }
+  .coin-hole { width: 5px; height: 18px; background: #111; border-radius: 3px; border: 1px solid #666; }
 
   /* カットインアニメーション */
   .cutin-overlay {
@@ -289,8 +257,8 @@
   .cutin-overlay.active { opacity: 1; background: rgba(0,0,0,0.5); }
   .cutin-banner {
     width: 130%; background: linear-gradient(90deg, #ff4081, #ffeb3b, #00e5ff, #ff4081);
-    background-size: 200% 100%; padding: 18px 0; transform: rotate(-6deg) translateX(-120%);
-    text-align: center; color: #fff; font-weight: 900; font-size: 1.25rem;
+    background-size: 200% 100%; padding: 16px 0; transform: rotate(-6deg) translateX(-120%);
+    text-align: center; color: #fff; font-weight: 900; font-size: 1.15rem;
     text-shadow: 2px 2px 0 #333, 0 0 12px #fff;
     border-top: 4px solid #fff; border-bottom: 4px solid #fff;
     box-shadow: 0 0 35px #ffeb3b;
@@ -303,64 +271,98 @@
     100% { transform: rotate(-6deg) translateX(120%) scale(1); }
   }
 
-  /* モーダル共通 */
+  /* ================= モーダル共通（図鑑・獲得・ショップ・管理） ================= */
   .modal-bg {
     position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 300;
-    display: none; justify-content: center; align-items: center; padding: 16px;
+    display: none; justify-content: center; align-items: center; padding: 14px;
     backdrop-filter: blur(4px);
   }
   .modal-bg.active { display: flex; }
   .modal-card {
-    background: #fff; border-radius: 26px; padding: 22px; width: 100%; max-width: 440px;
+    background: #fff; border-radius: 24px; padding: 18px; width: 100%; max-width: 440px;
     text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.5);
-    animation: popIn 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
-    max-height: 90vh; overflow-y: auto; border: 4px solid var(--cab-main);
+    max-height: 88dvh; overflow-y: auto; border: 4px solid var(--cab-main);
   }
-  @keyframes popIn { from { transform: scale(0.75); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  /* 図鑑グリッド（モーダル内） */
+  .dex-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-height: 58dvh; overflow-y: auto; padding: 4px; }
+  .figure-card {
+    background: radial-gradient(circle at 50% 30%, #ffffff, #e6ecf5);
+    border-radius: 14px; padding: 8px 6px; text-align: center; position: relative;
+    perspective: 700px; cursor: pointer; border: 2px solid #dce4f0;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  }
+  .acrylic-stand {
+    width: 100%; aspect-ratio: 1/1; position: relative;
+    display: flex; justify-content: center; align-items: center;
+  }
+  .acrylic-img {
+    width: 84%; height: 84%; object-fit: cover; border-radius: 14px;
+    border: 3px solid #ffffff; background: #fff;
+    filter:
+      drop-shadow(1px 2px 0px #d0d7de)
+      drop-shadow(2px 4px 0px #b0bac6)
+      drop-shadow(3px 6px 0px #8c98a8)
+      drop-shadow(5px 9px 8px rgba(0,0,0,0.3));
+  }
+  .unowned .acrylic-img {
+    filter: brightness(0) opacity(0.75) drop-shadow(2px 4px 0px #475569);
+  }
+  .stand-base {
+    width: 76%; height: 12px; margin: -4px auto 3px; border-radius: 50%;
+    background: linear-gradient(90deg, rgba(200,235,255,0.7), rgba(255,255,255,0.95), rgba(200,235,255,0.7));
+    box-shadow: 0 4px 0 #7c93b0, 0 6px 10px rgba(0,0,0,0.25);
+    border: 1px solid #fff; position: relative; z-index: 2;
+  }
+  .char-name { font-size: 0.68rem; font-weight: 900; color: #333; margin-top: 2px; line-height: 1.15; }
+  .count-badge {
+    position: absolute; top: 4px; right: 4px; background: var(--cab-dark); color: #fff;
+    font-size: 0.65rem; font-weight: 900; padding: 1px 6px; border-radius: 10px; z-index: 5;
+  }
 
   .prize-showcase {
-    width: 190px; height: 190px; margin: 12px auto; position: relative;
+    width: 180px; height: 180px; margin: 10px auto; position: relative;
     background: radial-gradient(circle, #fff59d 0%, rgba(255,245,157,0) 70%);
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     animation: float3D 2.8s ease-in-out infinite;
   }
   @keyframes float3D {
     0%, 100% { transform: translateY(0) rotateY(-14deg) rotateX(8deg); }
-    50% { transform: translateY(-10px) rotateY(14deg) rotateX(-6deg); }
+    50% { transform: translateY(-8px) rotateY(14deg) rotateX(-6deg); }
   }
 
-  /* ショップ＆管理メニューリスト */
-  .shop-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+  /* ショップ＆管理メニュー */
+  .shop-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
   .shop-tab {
-    flex: 1; padding: 10px; border-radius: 12px; border: none; font-weight: 900;
-    background: #eee; color: #555; cursor: pointer; font-size: 0.82rem;
+    flex: 1; padding: 9px; border-radius: 10px; border: none; font-weight: 900;
+    background: #eee; color: #555; cursor: pointer; font-size: 0.8rem;
   }
-  .shop-tab.active { background: var(--cab-dark); color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-  .shop-list { display: flex; flex-direction: column; gap: 8px; text-align: left; max-height: 52vh; overflow-y: auto; padding-right: 4px; }
+  .shop-tab.active { background: var(--cab-dark); color: #fff; }
+  .shop-list { display: flex; flex-direction: column; gap: 8px; text-align: left; max-height: 50dvh; overflow-y: auto; padding-right: 4px; }
   .shop-item {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 12px; background: #f8f9fa; border-radius: 14px; border: 2px solid #e2e8f0;
+    padding: 9px 12px; background: #f8f9fa; border-radius: 12px; border: 2px solid #e2e8f0;
   }
   .preview-dot {
-    width: 36px; height: 36px; border-radius: 10px; margin-right: 10px;
-    border: 2px solid #fff; box-shadow: 0 3px 6px rgba(0,0,0,0.2); flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    width: 34px; height: 34px; border-radius: 9px; margin-right: 10px;
+    border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
   }
 
-  /* 親の管理画面用カード */
   .admin-user-card {
-    background: #f8f9fa; border: 2px solid #cfd8dc; border-radius: 14px; padding: 12px; margin-bottom: 10px; text-align: left;
+    background: #f8f9fa; border: 2px solid #cfd8dc; border-radius: 12px; padding: 10px; margin-bottom: 8px; text-align: left;
   }
-  .admin-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 6px; font-size: 0.8rem; font-weight: bold; }
-  .admin-input { width: 95px; padding: 6px; border-radius: 8px; border: 1px solid #999; font-weight: bold; text-align: right; }
+  .admin-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 5px; font-size: 0.78rem; font-weight: bold; }
+  .admin-input { width: 90px; padding: 5px; border-radius: 6px; border: 1px solid #999; font-weight: bold; text-align: right; }
+  .inline-msg { font-size: 0.78rem; font-weight: bold; min-height: 1.3em; margin: 4px 0; color: #d50000; }
 </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
 <!-- ================= タイトル画面 ================= -->
 <div class="title-screen" id="titleScreen">
   <div class="title-card">
-    <div style="font-size: 3rem; margin-bottom: 4px;">🛸🎀✨</div>
+    <div style="font-size: 2.8rem; margin-bottom: 2px;">🛸🎀✨</div>
     <h1 class="title-logo">ゆいキャッチャー</h1>
     <div class="title-sub">〜 3D DX アクリルコレクション 〜</div>
 
@@ -380,28 +382,29 @@
 <!-- ================= ゲーム上部ヘッダー ================= -->
 <header>
   <div class="user-box">
-    <span class="user-badge" id="uiUserName">ゲスト</span>
-    <button class="btn-ui" onclick="returnToTitle()">🏠 タイトルへ</button>
+    <span class="user-badge" id="uiUserName">ゆい</span>
+    <button class="btn-ui" onclick="returnToTitle()">🏠</button>
   </div>
   <div class="user-box">
-    <span class="point-badge">💰 <span id="uiPoints">0</span></span>
-    <span class="ticket-badge">🎟️ <span id="uiTickets">0</span></span>
-    <button class="btn-ui btn-shop" onclick="openShopModal()">🎨 着せ替え</button>
+    <span class="point-badge">💰<span id="uiPoints">0</span></span>
+    <span class="ticket-badge">🎟️<span id="uiTickets">0</span></span>
+    <button class="btn-ui btn-dex" onclick="openDexModal()">📖図鑑(<span id="uiDexCount">0/17</span>)</button>
+    <button class="btn-ui btn-shop" onclick="openShopModal()">🎨着替</button>
   </div>
 </header>
 
-<!-- 🛠️ デバッグモード専用バー（パスワード解除時のみ出現） -->
+<!-- 🛠️ デバッグモード専用バー（パスワード解除時のみ表示） -->
 <div class="debug-bar" id="debugBar">
-  <span style="font-size:0.75rem; font-weight:900;">🛠️ デバッグモード起動中</span>
-  <div style="display:flex; gap:6px;">
-    <button class="btn-dbg-act" onclick="debugAddPoints(1000)">💰+1000pt</button>
-    <button class="btn-dbg-act" onclick="debugAddTickets(10)">🎟️+10枚</button>
-    <button class="btn-dbg-act" onclick="debugNextDay()">📅+1日ボ</button>
-    <button class="btn-dbg-act" style="background:#ff5252; color:#fff;" onclick="disableDebugMode()">終了</button>
+  <span style="font-size:0.72rem; font-weight:900;">🛠️ DEBUG</span>
+  <div style="display:flex; gap:5px;">
+    <button class="btn-dbg-act" onclick="debugAddPoints(1000)">💰+1000</button>
+    <button class="btn-dbg-act" onclick="debugAddTickets(10)">🎟️+10</button>
+    <button class="btn-dbg-act" onclick="debugNextDay()">📅+1日</button>
+    <button class="btn-dbg-act" style="background:#ff5252; color:#fff;" onclick="disableDebugMode()">OFF</button>
   </div>
 </div>
 
-<!-- 3D アーケード筐体 -->
+<!-- ================= 3D アーケード筐体（1画面全表示） ================= -->
 <div class="arcade-scene">
   <div class="cabinet-3d">
     <div class="marquee-top">
@@ -426,13 +429,13 @@
         <div class="btn-row">
           <div class="btn-socket">
             <button class="arcade-btn btn-right" id="btnRight">
-              <span style="font-size:1.5rem">▶</span>
+              <span style="font-size:1.3rem">▶</span>
               <span>よこ移動</span>
             </button>
           </div>
           <div class="btn-socket">
             <button class="arcade-btn btn-back" id="btnBack" disabled>
-              <span style="font-size:1.5rem">▲</span>
+              <span style="font-size:1.3rem">▲</span>
               <span>おく移動</span>
             </button>
           </div>
@@ -455,44 +458,48 @@
   </div>
 </div>
 
-<!-- コレクション図鑑 -->
-<div class="dex-section">
-  <div class="dex-header">
-    <h3 style="margin:0; font-size:1.05rem;">📖 ゆい＆フレンズ立体アクリル図鑑</h3>
-    <span id="dexProgress" style="font-weight:900; color:var(--cab-dark);">0 / 17</span>
+<!-- 📖 コレクション図鑑モーダル -->
+<div class="modal-bg" id="dexModal">
+  <div class="modal-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <h3 style="margin:0; font-size:1.05rem;">📖 ゆい＆フレンズ立体図鑑</h3>
+      <span id="dexProgress" style="font-weight:900; color:var(--cab-dark);">0 / 17</span>
+    </div>
+    <p style="font-size:0.74rem; color:#666; margin:0 0 10px;">※獲得したキャラをタップすると拡大表示できます。重複獲得でチケット🎟️+1枚！</p>
+    <div class="dex-grid" id="dexGrid"></div>
+    <button class="btn-ui" style="margin-top:12px; width:100%; padding:10px;" onclick="closeDexModal()">ゲームに戻る</button>
   </div>
-  <p style="font-size:0.76rem; color:#666; margin:0 0 12px;">※すでに持っているキャラクターをゲットすると、着せ替えチケット🎟️が1枚もらえます！</p>
-  <div class="dex-grid" id="dexGrid"></div>
 </div>
 
-<!-- 景品獲得モーダル -->
+<!-- 🎉 景品獲得・詳細モーダル -->
 <div class="modal-bg" id="prizeModal">
   <div class="modal-card">
-    <div style="color:var(--cab-dark); font-weight:900; font-size:1.5rem;">🎉 プライズ GET!! 🎉</div>
+    <div id="prizeModalHeader" style="color:var(--cab-dark); font-weight:900; font-size:1.4rem;">🎉 プライズ GET!! 🎉</div>
     <div class="prize-showcase">
       <img id="modalCharImg" class="acrylic-img" src="" alt="prize">
       <div class="stand-base"></div>
     </div>
     <h3 id="modalCharName" style="margin:6px 0 4px;">キャラ名</h3>
-    <p id="modalCharDesc" style="font-size:0.85rem; color:#666; margin-bottom:8px; line-height:1.4;"></p>
-    <div id="modalTicketInfo" style="background:#e0f7fa; color:#006064; padding:8px; border-radius:10px; font-weight:900; font-size:0.88rem; margin-bottom:14px; display:none;">
+    <p id="modalCharDesc" style="font-size:0.84rem; color:#555; margin-bottom:8px; line-height:1.4;"></p>
+    <div id="modalTicketInfo" style="background:#e0f7fa; color:#006064; padding:8px; border-radius:10px; font-weight:900; font-size:0.84rem; margin-bottom:12px; display:none;">
       🎁 重複ボーナス！着せ替えチケット +1枚獲得！
     </div>
-    <button class="btn-ui btn-shop" style="padding:10px 30px; font-size:1rem;" onclick="closePrizeModal()">やったね！</button>
+    <button class="btn-ui btn-shop" style="padding:10px 30px; font-size:0.95rem;" onclick="closePrizeModal()">とじる</button>
   </div>
 </div>
 
-<!-- カスタマイズショップモーダル -->
+<!-- 🎨 カスタマイズショップモーダル -->
 <div class="modal-bg" id="shopModal">
   <div class="modal-card">
-    <h3 style="margin:0 0 6px;">🎨 ゴージャス着せ替えショップ</h3>
-    <p style="font-size:0.8rem; color:#666; margin:0 0 12px;">所持チケット: 🎟️ <strong id="shopTicketCount">0</strong> 枚</p>
+    <h3 style="margin:0 0 4px;">🎨 ゴージャス着せ替えショップ</h3>
+    <p style="font-size:0.8rem; color:#666; margin:0 0 6px;">所持チケット: 🎟️ <strong id="shopTicketCount">0</strong> 枚</p>
+    <div id="shopFeedbackMsg" class="inline-msg"></div>
     <div class="shop-tabs">
       <button class="shop-tab active" id="tabCab" onclick="switchShopTab('cabinet')">🏠 筐体デザイン (10種)</button>
       <button class="shop-tab" id="tabClaw" onclick="switchShopTab('claw')">🦾 アーム＆ユニット (10種)</button>
     </div>
     <div class="shop-list" id="shopList"></div>
-    <button class="btn-ui" style="margin-top:14px; width:100%; padding:10px;" onclick="closeShopModal()">閉じる</button>
+    <button class="btn-ui" style="margin-top:12px; width:100%; padding:10px;" onclick="closeShopModal()">ゲームに戻る</button>
   </div>
 </div>
 
@@ -500,11 +507,12 @@
 <div class="modal-bg" id="parentAuthModal">
   <div class="modal-card">
     <h3 style="margin-top:0;">🔒 おうちのひと確認</h3>
-    <p style="font-size:0.82rem; color:#666;">管理メニューを開くにはパスワードを入力してください。</p>
-    <input type="password" id="parentPassInput" placeholder="パスワードを入力" style="width:100%; padding:12px; font-size:1.1rem; border-radius:10px; border:2px solid #ccc; text-align:center; margin-bottom:12px;">
-    <div style="display:flex; gap:8px;">
-      <button class="btn-ui" style="flex:1; padding:12px;" onclick="closeParentAuthModal()">キャンセル</button>
-      <button class="btn-ui btn-shop" style="flex:1; padding:12px;" onclick="verifyParentPassword()">OK</button>
+    <p style="font-size:0.8rem; color:#666; margin-bottom:8px;">管理メニューを開くにはパスワードを入力してください。</p>
+    <input type="password" id="parentPassInput" placeholder="パスワードを入力" style="width:100%; padding:10px; font-size:1.1rem; border-radius:10px; border:2px solid #ccc; text-align:center;">
+    <div id="parentAuthMsg" class="inline-msg"></div>
+    <div style="display:flex; gap:8px; margin-top:6px;">
+      <button class="btn-ui" style="flex:1; padding:10px;" onclick="closeParentAuthModal()">キャンセル</button>
+      <button class="btn-ui btn-shop" style="flex:1; padding:10px;" onclick="verifyParentPassword()">OK</button>
     </div>
   </div>
 </div>
@@ -512,34 +520,34 @@
 <!-- ⚙️ 親の管理メニュー本体モーダル -->
 <div class="modal-bg" id="parentAdminModal">
   <div class="modal-card">
-    <h3 style="margin:0 0 8px;">⚙️ 親の管理メニュー</h3>
-    <p style="font-size:0.75rem; color:#666; margin:0 0 12px;">ここで登録されたユーザーのみタイトル画面で選択できます。ユーザーごとの所持ポイント・ログインボーナス額を自由に変更できます。</p>
+    <h3 style="margin:0 0 4px;">⚙️ 親の管理メニュー</h3>
+    <div id="adminFeedbackMsg" class="inline-msg" style="color:#00897b;"></div>
 
     <!-- 新規ユーザー登録 -->
-    <div style="background:#fff0f6; padding:12px; border-radius:14px; border:2px solid #ff80ab; margin-bottom:14px; text-align:left;">
-      <div style="font-weight:900; font-size:0.85rem; color:#c93b76; margin-bottom:6px;">➕ 新しいユーザーを登録</div>
+    <div style="background:#fff0f6; padding:10px; border-radius:12px; border:2px solid #ff80ab; margin-bottom:10px; text-align:left;">
+      <div style="font-weight:900; font-size:0.82rem; color:#c93b76; margin-bottom:6px;">➕ 新しいユーザーを登録</div>
       <div style="display:flex; gap:6px; margin-bottom:6px;">
-        <input type="text" id="adminNewUserName" placeholder="ユーザー名 (例: ゆい)" style="flex:1; padding:8px; border-radius:8px; border:1px solid #ccc; font-weight:bold;">
-        <input type="number" id="adminNewUserBonus" placeholder="毎日ボーナス" value="1000" style="width:95px; padding:8px; border-radius:8px; border:1px solid #ccc; font-weight:bold;">
+        <input type="text" id="adminNewUserName" placeholder="ユーザー名 (例: ゆい)" style="flex:1; padding:7px; border-radius:8px; border:1px solid #ccc; font-weight:bold;">
+        <input type="number" id="adminNewUserBonus" placeholder="毎日ボーナス" value="1000" style="width:90px; padding:7px; border-radius:8px; border:1px solid #ccc; font-weight:bold;">
       </div>
       <button class="btn-ui btn-shop" style="width:100%; padding:8px;" onclick="adminCreateUser()">このユーザーを登録する</button>
     </div>
 
     <!-- 登録済みユーザー一覧＆ポイント・ボーナス編集 -->
-    <div style="font-weight:900; font-size:0.85rem; text-align:left; margin-bottom:6px;">👤 登録ユーザーの編集</div>
-    <div id="adminUserList" style="max-height:240px; overflow-y:auto; margin-bottom:14px;"></div>
+    <div style="font-weight:900; font-size:0.82rem; text-align:left; margin-bottom:4px;">👤 登録ユーザーの編集</div>
+    <div id="adminUserList" style="max-height:200px; overflow-y:auto; margin-bottom:10px;"></div>
 
-    <!-- さらにパスワードを入れてデバッグモードへ突入 -->
-    <div style="background:#ede7f6; padding:12px; border-radius:14px; border:2px solid #9575cd; text-align:left; margin-bottom:12px;">
-      <div style="font-weight:900; font-size:0.85rem; color:#4527a0; margin-bottom:6px;">🛠️ デバッグモード切替 (要追加パスワード)</div>
+    <!-- デバッグモード切替 -->
+    <div style="background:#ede7f6; padding:10px; border-radius:12px; border:2px solid #9575cd; text-align:left; margin-bottom:10px;">
+      <div style="font-weight:900; font-size:0.82rem; color:#4527a0; margin-bottom:5px;">🛠️ デバッグモード切替 (要追加パスワード)</div>
       <div style="display:flex; gap:6px;">
-        <input type="password" id="debugPassInput" placeholder="デバッグ用パスワード" style="flex:1; padding:8px; border-radius:8px; border:1px solid #ccc;">
-        <button class="btn-ui" style="background:#5e35b1; color:#fff;" onclick="verifyDebugPassword()">モードON</button>
+        <input type="password" id="debugPassInput" placeholder="デバッグ用パスワード" style="flex:1; padding:7px; border-radius:8px; border:1px solid #ccc;">
+        <button class="btn-ui" style="background:#5e35b1; color:#fff;" onclick="verifyDebugPassword()">ONにする</button>
       </div>
-      <div id="debugStatusMsg" style="font-size:0.75rem; color:#d50000; font-weight:bold; margin-top:4px;">現在: 通常モード（ポイント・チケットの任意追加不可）</div>
+      <div id="debugStatusMsg" style="font-size:0.72rem; color:#d50000; font-weight:bold; margin-top:4px;">現在: 通常モード（任意追加ロック中）</div>
     </div>
 
-    <button class="btn-ui" style="width:100%; padding:12px; font-size:0.95rem;" onclick="closeParentAdminModal()">管理メニューを閉じる</button>
+    <button class="btn-ui" style="width:100%; padding:10px; font-size:0.9rem;" onclick="closeParentAdminModal()">管理メニューを閉じる</button>
   </div>
 </div>
 
@@ -554,7 +562,7 @@ const DEBUG_PASS  = '9999';
 let isDebugMode = false;
 
 /**
- * 1. プライズ図鑑データ（全17種類！新着6種＋全角抜き天使ゆうたろう完全対応）
+ * 1. プライズ図鑑データ（全17種類）
  */
 function createFallbackSvg(emoji, bgColor, rimColor) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
@@ -565,7 +573,6 @@ function createFallbackSvg(emoji, bgColor, rimColor) {
   return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
 
-// 複数候補のファイル名を順番に試す賢い画像ローダー（スペース有無の違いを自動吸収）
 function setSmartImage(imgEl, charObj) {
   const candidates = [charObj.img, ...(charObj.altImgs || [])];
   let idx = 0;
@@ -582,225 +589,52 @@ function setSmartImage(imgEl, charObj) {
 }
 
 const CHARACTERS = [
-  {
-    id: 'yui_01',
-    name: 'おしゃれゆい',
-    desc: 'ピンクのお洋服でおめかしバッチリ！赤い髪飾りもとっても似合ってるでしょ？',
-    img: 'おしゃれゆい.jpg',
-    fallback: createFallbackSvg('🎀', '#ffc1e3', '#ec407a')
-  },
-  {
-    id: 'yui_02',
-    name: 'アイスクリームゆい',
-    desc: '冷たくてあま〜いアイスクリームをどうぞ！一緒に食べるとしあわせだね♪',
-    img: 'アイスクリームゆい.jpg',
-    fallback: createFallbackSvg('🍨', '#b2ebf2', '#00acc1')
-  },
-  {
-    id: 'yui_03',
-    name: '雪だるまゆい',
-    desc: '真っ白ふわふわな雪だるまに変身！水色のボタンがチャームポイントだよ⛄',
-    img: '雪だるまゆい.jpg',
-    fallback: createFallbackSvg('⛄', '#e1f5fe', '#29b6f6')
-  },
-  {
-    id: 'yui_04',
-    name: 'かぼちゃうさぽん',
-    desc: 'ハロウィンのかぼちゃ帽子＆パンツで登場！トリック・オア・トリート🎃',
-    img: 'かぼちゃうさぽん.jpg',
-    fallback: createFallbackSvg('🎃', '#f3e5f5', '#ab47bc')
-  },
-  {
-    id: 'yui_05',
-    name: '赤ずきんゆいな',
-    desc: '真っ赤なずきんがトレードマーク！森のなかをお散歩中のかわいいゆいなちゃん🍓',
-    img: '赤ずきんゆいな.jpg',
-    fallback: createFallbackSvg('🍓', '#ffcdd2', '#e53935')
-  },
-  {
-    id: 'yui_06',
-    name: 'ゆうたろう天使',
-    desc: '小さな白い羽をパタパタさせて舞い降りた、ハートを届ける癒やしの天使ちゃん👼',
-    img: 'ゆうたろう天使.jpg',
-    altImgs: ['天使ゆうたろう.jpg', 'ゆうたろう 天使.jpg', 'ゆうたろう　天使.jpg'],
-    fallback: createFallbackSvg('👼', '#f3e5f5', '#ce93d8')
-  },
-  {
-    id: 'yui_07',
-    name: 'お月見ゆい',
-    desc: 'まんまるお月様を見ながらお月見団子をもぐもぐ！秋のおいしい夜長を楽しもう🌕',
-    img: 'お月見ゆい.jpg',
-    fallback: createFallbackSvg('🎑', '#fff9c4', '#fbc02d')
-  },
-  {
-    id: 'yui_08',
-    name: '今日ゆいになりました',
-    desc: 'キリッとした表情でシールドを構える頼もしい姿！今日から無敵のゆいちゃん誕生🛡️',
-    img: '今日ゆいになりました.jpg',
-    fallback: createFallbackSvg('🛡️', '#b3e5fc', '#0288d1')
-  },
-  {
-    id: 'yui_09',
-    name: 'お丸ゆい',
-    desc: 'まんまるフォルムとゆる〜い表情がたまらない！見ているだけで心がほっこり和むね⚪',
-    img: 'お丸ゆい.jpg',
-    fallback: createFallbackSvg('⚪', '#f5f5f5', '#9e9e9e')
-  },
-  {
-    id: 'yui_10',
-    name: 'ブラックゆい',
-    desc: 'ダークなオーラをまとったミステリアスな姿…！いつもと違うクールな魅力にドキッ🖤',
-    img: 'ブラックゆい.jpg',
-    fallback: createFallbackSvg('🖤', '#cfd8dc', '#455a64')
-  },
-  {
-    id: 'yui_11',
-    name: 'メロンパンゆい',
-    desc: 'サクサクふわふわのメロンパンに包まれた甘いゆいちゃん！焼きたての香りがしそう🍈',
-    img: 'メロンパンゆい.jpg',
-    fallback: createFallbackSvg('🍈', '#dcedc8', '#7cb342')
-  },
-  {
-    id: 'yui_12',
-    name: 'ふつうのクマぽん',
-    desc: 'こんがりブラウンのまんまるボディがかわいい！のんびり屋さんなクマぽんだよ🐻',
-    img: 'ふつうのクマぽん.jpg',
-    fallback: createFallbackSvg('🐻', '#ffe0b2', '#e65100')
-  },
-  {
-    id: 'yui_13',
-    name: 'ふつうのうさぽん',
-    desc: 'ぴょこんと立ったお耳とパステルピンクがキュート！ふわふわ優しいうさぽん🐰',
-    img: 'ふつうのうさぽん.jpg',
-    fallback: createFallbackSvg('🐰', '#f8bbd0', '#ec407a')
-  },
-  {
-    id: 'yui_14',
-    name: 'くまうさぽん',
-    desc: 'うさぽんとクマぽんが夢の合体！？ピンクのお顔にブラウンの体がオシャレでしょ🐻🐰',
-    img: 'くまうさぽん.jpg',
-    fallback: createFallbackSvg('🧸', '#ffccbc', '#d84315')
-  },
-  {
-    id: 'yui_15',
-    name: 'ぞうぽん',
-    desc: '鮮やかなスカイブルーがとっても爽やか！長いお鼻が自慢の元気なぞうぽん🐘',
-    img: 'ぞうぽん.jpg',
-    fallback: createFallbackSvg('🐘', '#84ffff', '#00acc1')
-  },
-  {
-    id: 'yui_16',
-    name: 'コアラのこあぽん',
-    desc: '青いお耳とお洋服がクール！大きな丸いお鼻がチャームポイントのこあぽんだよ🐨',
-    img: 'コアラのこあぽん.jpg',
-    fallback: createFallbackSvg('🐨', '#bbdefb', '#1976d2')
-  },
-  {
-    id: 'yui_17',
-    name: 'ライオンのらいぽん',
-    desc: '太陽みたいに明るい黄金のたてがみがカッコいい！赤い髪飾りをつけた百獣の王らいぽん🦁',
-    img: 'ライオンのらいぽん.jpg',
-    fallback: createFallbackSvg('🦁', '#fff59d', '#ff8f00')
-  }
+  { id: 'yui_01', name: 'おしゃれゆい', desc: 'ピンクのお洋服でおめかしバッチリ！赤い髪飾りもとっても似合ってるでしょ？', img: 'おしゃれゆい.jpg', fallback: createFallbackSvg('🎀', '#ffc1e3', '#ec407a') },
+  { id: 'yui_02', name: 'アイスクリームゆい', desc: '冷たくてあま〜いアイスクリームをどうぞ！一緒に食べるとしあわせだね♪', img: 'アイスクリームゆい.jpg', fallback: createFallbackSvg('🍨', '#b2ebf2', '#00acc1') },
+  { id: 'yui_03', name: '雪だるまゆい', desc: '真っ白ふわふわな雪だるまに変身！水色のボタンがチャームポイントだよ⛄', img: '雪だるまゆい.jpg', fallback: createFallbackSvg('⛄', '#e1f5fe', '#29b6f6') },
+  { id: 'yui_04', name: 'かぼちゃうさぽん', desc: 'ハロウィンのかぼちゃ帽子＆パンツで登場！トリック・オア・トリート🎃', img: 'かぼちゃうさぽん.jpg', fallback: createFallbackSvg('🎃', '#f3e5f5', '#ab47bc') },
+  { id: 'yui_05', name: '赤ずきんゆいな', desc: '真っ赤なずきんがトレードマーク！森のなかをお散歩中のかわいいゆいなちゃん🍓', img: '赤ずきんゆいな.jpg', fallback: createFallbackSvg('🍓', '#ffcdd2', '#e53935') },
+  { id: 'yui_06', name: 'ゆうたろう天使', desc: '小さな白い羽をパタパタさせて舞い降りた、ハートを届ける癒やしの天使ちゃん👼', img: 'ゆうたろう天使.jpg', altImgs: ['天使ゆうたろう.jpg', 'ゆうたろう 天使.jpg', 'ゆうたろう　天使.jpg'], fallback: createFallbackSvg('👼', '#f3e5f5', '#ce93d8') },
+  { id: 'yui_07', name: 'お月見ゆい', desc: 'まんまるお月様を見ながらお月見団子をもぐもぐ！秋のおいしい夜長を楽しもう🌕', img: 'お月見ゆい.jpg', fallback: createFallbackSvg('🎑', '#fff9c4', '#fbc02d') },
+  { id: 'yui_08', name: '今日ゆいになりました', desc: 'キリッとした表情でシールドを構える頼もしい姿！今日から無敵のゆいちゃん誕生🛡️', img: '今日ゆいになりました.jpg', fallback: createFallbackSvg('🛡️', '#b3e5fc', '#0288d1') },
+  { id: 'yui_09', name: 'お丸ゆい', desc: 'まんまるフォルムとゆる〜い表情がたまらない！見ているだけで心がほっこり和むね⚪', img: 'お丸ゆい.jpg', fallback: createFallbackSvg('⚪', '#f5f5f5', '#9e9e9e') },
+  { id: 'yui_10', name: 'ブラックゆい', desc: 'ダークなオーラをまとったミステリアスな姿…！いつもと違うクールな魅力にドキッ🖤', img: 'ブラックゆい.jpg', fallback: createFallbackSvg('🖤', '#cfd8dc', '#455a64') },
+  { id: 'yui_11', name: 'メロンパンゆい', desc: 'サクサクふわふわのメロンパンに包まれた甘いゆいちゃん！焼きたての香りがしそう🍈', img: 'メロンパンゆい.jpg', fallback: createFallbackSvg('🍈', '#dcedc8', '#7cb342') },
+  { id: 'yui_12', name: 'ふつうのクマぽん', desc: 'こんがりブラウンのまんまるボディがかわいい！のんびり屋さんなクマぽんだよ🐻', img: 'ふつうのクマぽん.jpg', fallback: createFallbackSvg('🐻', '#ffe0b2', '#e65100') },
+  { id: 'yui_13', name: 'ふつうのうさぽん', desc: 'ぴょこんと立ったお耳とパステルピンクがキュート！ふわふわ優しいうさぽん🐰', img: 'ふつうのうさぽん.jpg', fallback: createFallbackSvg('🐰', '#f8bbd0', '#ec407a') },
+  { id: 'yui_14', name: 'くまうさぽん', desc: 'うさぽんとクマぽんが夢の合体！？ピンクのお顔にブラウンの体がオシャレでしょ🐻🐰', img: 'くまうさぽん.jpg', fallback: createFallbackSvg('🧸', '#ffccbc', '#d84315') },
+  { id: 'yui_15', name: 'ぞうぽん', desc: '鮮やかなスカイブルーがとっても爽やか！長いお鼻が自慢の元気なぞうぽん🐘', img: 'ぞうぽん.jpg', fallback: createFallbackSvg('🐘', '#84ffff', '#00acc1') },
+  { id: 'yui_16', name: 'コアラのこあぽん', desc: '青いお耳とお洋服がクール！大きな丸いお鼻がチャームポイントのこあぽんだよ🐨', img: 'コアラのこあぽん.jpg', fallback: createFallbackSvg('🐨', '#bbdefb', '#1976d2') },
+  { id: 'yui_17', name: 'ライオンのらいぽん', desc: '太陽みたいに明るい黄金のたてがみがカッコいい！赤い髪飾りをつけた百獣の王らいぽん🦁', img: 'ライオンのらいぽん.jpg', fallback: createFallbackSvg('🦁', '#fff59d', '#ff8f00') }
 ];
 
 /**
  * 2. 筐体デザイン10種 ＆ アーム（ユニット＋腕）デザイン10種
  */
 const CABINET_SKINS = {
-  pink: {
-    name: '1. 🎀 ラブリーピンク', icon: '🎀', cost: 0, preview: 'linear-gradient(135deg,#ff7eb3,#c93b76)',
-    title: '✨ ゆいキャッチャー ✨',
-    main: '#ff7eb3', dark: '#c93b76', darker: '#8f1d4d', trim: '#fff0f6', neon: '#ff007f', panel: '#262433',
-    wallBack: '#ffeef6', wallSide: '#f8bbd0', floor1: '#f48fb1', floor2: '#fce4ec'
-  },
-  mint: {
-    name: '2. 🌿 パステルミント', icon: '🌿', cost: 1, preview: 'linear-gradient(135deg,#64ffda,#00bfa5)',
-    title: '🌿 ミントゆいキャッチャー 🌿',
-    main: '#4db6ac', dark: '#00897b', darker: '#004d40', trim: '#e0f2f1', neon: '#1de9b6', panel: '#162c28',
-    wallBack: '#e0f7fa', wallSide: '#b2dfdb', floor1: '#80cbc4', floor2: '#e0f2f1'
-  },
-  candy: {
-    name: '3. 🍭 キャンディポップ', icon: '🍭', cost: 1, preview: 'linear-gradient(135deg,#ff80ab,#82b1ff)',
-    title: '🍭 キャンディゆいキャッチャー 🍭',
-    main: '#ff80ab', dark: '#536dfe', darker: '#304ffe', trim: '#fff9c4', neon: '#ff4081', panel: '#281e3a',
-    wallBack: '#fff9c4', wallSide: '#f8bbd0', floor1: '#bbdefb', floor2: '#fce4ec'
-  },
-  cyber: {
-    name: '4. 🧊 サイバーネオン', icon: '🧊', cost: 2, preview: 'linear-gradient(135deg,#00e5ff,#2979ff)',
-    title: '⚡ CYBER YUI CATCHER ⚡',
-    main: '#1e88e5', dark: '#0d47a1', darker: '#062356', trim: '#84ffff', neon: '#00e5ff', panel: '#0d1b2a',
-    wallBack: '#0b192c', wallSide: '#112240', floor1: '#1d3557', floor2: '#0f2537'
-  },
-  ocean: {
-    name: '5. 🐬 オーシャンマリン', icon: '🐬', cost: 2, preview: 'linear-gradient(135deg,#40c4ff,#01579b)',
-    title: '🐚 マリンゆいキャッチャー 🐚',
-    main: '#29b6f6', dark: '#0277bd', darker: '#01579b', trim: '#e1f5fe', neon: '#00e5ff', panel: '#0c2233',
-    wallBack: '#e1f5fe', wallSide: '#81d4fa', floor1: '#4fc3f7', floor2: '#b3e5fc'
-  },
-  forest: {
-    name: '6. 🧚 フォレストフェアリー', icon: '🧚', cost: 3, preview: 'linear-gradient(135deg,#aed581,#33691e)',
-    title: '🍀 フェアリーゆいキャッチャー 🍀',
-    main: '#9ccc65', dark: '#558b2f', darker: '#33691e', trim: '#f1f8e9', neon: '#76ff03', panel: '#241c14',
-    wallBack: '#f1f8e9', wallSide: '#dcedc8', floor1: '#aed581', floor2: '#f9fbe7'
-  },
-  halloween: {
-    name: '7. 🎃 ハロウィンナイト', icon: '🎃', cost: 3, preview: 'linear-gradient(135deg,#ff9100,#4a148c)',
-    title: '🎃 トリック・オア・ゆい！ 🎃',
-    main: '#ff6d00', dark: '#6a1b9a', darker: '#311b92', trim: '#ffe082', neon: '#ff9100', panel: '#1a0f24',
-    wallBack: '#2c1638', wallSide: '#4a148c', floor1: '#ff8f00', floor2: '#4a148c'
-  },
-  royal: {
-    name: '8. 👑 ロイヤルゴールド', icon: '👑', cost: 4, preview: 'linear-gradient(135deg,#ffd54f,#ff8f00)',
-    title: '👑 ロイヤルゆいキャッチャー 👑',
-    main: '#ffd54f', dark: '#ff8f00', darker: '#b25900', trim: '#fff8e1', neon: '#ffea00', panel: '#2b1d0e',
-    wallBack: '#fff8e1', wallSide: '#ffecb3', floor1: '#ffd54f', floor2: '#fff3e0'
-  },
-  gothic: {
-    name: '9. 💎 ジュエルゴシック', icon: '💎', cost: 5, preview: 'linear-gradient(135deg,#e040fb,#4a148c)',
-    title: '💎 ジュエルゆいキャッチャー 💎',
-    main: '#9c27b0', dark: '#6a1b9a', darker: '#2a0845', trim: '#ea80fc', neon: '#e040fb', panel: '#1a0826',
-    wallBack: '#2d1242', wallSide: '#1e0a2d', floor1: '#512da8', floor2: '#311b92'
-  },
-  galaxy: {
-    name: '10. 🌌 ギャラクシーコズミック', icon: '🌌', cost: 6, preview: 'linear-gradient(135deg,#00e5ff,#d500f9,#ffea00)',
-    title: '🌌 ギャラクシーゆいキャッチャー 🌌',
-    main: '#651fff', dark: '#311b92', darker: '#12005e', trim: '#84ffff', neon: '#00e5ff', panel: '#090418',
-    wallBack: '#0a061e', wallSide: '#150d3a', floor1: '#311b92', floor2: '#006064'
-  }
+  pink: { name: '1. 🎀 ラブリーピンク', icon: '🎀', cost: 0, preview: 'linear-gradient(135deg,#ff7eb3,#c93b76)', title: '✨ ゆいキャッチャー ✨', main: '#ff7eb3', dark: '#c93b76', darker: '#8f1d4d', trim: '#fff0f6', neon: '#ff007f', panel: '#262433', wallBack: '#ffeef6', wallSide: '#f8bbd0', floor1: '#f48fb1', floor2: '#fce4ec' },
+  mint: { name: '2. 🌿 パステルミント', icon: '🌿', cost: 1, preview: 'linear-gradient(135deg,#64ffda,#00bfa5)', title: '🌿 ミントゆいキャッチャー 🌿', main: '#4db6ac', dark: '#00897b', darker: '#004d40', trim: '#e0f2f1', neon: '#1de9b6', panel: '#162c28', wallBack: '#e0f7fa', wallSide: '#b2dfdb', floor1: '#80cbc4', floor2: '#e0f2f1' },
+  candy: { name: '3. 🍭 キャンディポップ', icon: '🍭', cost: 1, preview: 'linear-gradient(135deg,#ff80ab,#82b1ff)', title: '🍭 キャンディゆいキャッチャー 🍭', main: '#ff80ab', dark: '#536dfe', darker: '#304ffe', trim: '#fff9c4', neon: '#ff4081', panel: '#281e3a', wallBack: '#fff9c4', wallSide: '#f8bbd0', floor1: '#bbdefb', floor2: '#fce4ec' },
+  cyber: { name: '4. 🧊 サイバーネオン', icon: '🧊', cost: 2, preview: 'linear-gradient(135deg,#00e5ff,#2979ff)', title: '⚡ CYBER YUI CATCHER ⚡', main: '#1e88e5', dark: '#0d47a1', darker: '#062356', trim: '#84ffff', neon: '#00e5ff', panel: '#0d1b2a', wallBack: '#0b192c', wallSide: '#112240', floor1: '#1d3557', floor2: '#0f2537' },
+  ocean: { name: '5. 🐬 オーシャンマリン', icon: '🐬', cost: 2, preview: 'linear-gradient(135deg,#40c4ff,#01579b)', title: '🐚 マリンゆいキャッチャー 🐚', main: '#29b6f6', dark: '#0277bd', darker: '#01579b', trim: '#e1f5fe', neon: '#00e5ff', panel: '#0c2233', wallBack: '#e1f5fe', wallSide: '#81d4fa', floor1: '#4fc3f7', floor2: '#b3e5fc' },
+  forest: { name: '6. 🧚 フォレストフェアリー', icon: '🧚', cost: 3, preview: 'linear-gradient(135deg,#aed581,#33691e)', title: '🍀 フェアリーゆいキャッチャー 🍀', main: '#9ccc65', dark: '#558b2f', darker: '#33691e', trim: '#f1f8e9', neon: '#76ff03', panel: '#241c14', wallBack: '#f1f8e9', wallSide: '#dcedc8', floor1: '#aed581', floor2: '#f9fbe7' },
+  halloween: { name: '7. 🎃 ハロウィンナイト', icon: '🎃', cost: 3, preview: 'linear-gradient(135deg,#ff9100,#4a148c)', title: '🎃 トリック・オア・ゆい！ 🎃', main: '#ff6d00', dark: '#6a1b9a', darker: '#311b92', trim: '#ffe082', neon: '#ff9100', panel: '#1a0f24', wallBack: '#2c1638', wallSide: '#4a148c', floor1: '#ff8f00', floor2: '#4a148c' },
+  royal: { name: '8. 👑 ロイヤルゴールド', icon: '👑', cost: 4, preview: 'linear-gradient(135deg,#ffd54f,#ff8f00)', title: '👑 ロイヤルゆいキャッチャー 👑', main: '#ffd54f', dark: '#ff8f00', darker: '#b25900', trim: '#fff8e1', neon: '#ffea00', panel: '#2b1d0e', wallBack: '#fff8e1', wallSide: '#ffecb3', floor1: '#ffd54f', floor2: '#fff3e0' },
+  gothic: { name: '9. 💎 ジュエルゴシック', icon: '💎', cost: 5, preview: 'linear-gradient(135deg,#e040fb,#4a148c)', title: '💎 ジュエルゆいキャッチャー 💎', main: '#9c27b0', dark: '#6a1b9a', darker: '#2a0845', trim: '#ea80fc', neon: '#e040fb', panel: '#1a0826', wallBack: '#2d1242', wallSide: '#1e0a2d', floor1: '#512da8', floor2: '#311b92' },
+  galaxy: { name: '10. 🌌 ギャラクシーコズミック', icon: '🌌', cost: 6, preview: 'linear-gradient(135deg,#00e5ff,#d500f9,#ffea00)', title: '🌌 ギャラクシーゆいキャッチャー 🌌', main: '#651fff', dark: '#311b92', darker: '#12005e', trim: '#84ffff', neon: '#00e5ff', panel: '#090418', wallBack: '#0a061e', wallSide: '#150d3a', floor1: '#311b92', floor2: '#006064' }
 };
 
 const CLAW_SKINS = {
-  standard: {
-    name: '1. 🦾 スタンダードユニット', icon: '🦾', cost: 0, type: 'standard', preview: 'linear-gradient(135deg,#ff80ab,#eceff1)', wire: '#546e7a'
-  },
-  flower: {
-    name: '2. 🌸 フラワーブロッサム (花型ユニット＆ツル腕)', icon: '🌸', cost: 1, type: 'flower', preview: 'linear-gradient(135deg,#ff80ab,#ffeb3b)', wire: '#66bb6a'
-  },
-  star: {
-    name: '3. ⭐ トゥインクルスター (巨大星ユニット＆流星爪)', icon: '⭐', cost: 2, type: 'star', preview: 'linear-gradient(135deg,#ffee58,#ff8f00)', wire: '#ffd54f'
-  },
-  snow: {
-    name: '4. ❄️ クリスタルスノー (氷結晶コア＆氷柱アーム)', icon: '❄️', cost: 2, type: 'snow', preview: 'linear-gradient(135deg,#e0f7fa,#00b0ff)', wire: '#80d8ff'
-  },
-  dragon: {
-    name: '5. 🔥 ドラゴニックジョー (竜頭ユニット＆大顎の牙)', icon: '🔥', cost: 3, type: 'dragon', preview: 'linear-gradient(135deg,#ff3d00,#b71c1c)', wire: '#dd2c00'
-  },
-  heart: {
-    name: '6. 💖 ラブリーハート (立体ハート＆リボンアーム)', icon: '💖', cost: 2, type: 'heart', preview: 'linear-gradient(135deg,#ff4081,#f8bbd0)', wire: '#ff80ab'
-  },
-  angel: {
-    name: '7. 👼 エンジェルセラフ (天使の輪・羽ばたく翼)', icon: '👼', cost: 3, type: 'angel', preview: 'linear-gradient(135deg,#ffffff,#80d8ff)', wire: '#fff59d'
-  },
-  devil: {
-    name: '8. 😈 デビルナイトメア (悪魔の角・コウモリ翼)', icon: '😈', cost: 3, type: 'devil', preview: 'linear-gradient(135deg,#7c4dff,#212121)', wire: '#b388ff'
-  },
-  neko: {
-    name: '9. 🐾 にゃんこパンチ (猫顔ユニット＆ぷにぷに肉球)', icon: '🐾', cost: 3, type: 'neko', preview: 'linear-gradient(135deg,#ffb74d,#fff3e0)', wire: '#ffa726'
-  },
-  ultimate: {
-    name: '10. 👑 黄金神バハムート (王冠・後光・神竜の顎)', icon: '👑', cost: 5, type: 'ultimate', preview: 'linear-gradient(135deg,#ffd700,#ff1744,#00e5ff)', wire: '#ffea00'
-  }
+  standard: { name: '1. 🦾 スタンダードユニット', icon: '🦾', cost: 0, type: 'standard', preview: 'linear-gradient(135deg,#ff80ab,#eceff1)', wire: '#546e7a' },
+  flower: { name: '2. 🌸 フラワーブロッサム (花ユニット＆ツル腕)', icon: '🌸', cost: 1, type: 'flower', preview: 'linear-gradient(135deg,#ff80ab,#ffeb3b)', wire: '#66bb6a' },
+  star: { name: '3. ⭐ トゥインクルスター (星ユニット＆流星爪)', icon: '⭐', cost: 2, type: 'star', preview: 'linear-gradient(135deg,#ffee58,#ff8f00)', wire: '#ffd54f' },
+  snow: { name: '4. ❄️ クリスタルスノー (氷結晶コア＆氷柱腕)', icon: '❄️', cost: 2, type: 'snow', preview: 'linear-gradient(135deg,#e0f7fa,#00b0ff)', wire: '#80d8ff' },
+  dragon: { name: '5. 🔥 ドラゴニックジョー (竜頭＆大顎の牙)', icon: '🔥', cost: 3, type: 'dragon', preview: 'linear-gradient(135deg,#ff3d00,#b71c1c)', wire: '#dd2c00' },
+  heart: { name: '6. 💖 ラブリーハート (立体ハート＆リボン腕)', icon: '💖', cost: 2, type: 'heart', preview: 'linear-gradient(135deg,#ff4081,#f8bbd0)', wire: '#ff80ab' },
+  angel: { name: '7. 👼 エンジェルセラフ (天使の輪・羽ばたく翼)', icon: '👼', cost: 3, type: 'angel', preview: 'linear-gradient(135deg,#ffffff,#80d8ff)', wire: '#fff59d' },
+  devil: { name: '8. 😈 デビルナイトメア (悪魔の角・コウモリ翼)', icon: '😈', cost: 3, type: 'devil', preview: 'linear-gradient(135deg,#7c4dff,#212121)', wire: '#b388ff' },
+  neko: { name: '9. 🐾 にゃんこパンチ (猫顔ユニット＆肉球)', icon: '🐾', cost: 3, type: 'neko', preview: 'linear-gradient(135deg,#ffb74d,#fff3e0)', wire: '#ffa726' },
+  ultimate: { name: '10. 👑 黄金神バハムート (王冠・後光・神竜顎)', icon: '👑', cost: 5, type: 'ultimate', preview: 'linear-gradient(135deg,#ffd700,#ff1744,#00e5ff)', wire: '#ffea00' }
 };
 
 /**
@@ -814,7 +648,6 @@ try {
   allUsers = {};
 }
 
-// 初期状態でユーザーが1人もいない場合はデフォルトユーザーを作成
 if (Object.keys(allUsers).length === 0) {
   allUsers['ゆい'] = {
     points: 1000, loginBonus: 1000, tickets: 0, lastLogin: '',
@@ -852,7 +685,6 @@ function saveData() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(allUsers));
 }
 
-// タイトル画面のプルダウンを更新
 function populateTitleDropdown() {
   const select = document.getElementById('titleUserSelect');
   select.innerHTML = '';
@@ -866,21 +698,22 @@ function populateTitleDropdown() {
   });
 }
 
-// タイトル画面からゲーム開始
 function startGameFromTitle() {
   const select = document.getElementById('titleUserSelect');
   const selectedUser = select.value;
-  if (!selectedUser || !allUsers[selectedUser]) {
-    alert('おうちのひとメニューからユーザーを登録してください！');
-    return;
-  }
+  if (!selectedUser || !allUsers[selectedUser]) return;
+
   currentUser = selectedUser;
   localStorage.setItem('yui_catcher_current_user', currentUser);
   ensureUserFields(allUsers[currentUser]);
 
   document.getElementById('titleScreen').classList.add('hidden');
   applyCabinetSkin(allUsers[currentUser].currentCabinet);
-  checkLoginBonus(false);
+
+  const gotBonus = checkLoginBonus(false);
+  if (!gotBonus) {
+    setStatus('「▶ よこ移動」を押してスタート！(1プレイ 100pt)');
+  }
   updateUI();
 }
 
@@ -891,6 +724,7 @@ function returnToTitle() {
   document.getElementById('titleScreen').classList.remove('hidden');
 }
 
+// ポップアップを出さずに電光掲示板でログインボーナスを通知
 function checkLoginBonus(force) {
   const u = allUsers[currentUser];
   const today = getTodayStr();
@@ -899,16 +733,17 @@ function checkLoginBonus(force) {
     u.points += bonusAmount;
     u.lastLogin = today;
     saveData();
-    setTimeout(() => {
-      alert(`🎁【${currentUser}】さん、ログインボーナス！\n本日の ${bonusAmount.toLocaleString()} pt が支給されました！`);
-      updateUI();
-    }, 80);
+    updateUI();
+    setStatus(`🎁 ログインボーナス！ +${bonusAmount.toLocaleString()}pt もらったよ！`);
+    return true;
   }
+  return false;
 }
 
 // 親の管理メニュー認証
 function openParentAuthModal() {
   document.getElementById('parentPassInput').value = '';
+  document.getElementById('parentAuthMsg').textContent = '';
   document.getElementById('parentAuthModal').classList.add('active');
 }
 function closeParentAuthModal() {
@@ -920,13 +755,14 @@ function verifyParentPassword() {
     closeParentAuthModal();
     openParentAdminModal();
   } else {
-    alert('パスワードが違います！');
+    document.getElementById('parentAuthMsg').textContent = '⚠️ パスワードが違います';
   }
 }
 
 // 親の管理メニュー本体
 function openParentAdminModal() {
   document.getElementById('debugPassInput').value = '';
+  document.getElementById('adminFeedbackMsg').textContent = '';
   renderAdminUserList();
   updateDebugStatusUI();
   document.getElementById('parentAdminModal').classList.add('active');
@@ -937,35 +773,62 @@ function closeParentAdminModal() {
   updateUI();
 }
 
+function setAdminFeedback(msg, isError = false) {
+  const el = document.getElementById('adminFeedbackMsg');
+  el.style.color = isError ? '#d50000' : '#00897b';
+  el.textContent = msg;
+}
+
 function renderAdminUserList() {
   const container = document.getElementById('adminUserList');
   container.innerHTML = '';
-  Object.keys(allUsers).forEach((uName, idx) => {
+  const userNames = Object.keys(allUsers);
+
+  userNames.forEach((uName, idx) => {
     const u = allUsers[uName];
     const card = document.createElement('div');
     card.className = 'admin-user-card';
-    card.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-weight:900; font-size:0.95rem; color:#c93b76;">👤 ${uName}</span>
-        <span style="font-size:0.75rem; color:#006064; font-weight:bold;">🎟️チケット: ${u.tickets}枚</span>
-      </div>
-      <div class="admin-row">
-        <span>💰 現在の所持ポイント:</span>
-        <div>
-          <input type="number" class="admin-input" id="adm_pt_${idx}" value="${u.points}" min="0" step="100"> pt
-        </div>
-      </div>
-      <div class="admin-row">
-        <span>📅 毎日のログインボーナス:</span>
-        <div>
-          <input type="number" class="admin-input" id="adm_bn_${idx}" value="${u.loginBonus}" min="0" step="100"> pt
-        </div>
-      </div>
-      <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
-        <button class="btn-ui" style="background:#ef5350; color:#fff;" onclick="adminDeleteUser('${uName}')">削除</button>
-        <button class="btn-ui btn-shop" onclick="adminSaveUser('${uName}', ${idx})">変更を保存</button>
-      </div>
-    `;
+
+    const topRow = document.createElement('div');
+    topRow.style.cssText = 'display:flex; justify-content:space-between; align-items:center;';
+    const nameSpan = document.createElement('span');
+    nameSpan.style.cssText = 'font-weight:900; font-size:0.9rem; color:#c93b76;';
+    nameSpan.textContent = `👤 ${uName}`;
+    const ticketSpan = document.createElement('span');
+    ticketSpan.style.cssText = 'font-size:0.75rem; color:#006064; font-weight:bold;';
+    ticketSpan.textContent = `🎟️チケット: ${u.tickets}枚`;
+    topRow.appendChild(nameSpan);
+    topRow.appendChild(ticketSpan);
+    card.appendChild(topRow);
+
+    const ptRow = document.createElement('div');
+    ptRow.className = 'admin-row';
+    ptRow.innerHTML = `<span>💰 現在の所持ポイント:</span><div><input type="number" class="admin-input" id="adm_pt_${idx}" value="${u.points}" min="0" step="100"> pt</div>`;
+    card.appendChild(ptRow);
+
+    const bnRow = document.createElement('div');
+    bnRow.className = 'admin-row';
+    bnRow.innerHTML = `<span>📅 毎日のログインボーナス:</span><div><input type="number" class="admin-input" id="adm_bn_${idx}" value="${u.loginBonus}" min="0" step="100"> pt</div>`;
+    card.appendChild(bnRow);
+
+    const btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex; justify-content:flex-end; gap:6px; margin-top:8px;';
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'btn-ui';
+    delBtn.style.cssText = 'background:#ef5350; color:#fff;';
+    delBtn.textContent = '削除';
+    delBtn.onclick = () => adminDeleteUserByIndex(idx);
+
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'btn-ui btn-shop';
+    saveBtn.textContent = '変更を保存';
+    saveBtn.onclick = () => adminSaveUserByIndex(idx);
+
+    btnRow.appendChild(delBtn);
+    btnRow.appendChild(saveBtn);
+    card.appendChild(btnRow);
+
     container.appendChild(card);
   });
 }
@@ -977,11 +840,11 @@ function adminCreateUser() {
   const bonus = parseInt(bonusInput.value, 10);
 
   if (!name) {
-    alert('新しいユーザー名を入力してください。');
+    setAdminFeedback('⚠️ ユーザー名を入力してください', true);
     return;
   }
   if (allUsers[name]) {
-    alert('そのユーザー名はすでに登録されています。');
+    setAdminFeedback('⚠️ そのユーザー名はすでに登録されています', true);
     return;
   }
   const validBonus = isNaN(bonus) ? 1000 : Math.max(0, bonus);
@@ -1002,14 +865,16 @@ function adminCreateUser() {
   saveData();
   renderAdminUserList();
   populateTitleDropdown();
-  alert(`👤「${name}」さんを登録しました！（初期ポイント: ${validBonus}pt）`);
+  setAdminFeedback(`✅「${name}」さんを登録しました！(初期 ${validBonus}pt)`);
 }
 
-function adminSaveUser(uName, idx) {
+function adminSaveUserByIndex(idx) {
+  const uName = Object.keys(allUsers)[idx];
+  if (!uName) return;
   const ptVal = parseInt(document.getElementById(`adm_pt_${idx}`).value, 10);
   const bnVal = parseInt(document.getElementById(`adm_bn_${idx}`).value, 10);
   if (isNaN(ptVal) || isNaN(bnVal)) {
-    alert('正しい数値を入力してください。');
+    setAdminFeedback('⚠️ 正しい数値を入力してください', true);
     return;
   }
   allUsers[uName].points = Math.max(0, ptVal);
@@ -1018,15 +883,16 @@ function adminSaveUser(uName, idx) {
   renderAdminUserList();
   populateTitleDropdown();
   updateUI();
-  alert(`✅「${uName}」さんの設定を保存しました！`);
+  setAdminFeedback(`✅「${uName}」さんの設定を保存しました！`);
 }
 
-function adminDeleteUser(uName) {
-  if (Object.keys(allUsers).length <= 1) {
-    alert('最低1人のユーザーが必要です。削除できません。');
+function adminDeleteUserByIndex(idx) {
+  const keys = Object.keys(allUsers);
+  if (keys.length <= 1) {
+    setAdminFeedback('⚠️ 最低1人のユーザーが必要です', true);
     return;
   }
-  if (!confirm(`本当に「${uName}」さんのデータを削除しますか？`)) return;
+  const uName = keys[idx];
   delete allUsers[uName];
   if (currentUser === uName) {
     currentUser = Object.keys(allUsers)[0];
@@ -1036,18 +902,18 @@ function adminDeleteUser(uName) {
   renderAdminUserList();
   populateTitleDropdown();
   updateUI();
+  setAdminFeedback(`🗑️「${uName}」さんを削除しました`);
 }
 
-// 🛠️ デバッグモードのパスワード認証と操作（デバッグモード中のみ任意追加が許可される）
 function verifyDebugPassword() {
   const pass = document.getElementById('debugPassInput').value.trim();
   if (pass === DEBUG_PASS) {
     isDebugMode = true;
     document.getElementById('debugBar').classList.add('active');
     updateDebugStatusUI();
-    alert('🛠️ デバッグモードがONになりました！\nゲーム画面上部のバーからいつでもポイントやチケットを追加できます。');
+    setAdminFeedback('🛠️ デバッグモードをONにしました！');
   } else {
-    alert('デバッグ用パスワードが違います！');
+    setAdminFeedback('⚠️ デバッグ用パスワードが違います', true);
   }
 }
 
@@ -1062,10 +928,10 @@ function updateDebugStatusUI() {
   if (!msg) return;
   if (isDebugMode) {
     msg.style.color = '#00c853';
-    msg.textContent = '現在: 🛠️デバッグモードON（画面上部でポイント・チケット自由追加可能）';
+    msg.textContent = '現在: 🛠️デバッグモードON（上部バーでポイント・チケット追加可）';
   } else {
     msg.style.color = '#d50000';
-    msg.textContent = '現在: 通常モード（ポイント・チケットの任意追加不可）';
+    msg.textContent = '現在: 通常モード（任意追加ロック中）';
   }
 }
 
@@ -1073,12 +939,14 @@ function debugAddPoints(amount) {
   if (!isDebugMode) return;
   allUsers[currentUser].points += amount;
   saveData(); updateUI();
+  setStatus(`🛠️ デバッグ: +${amount}pt 追加しました`);
 }
 function debugAddTickets(amount) {
   if (!isDebugMode) return;
   allUsers[currentUser].tickets += amount;
   saveData(); updateUI();
   if (document.getElementById('shopModal').classList.contains('active')) renderShop();
+  setStatus(`🛠️ デバッグ: チケット+${amount}枚 追加しました`);
 }
 function debugNextDay() {
   if (!isDebugMode) return;
@@ -1104,6 +972,14 @@ function updateUI() {
   document.getElementById('uiPoints').textContent = u.points.toLocaleString();
   document.getElementById('uiTickets').textContent = u.tickets.toLocaleString();
   renderDex();
+}
+
+function openDexModal() {
+  renderDex();
+  document.getElementById('dexModal').classList.add('active');
+}
+function closeDexModal() {
+  document.getElementById('dexModal').classList.remove('active');
 }
 
 function renderDex() {
@@ -1146,11 +1022,12 @@ function renderDex() {
     nameEl.textContent = count > 0 ? ch.name : '？？？';
     card.appendChild(nameEl);
 
-    if (count > 0) card.onclick = () => showPrizeModal(ch, false);
+    if (count > 0) card.onclick = () => showPrizeModal(ch, false, true);
     grid.appendChild(card);
   });
 
   document.getElementById('dexProgress').textContent = `${ownedCount} / ${CHARACTERS.length}`;
+  document.getElementById('uiDexCount').textContent = `${ownedCount}/${CHARACTERS.length}`;
 }
 
 /**
@@ -1344,9 +1221,6 @@ function drawSingleCapsule(cap, customScreenY = null) {
   ctx.restore();
 }
 
-/**
- * ★ 10種類のアーム「腕部分」の専用描画
- */
 function drawCustomArmLimb(type, dir) {
   ctx.save();
   if (type === 'flower') {
@@ -1446,9 +1320,6 @@ function drawCustomArmLimb(type, dir) {
   ctx.restore();
 }
 
-/**
- * ★ 10種類の「ユニット（ヘッド本体）」の専用描画
- */
 function drawCustomUnitBody(type) {
   ctx.save();
   const flap = Math.sin(Date.now() / 140) * 0.22;
@@ -1652,7 +1523,7 @@ function renderStage() {
 }
 
 /**
- * 5. 操作ロジック
+ * 5. 操作ロジック（Pointer Eventsでタッチ・マウスの二重発火を完全防止）
  */
 const btnRight = document.getElementById('btnRight');
 const btnBack = document.getElementById('btnBack');
@@ -1668,12 +1539,12 @@ function updateButtons() {
 
 let xDir = 1;
 function startRight(e) {
-  if (e.cancelable) e.preventDefault();
+  if (e && e.cancelable) e.preventDefault();
   if (btnRight.disabled) return;
   if (gameState === 'IDLE') {
     const u = allUsers[currentUser];
     if (u.points < 100) {
-      alert('ポイントが足りません！（1プレイ 100pt）');
+      setStatus('⚠️ ポイントが足りません！(1プレイ 100pt)');
       return;
     }
     u.points -= 100; saveData(); updateUI();
@@ -1688,6 +1559,7 @@ function startRight(e) {
 }
 function stopRight(e) {
   if (e && e.cancelable) e.preventDefault();
+  if (!isPressingRight) return;
   isPressingRight = false;
   btnRight.classList.remove('pressing');
   if (gameState === 'X_MOVING') {
@@ -1699,10 +1571,11 @@ function stopRight(e) {
 
 let zDir = 1;
 function startBack(e) {
-  if (e.cancelable) e.preventDefault();
+  if (e && e.cancelable) e.preventDefault();
   if (btnBack.disabled) return;
   if (gameState === 'X_READY' || gameState === 'X_MOVING') {
     isPressingRight = false;
+    btnRight.classList.remove('pressing');
     gameState = 'Z_MOVING';
   } else if (gameState === 'Z_READY') {
     gameState = 'Z_MOVING';
@@ -1714,6 +1587,7 @@ function startBack(e) {
 }
 function stopBack(e) {
   if (e && e.cancelable) e.preventDefault();
+  if (!isPressingBack) return;
   isPressingBack = false;
   btnBack.classList.remove('pressing');
   if (gameState === 'Z_MOVING') {
@@ -1723,9 +1597,20 @@ function stopBack(e) {
   }
 }
 
+btnRight.addEventListener('pointerdown', startRight);
+btnRight.addEventListener('pointerup', stopRight);
+btnRight.addEventListener('pointerleave', stopRight);
+btnRight.addEventListener('pointercancel', stopRight);
+
+btnBack.addEventListener('pointerdown', startBack);
+btnBack.addEventListener('pointerup', stopBack);
+btnBack.addEventListener('pointerleave', stopBack);
+btnBack.addEventListener('pointercancel', stopBack);
+
 btnCatch.addEventListener('click', () => {
   if (gameState !== 'Z_READY' && gameState !== 'Z_MOVING') return;
   isPressingBack = false;
+  btnBack.classList.remove('pressing');
   gameState = 'EVALUATING';
   updateButtons();
 
@@ -1785,7 +1670,7 @@ function gameLoop() {
       if (fallingCapsule.bounces < 1) {
         fallingCapsule.vy = -fallingCapsule.vy * 0.42;
         fallingCapsule.bounces++;
-        fallingCapsule.cap.x += (Math.random() - 0.5) * 18;
+        fallingCapsule.cap.x = Math.max(115, Math.min(425, fallingCapsule.cap.x + (Math.random() - 0.5) * 18));
       } else {
         capsules.sort((a, b) => b.z - a.z);
         fallingCapsule = null;
@@ -1874,15 +1759,6 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-['mousedown', 'touchstart'].forEach(evt => {
-  btnRight.addEventListener(evt, startRight, { passive: false });
-  btnBack.addEventListener(evt, startBack, { passive: false });
-});
-['mouseup', 'mouseleave', 'touchend'].forEach(evt => {
-  btnRight.addEventListener(evt, stopRight);
-  btnBack.addEventListener(evt, stopBack);
-});
-
 /**
  * 6. 景品獲得 ＆ ショップ処理
  */
@@ -1897,13 +1773,14 @@ function onWinPrize() {
   saveData();
   updateUI();
   setStatus(`🎉 「${wonChar.name}」を獲得しました！`);
-  showPrizeModal(wonChar, isDuplicate);
+  showPrizeModal(wonChar, isDuplicate, false);
 }
 
-function showPrizeModal(charObj, isDuplicate) {
+function showPrizeModal(charObj, isDuplicate, isFromDex = false) {
   const modalImg = document.getElementById('modalCharImg');
   setSmartImage(modalImg, charObj);
 
+  document.getElementById('prizeModalHeader').textContent = isFromDex ? '📖 アクリルコレクション' : '🎉 プライズ GET!! 🎉';
   document.getElementById('modalCharName').textContent = charObj.name;
   document.getElementById('modalCharDesc').textContent = charObj.desc;
   document.getElementById('modalTicketInfo').style.display = isDuplicate ? 'block' : 'none';
@@ -1912,6 +1789,7 @@ function showPrizeModal(charObj, isDuplicate) {
 function closePrizeModal() { document.getElementById('prizeModal').classList.remove('active'); }
 
 function openShopModal() {
+  document.getElementById('shopFeedbackMsg').textContent = '';
   renderShop();
   document.getElementById('shopModal').classList.add('active');
 }
@@ -1919,6 +1797,7 @@ function closeShopModal() { document.getElementById('shopModal').classList.remov
 
 function switchShopTab(tab) {
   currentShopTab = tab;
+  document.getElementById('shopFeedbackMsg').textContent = '';
   document.getElementById('tabCab').classList.toggle('active', tab === 'cabinet');
   document.getElementById('tabClaw').classList.toggle('active', tab === 'claw');
   renderShop();
@@ -1946,8 +1825,8 @@ function renderShop() {
       <div style="display:flex; align-items:center;">
         <div class="preview-dot" style="background:${item.preview}">${item.icon || ''}</div>
         <div>
-          <div style="font-weight:900; font-size:0.82rem;">${item.name}</div>
-          <div style="font-size:0.72rem; color:#00838f; font-weight:bold;">
+          <div style="font-weight:900; font-size:0.8rem;">${item.name}</div>
+          <div style="font-size:0.7rem; color:#00838f; font-weight:bold;">
             ${isUnlocked ? '入手済み' : `🎟️ チケット ${item.cost}枚`}
           </div>
         </div>
@@ -1980,13 +1859,17 @@ function renderShop() {
 
 function buyItem(isCab, key, cost) {
   const u = allUsers[currentUser];
+  const msgEl = document.getElementById('shopFeedbackMsg');
   if (u.tickets < cost) {
-    alert('着せ替えチケットが足りません！\nすでに持っているキャラクターを重複ゲットするとチケットがもらえます。');
+    msgEl.style.color = '#d50000';
+    msgEl.textContent = '⚠️ チケットが足りません！（キャラ重複ゲットで+1枚）';
     return;
   }
   u.tickets -= cost;
   if (isCab) u.unlockedCabinets.push(key);
   else u.unlockedClaws.push(key);
+  msgEl.style.color = '#00897b';
+  msgEl.textContent = '🎉 新しいデザインを購入して着せ替えました！';
   equipItem(isCab, key);
 }
 
@@ -2003,7 +1886,7 @@ function equipItem(isCab, key) {
   renderShop();
 }
 
-// 初期起動時はタイトル画面を表示してプルダウンを準備
+// 初期起動
 populateTitleDropdown();
 updateUI();
 updateButtons();
