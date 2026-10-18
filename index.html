@@ -118,7 +118,7 @@
   }
   .btn-row { display: flex; justify-content: space-around; align-items: center; }
 
-  /* 立体アーケード押しボタン（ベゼル＋ドーム構造） */
+  /* 立体アーケード押しボタン */
   .btn-socket {
     background: radial-gradient(circle, #111 40%, #444 100%);
     padding: 7px; border-radius: 50%;
@@ -393,14 +393,14 @@
   </div>
 </div>
 
-<!-- カスタマイズショップモーダル（筐体＆アーム段階的ゴージャス進化） -->
+<!-- カスタマイズショップモーダル -->
 <div class="modal-bg" id="shopModal">
   <div class="modal-card">
     <h3 style="margin:0 0 6px;">🎨 ゴージャス着せ替えショップ</h3>
     <p style="font-size:0.8rem; color:#666; margin:0 0 12px;">所持チケット: 🎟️ <strong id="shopTicketCount">0</strong> 枚</p>
     <div class="shop-tabs">
       <button class="shop-tab active" id="tabCab" onclick="switchShopTab('cabinet')">🏠 筐体デザイン</button>
-      <button class="shop-tab" id="tabClaw" onclick="switchShopTab('claw')">🦾 アームデザイン</button>
+      <button class="shop-tab" id="tabClaw" onclick="switchShopTab('claw')">🦾 アームデザイン (10種)</button>
     </div>
     <div class="shop-list" id="shopList"></div>
     <button class="btn-ui" style="margin-top:16px; width:100%; padding:10px;" onclick="closeShopModal()">閉じる</button>
@@ -422,7 +422,7 @@
 
 <script>
 /**
- * 1. キャラクター図鑑データ（ゆいちゃんバリエーション）
+ * 1. キャラクター図鑑データ
  */
 function createYuiSvg(emoji, bgColor, rimColor) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
@@ -443,7 +443,7 @@ const CHARACTERS = [
 ];
 
 /**
- * 2. 筐体スキン ＆ アームスキン（段階的にゴージャスに進化）
+ * 2. 筐体スキン ＆ アームスキン（花、星、雪の結晶、竜の口など10種！）
  */
 const CABINET_SKINS = {
   pink: {
@@ -452,17 +452,17 @@ const CABINET_SKINS = {
     wallBack: '#ffeef6', wallSide: '#f8bbd0', floor1: '#f48fb1', floor2: '#fce4ec'
   },
   cyber: {
-    name: '🧊 サイバーネオン (アドバンス)', cost: 2, preview: 'linear-gradient(135deg,#00e5ff,#2979ff)',
+    name: '🧊 サイバーネオン', cost: 2, preview: 'linear-gradient(135deg,#00e5ff,#2979ff)',
     main: '#1e88e5', dark: '#0d47a1', darker: '#062356', trim: '#84ffff', neon: '#00e5ff', panel: '#0d1b2a',
     wallBack: '#0b192c', wallSide: '#112240', floor1: '#1d3557', floor2: '#0f2537'
   },
   royal: {
-    name: '👑 ロイヤルゴールド (ゴージャス)', cost: 4, preview: 'linear-gradient(135deg,#ffd54f,#ff8f00)',
+    name: '👑 ロイヤルゴールド', cost: 4, preview: 'linear-gradient(135deg,#ffd54f,#ff8f00)',
     main: '#ffd54f', dark: '#ff8f00', darker: '#b25900', trim: '#fff8e1', neon: '#ffea00', panel: '#2b1d0e',
     wallBack: '#fff8e1', wallSide: '#ffecb3', floor1: '#ffd54f', floor2: '#fff3e0'
   },
   gothic: {
-    name: '💎 ジュエルゴシック (超豪華)', cost: 6, preview: 'linear-gradient(135deg,#e040fb,#7b1fa2)',
+    name: '💎 ジュエルゴシック', cost: 5, preview: 'linear-gradient(135deg,#e040fb,#7b1fa2)',
     main: '#9c27b0', dark: '#6a1b9a', darker: '#2a0845', trim: '#ea80fc', neon: '#e040fb', panel: '#1a0826',
     wallBack: '#2d1242', wallSide: '#1e0a2d', floor1: '#512da8', floor2: '#311b92'
   }
@@ -470,27 +470,51 @@ const CABINET_SKINS = {
 
 const CLAW_SKINS = {
   standard: {
-    name: '🦾 スタンダードアーム', cost: 0, preview: 'linear-gradient(135deg,#ff4081,#cfd8dc)',
+    name: '🦾 スタンダードアーム', cost: 0, type: 'standard', preview: '#cfd8dc',
     head1: '#ff80ab', head2: '#c51162', arm: '#eceff1', tip: '#ff4081', wire: '#546e7a'
   },
-  gold: {
-    name: '✨ ゴールドアーム', cost: 2, preview: 'linear-gradient(135deg,#ffee58,#f57f17)',
-    head1: '#fff176', head2: '#f57f17', arm: '#ffd54f', tip: '#d50000', wire: '#8d6e63'
+  flower: {
+    name: '🌸 フラワーアーム (花付)', cost: 1, type: 'flower', preview: '#ff80ab',
+    head1: '#ff80ab', head2: '#ad1457', arm: '#fce4ec', tip: '#ff4081', wire: '#880e4f'
   },
-  laser: {
-    name: '⚡ クリスタルレーザー', cost: 3, preview: 'linear-gradient(135deg,#18ffff,#00b0ff)',
-    head1: '#84ffff', head2: '#006064', arm: '#00e5ff', tip: '#ffea00', wire: '#00e5ff'
+  star: {
+    name: '⭐ スターアーム (星付)', cost: 2, type: 'star', preview: '#ffd54f',
+    head1: '#ffe082', head2: '#ff8f00', arm: '#fffde7', tip: '#ffb300', wire: '#ff6f00'
+  },
+  snow: {
+    name: '❄️ スノーアーム (雪結晶)', cost: 2, type: 'snow', preview: '#80d8ff',
+    head1: '#81d4fa', head2: '#0288d1', arm: '#e0f7fa', tip: '#00b0ff', wire: '#01579b'
   },
   dragon: {
-    name: '🔥 ドラゴンエナジー (究極)', cost: 5, preview: 'linear-gradient(135deg,#ff3d00,#ffea00)',
-    head1: '#ff6d00', head2: '#dd2c00', arm: '#ffab00', tip: '#6200ea', wire: '#ff3d00'
+    name: '🔥 ドラゴンクロー (竜の口)', cost: 3, type: 'dragon', preview: '#ff3d00',
+    head1: '#ff6d00', head2: '#dd2c00', arm: '#ffab00', tip: '#d50000', wire: '#bf360c'
+  },
+  heart: {
+    name: '💖 ラブハートアーム', cost: 2, type: 'heart', preview: '#ff4081',
+    head1: '#ff80ab', head2: '#c51162', arm: '#f8bbd0', tip: '#ff1744', wire: '#880e4f'
+  },
+  angel: {
+    name: '👼 エンジェルウィング', cost: 3, type: 'angel', preview: '#ffffff',
+    head1: '#e1f5fe', head2: '#0288d1', arm: '#ffffff', tip: '#00e5ff', wire: '#b0bec5'
+  },
+  devil: {
+    name: '😈 デビルホーン', cost: 3, type: 'devil', preview: '#7c4dff',
+    head1: '#b388ff', head2: '#4527a0', arm: '#512da8', tip: '#ff1744', wire: '#212121'
+  },
+  neko: {
+    name: '🐾 にゃんこアーム', cost: 3, type: 'neko', preview: '#ffb74d',
+    head1: '#ffe0b2', head2: '#f57c00', arm: '#fff3e0', tip: '#ff9800', wire: '#e65100'
+  },
+  ultimate: {
+    name: '👑 ギガロイヤル竜神', cost: 5, type: 'ultimate', preview: 'linear-gradient(135deg,#ffd700,#ff3d00)',
+    head1: '#ffe57f', head2: '#ff6f00', arm: '#ffea00', tip: '#d50000', wire: '#ffab00'
   }
 };
 
 /**
- * 3. ユーザー個別管理 ＆ データ保存
+ * 3. ユーザー管理 ＆ データ保存
  */
-const STORAGE_KEY = 'yui_catcher_users_v4';
+const STORAGE_KEY = 'yui_catcher_users_v5';
 let allUsers = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
 let currentUser = localStorage.getItem('yui_catcher_current_user') || 'ゆいファン1号';
 let currentShopTab = 'cabinet';
@@ -587,7 +611,7 @@ function renderDex() {
 }
 
 /**
- * 4. 3Dルーム＆カプセル＆クレーン描画エンジン
+ * 4. 3Dルーム＆カプセル＆多種アーム描画エンジン
  */
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -671,7 +695,6 @@ function draw3DRoom(skin) {
     }
   }
 
-  // シューター（取り出し口）
   ctx.save();
   const holeGrad = ctx.createLinearGradient(18, 240, 18, 315);
   holeGrad.addColorStop(0, '#09060e');
@@ -758,6 +781,67 @@ function drawSingleCapsule(cap, customScreenY = null) {
   ctx.restore();
 }
 
+// アーム先端のカスタム装飾を描画する関数
+function drawClawOrnament(type) {
+  ctx.save();
+  if (type === 'flower') {
+    // 花の装飾
+    ctx.fillStyle = '#ff4081';
+    for (let i = 0; i < 5; i++) {
+      ctx.rotate((Math.PI * 2) / 5);
+      ctx.beginPath(); ctx.arc(0, -6, 4.5, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = '#ffeb3b';
+    ctx.beginPath(); ctx.arc(0, 0, 3.5, 0, Math.PI * 2); ctx.fill();
+  } else if (type === 'star') {
+    // 星の装飾
+    ctx.fillStyle = '#ffea00';
+    ctx.beginPath();
+    for (let i = 0; i < 5; i++) {
+      const a = (Math.PI * 2 / 5) * i - Math.PI / 2;
+      const x = Math.cos(a) * 7, y = Math.sin(a) * 7;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath(); ctx.fill();
+  } else if (type === 'snow') {
+    // 雪の結晶
+    ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 2;
+    for (let i = 0; i < 3; i++) {
+      ctx.rotate(Math.PI / 3);
+      ctx.beginPath(); ctx.moveTo(0, -7); ctx.lineTo(0, 7); ctx.stroke();
+    }
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(0, 0, 3, 0, Math.PI * 2); ctx.fill();
+  } else if (type === 'dragon' || type === 'ultimate') {
+    // 竜の口（牙が生えたアギト）
+    ctx.fillStyle = '#b71c1c';
+    ctx.beginPath(); ctx.moveTo(-6, -6); ctx.lineTo(6, -6); ctx.lineTo(0, 8); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.moveTo(-4, -4); ctx.lineTo(-2, 0); ctx.lineTo(-5, -1); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(4, -4); ctx.lineTo(2, 0); ctx.lineTo(5, -1); ctx.closePath(); ctx.fill();
+  } else if (type === 'heart') {
+    ctx.fillStyle = '#ff1744';
+    ctx.beginPath();
+    ctx.moveTo(0, 4);
+    ctx.bezierCurveTo(-7, -2, -6, -8, 0, -3);
+    ctx.bezierCurveTo(6, -8, 7, -2, 0, 4);
+    ctx.fill();
+  } else if (type === 'angel') {
+    ctx.fillStyle = '#00e5ff';
+    ctx.beginPath(); ctx.ellipse(-6, -2, 7, 3, 0.5, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(6, -2, 7, 3, -0.5, 0, Math.PI*2); ctx.fill();
+  } else if (type === 'devil') {
+    ctx.fillStyle = '#ff1744';
+    ctx.beginPath(); ctx.moveTo(-6, -8); ctx.lineTo(-2, -3); ctx.lineTo(-8, -2); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(6, -8); ctx.lineTo(2, -3); ctx.lineTo(8, -2); ctx.closePath(); ctx.fill();
+  } else if (type === 'neko') {
+    ctx.fillStyle = '#ffa726';
+    ctx.beginPath(); ctx.moveTo(-7, -9); ctx.lineTo(-2, -3); ctx.lineTo(-8, -2); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(7, -9); ctx.lineTo(2, -3); ctx.lineTo(8, -2); ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+}
+
 function drawClawAndCapsule(clawSkin) {
   const proj = project3D(claw.x, claw.z);
   const railY = 18 + (100 - claw.z) * 0.14;
@@ -796,6 +880,12 @@ function drawClawAndCapsule(clawSkin) {
   ctx.fillStyle = headGrad;
   ctx.beginPath(); ctx.roundRect(-20, -12, 40, 20, 9); ctx.fill();
   ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+
+  // センター上部のシンボル装飾
+  ctx.save();
+  ctx.translate(0, -2);
+  drawClawOrnament(clawSkin.type);
+  ctx.restore();
 
   [-1, 1].forEach(dir => {
     ctx.save();
@@ -1135,8 +1225,8 @@ function renderShop() {
       <div style="display:flex; align-items:center;">
         <div class="preview-dot" style="background:${item.preview}"></div>
         <div>
-          <div style="font-weight:900; font-size:0.88rem;">${item.name}</div>
-          <div style="font-size:0.75rem; color:#00838f; font-weight:bold;">
+          <div style="font-weight:900; font-size:0.86rem;">${item.name}</div>
+          <div style="font-size:0.73rem; color:#00838f; font-weight:bold;">
             ${isUnlocked ? '入手済み' : `🎟️ チケット ${item.cost}枚`}
           </div>
         </div>
